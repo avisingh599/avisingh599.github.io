@@ -125,8 +125,9 @@
 <div id="drawer">
 <ul id="markdown-toc">
   <li><a href="#computer-vision">Computer Vision</a>    <ul>
-      <li><a href="#range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</a></li>
-      <li><a href="#landmark-based-localisation-using-a-kinect-sensor">Landmark Based Localisation using a Kinect Sensor</a></li>
+      <li><a href="#visual-odometry-ongoing">Visual Odometry (Ongoing)</a></li>
+      <li><a href="#range-flow-rgbd-version-of-optical-flow-summer-2014">Range Flow (RGBD version of Optical Flow) (Summer 2014)</a></li>
+      <li><a href="#landmark-based-localisation-using-a-kinect-sensor-winter-2013">Landmark Based Localisation using a Kinect Sensor (Winter 2013)</a></li>
     </ul>
   </li>
   <li><a href="#fpgas">FPGAs</a>    <ul>
@@ -156,19 +157,38 @@
 
 <h1 id="computer-vision">Computer Vision</h1>
 
-<h2 id="range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</h2>
+<h2 id="visual-odometry-ongoing">Visual Odometry (Ongoing)</h2>
 
 <ul>
-  <li>Grabbed RGBD data from a Microsoft Kinect sensor, and used it to computet range flow using several different techniques.</li>
-  <li>Evaluated the flow computed against groud truth data generated using a highly accurate 6DOF tracker.</li>
+  <li>Performing a literature survey of various stereo and monocular approaches of Visual Odometry.</li>
+  <li>A multi-modal approach is planned, with methods involving feature tracking, and also a geometrical
+analysis of the tracks left by a ground vehicle in a sandy/muddy terrain.</li>
 </ul>
 
-<h2 id="landmark-based-localisation-using-a-kinect-sensor">Landmark Based Localisation using a Kinect Sensor</h2>
+<h2 id="range-flow-rgbd-version-of-optical-flow-summer-2014">Range Flow (RGBD version of Optical Flow) (Summer 2014)</h2>
 
 <ul>
-  <li>Some landmarks were stored as color histograms.</li>
-  <li>This histogram model was then used to find and track a object using the CAMShift algorithm</li>
-  <li>The posisitions of the landmarks in the globar frame was fed as a gaussian random variable.</li>
+  <li>Performed a literature review on Optical Flow, and the various approaches on extending it to 3D.</li>
+  <li>Captured RGBD Data from a Microsoft Kinect using OpenNI and OpenCV libraries, and programming
+in C++.</li>
+  <li>Implemented two approaches for estimation of Range Flow from RGB-D data, one using ’Local Least
+Squares Solution’, the other a ’Global Minimum Energy Solution’, and the above two approaches were
+evaluated for speed and accuracy.</li>
+  <li>A third approach, Physical RGBD Flow, attempting to capture the physical flow (instead of apparent
+flow) was also implemented, and was evaluated using ground truth data generated using a highly
+accurate 6-DOF tracking device, the Personal Space Tracker.</li>
+</ul>
+
+<h2 id="landmark-based-localisation-using-a-kinect-sensor-winter-2013">Landmark Based Localisation using a Kinect Sensor (Winter 2013)</h2>
+
+<ul>
+  <li>Geometric Triangulation was used to determine the pose (modelled as a set of random variables with
+Gaussian Distribution) of a robot, from information obtained from noisy landmarks.</li>
+  <li>A Microsoft Kinect was used to identify the landmarks (using color histogram based models), CAMshift
+algorithm was used to track these landmarks, and bearing measurements were calculated using the depth
+data.</li>
+  <li>An error model for the data obtained from a Kinect was used along with the Error Propagation Law
+to arrive at the uncertainty in the final pose computed using the Geometric Localisation Algorithm.</li>
 </ul>
 
 <hr />
@@ -178,8 +198,12 @@
 <h2 id="discrete-hilbert-transform-in-verilog">Discrete Hilbert Transform in Verilog</h2>
 
 <ul>
-  <li>A circuit/algorithm was implemented to compute the discrete Hilbert Transform given sampled data.</li>
-  <li>A circuit mimicking Fast Fourier Transform (FFT) was used as an intermediate part of the design.</li>
+  <li>Implemented a 32-point discrete Hilbert Transform in Verilog.</li>
+  <li>Used a sequential implementation of FFT and IFFT as intermediate steps in the calculation of the
+Hilbert Transform.</li>
+  <li>Results obtained were evaluated against the Hilbert transform obtained from Matlab.</li>
+  <li>Secured 2nd position in ECDC, Techkriti ’14(Annual Technical and Entrepreneurship Fes-
+tival of IIT-Kanpur).</li>
 </ul>
 
 <hr />
