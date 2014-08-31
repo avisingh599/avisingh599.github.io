@@ -1,50 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://avisingh599.github.io</loc>
+        <loc>http://localhost:4000</loc>
     </url>
     
     
     <url>
-        <loc>http://avisingh599.github.io/404.html</loc>
+        <loc>http://localhost:4000/404.html</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/about/</loc>
+        <loc>http://localhost:4000/about/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/acads/</loc>
+        <loc>http://localhost:4000/acads/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/contact/</loc>
+        <loc>http://localhost:4000/contact/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/extracurriculars/</loc>
+        <loc>http://localhost:4000/extracurriculars/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/feed.xml</loc>
+        <loc>http://localhost:4000/feed.xml</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/index.html</loc>
+        <loc>http://localhost:4000/index.html</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/posts/</loc>
+        <loc>http://localhost:4000/posts/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/projects/</loc>
+        <loc>http://localhost:4000/projects/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/sitemap.xml</loc>
+        <loc>http://localhost:4000/sitemap.xml</loc>
     </url>
     
 
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22vision%22%5D/visual-odometry-part-1/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%5D/quotes/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22computer%20vision%22%5D/image-filtering/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22robotics%22%5D/visual-odometry/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22math%22%5D/ransac/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22gpu%22%5D/parallel-programming-with-cuda/</loc>
+    </url>
+    
+    <url>
+        <loc>http://localhost:4000/%5B%22computervision%22%5D/optical-flow/</loc>
+    </url>
     
 </urlset>

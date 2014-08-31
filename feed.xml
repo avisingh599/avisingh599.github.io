@@ -2,14 +2,407 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
 <title type="text">Avi Singh</title>
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
-<link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2014-07-20T09:07:13+00:00</updated>
-<id>http://avisingh599.github.io/</id>
+<link rel="self" type="application/atom+xml" href="http://localhost:4000/feed.xml" />
+<link rel="alternate" type="text/html" href="http://localhost:4000" />
+<updated>2014-08-31T13:35:23+00:00</updated>
+<id>http://localhost:4000/</id>
 <author>
   <name>Avi Singh</name>
-  <uri>http://avisingh599.github.io/</uri>
+  <uri>http://localhost:4000/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Visual Odometry(Part 1)]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22vision%22%5D/visual-odometry-part-1/" />
+  <id>http://localhost:4000/%5B%22vision%22%5D/visual-odometry-part-1</id>
+  <updated>2014-07-29 05:38:43 +0000T00:00:00-00:00</updated>
+  <published>2014-07-29T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester at IIT-Kanpur.
+This post is primarily a list of some useful links which will get on acquainted with the basics of Visual Odometry.&lt;/p&gt;
+
+&lt;p&gt;The first thing that anyone should read is this wonderful two-part review by Davide Scaramuzza and Friedrich Fraundorfer:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.roboticsschool.ethz.ch/airobots/programme/presentations/VO_part_I.pdf&quot;&gt;Visual Odometry Tutorial Part 1&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://rpg.ifi.uzh.ch/docs/VO_Part_II_Scaramuzza.pdf&quot;&gt;Visual Odometry Tutorial Part 2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;One thing that I did not understand from the above tutorials was the ‘5-point algorithm’ by Nister in 2003. The original paper is &lt;a href=&quot;http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1288525&quot;&gt;here&lt;/a&gt;. But, this paper also seemed quite complicated for me to implement without any background, so I moved onto a simpler algorithm, called the ‘8-point algorithm’, which was published a long time ago by Longuet-Higgins. You can find it &lt;a href=&quot;http://www2.ece.ohio-state.edu/~aleix/Longuet-Higgins.pdf&quot;&gt;here&lt;/a&gt;. There are some lecture slides which explain this in a simple manner, and you can find them &lt;a href=&quot;http://www.cse.psu.edu/~rcollins/CSE486/lecture20_6pp.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Note, there are more papers that one should read regarding this, most notably:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cse.unr.edu/~bebis/CS485/Handouts/hartley.pdf&quot;&gt;In Defense of the 8-point Algorithmm&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://users.cecs.anu.edu.au/~hongdong/new5pt_cameraREady_ver_1.pdf&quot;&gt;5-point Motion Estimation Made Easy&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22vision%22%5D/visual-odometry-part-1/&quot;&gt;Visual Odometry(Part 1)&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Quotes]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%5D/quotes/" />
+  <id>http://localhost:4000/%5B%5D/quotes</id>
+  <updated>2014-07-26 13:32:24 +0000T00:00:00-00:00</updated>
+  <published>2014-07-26T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down.&lt;/p&gt;
+
+&lt;p&gt;Starting with poems first, this poem by William Ernest Henley is my personal favourite.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Out of the night that covers me,&lt;br /&gt;
+Black as the Pit from pole to pole,&lt;br /&gt;
+I thank whatever gods may be&lt;br /&gt;
+For my unconquerable soul.&lt;br /&gt;
+In the fell clutch of circumstance&lt;br /&gt;
+I have not winced nor cried aloud.&lt;br /&gt;
+Under the bludgeoning of chance&lt;br /&gt;
+My head is bloody, but unbowed.&lt;br /&gt;
+Beyond this place of wrath and tears&lt;br /&gt;
+Looms but the Horror of the shade,&lt;br /&gt;
+And yet the menace of the years&lt;br /&gt;
+Finds, and shall find, me unafraid.&lt;br /&gt;
+It matters not how strait the gate,&lt;br /&gt;
+How charged with punishments the scroll.&lt;br /&gt;
+I am the master of my fate:&lt;br /&gt;
+I am the captain of my soul.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Another one that I particularly like (though it is not inspiring in any way) is this one by Robert Frost.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Some say the world will end in fire,&lt;br /&gt;
+Some say in ice.&lt;br /&gt;
+From what I’ve tasted of desire&lt;br /&gt;
+I hold with those who favor fire.&lt;br /&gt;
+But if it had to perish twice,&lt;br /&gt;
+I think I know enough of hate&lt;br /&gt;
+To say that for destruction ice&lt;br /&gt;
+Is also great&lt;br /&gt;
+And would suffice.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%5D/quotes/&quot;&gt;Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Image Filtering]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22computer%20vision%22%5D/image-filtering/" />
+  <id>http://localhost:4000/%5B%22computer%20vision%22%5D/image-filtering</id>
+  <updated>2014-07-22 13:05:37 +0000T00:00:00-00:00</updated>
+  <published>2014-07-22T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;Most of the images obtained from cameras have some sort for noise. This may be due to Light Variations, Cam Electronics, Lens and surface reflectance. Noise is obviousely undesirable, and we would like to get rid of it.&lt;/p&gt;
+
+&lt;p&gt;I^(x,y) = I(x,y) + n(x,y)&lt;/p&gt;
+
+&lt;p&gt;Now what do we know about n(x,y)?
+We cannot exactly knwo what n(x,y) is, but we may have some idea as to what the &lt;em&gt;distribution&lt;/em&gt; of noise.
+For example, noise might be gaussian in nature, with zero mean.&lt;/p&gt;
+
+&lt;h3 id=&quot;image-derivatives&quot;&gt;Image Derivatives&lt;/h3&gt;
+&lt;p&gt;What are derivatives?
+* They denote the &lt;em&gt;rate of change&lt;/em&gt;.&lt;/p&gt;
+
+&lt;p&gt;Derivatives might be continuous (for functions), or discrete (for real world data). The smallest Delta_X that we can choose in an image derivate is 1.&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;f’ = f(x) - f(x-1)&lt;/li&gt;
+  &lt;li&gt;f’ = f(x+1) - f(x)&lt;/li&gt;
+  &lt;li&gt;f’ = f(x+1) - f(x-1)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In image processing, we have masks.&lt;/p&gt;
+
+&lt;p&gt;Backward mask = [-1 1].&lt;/p&gt;
+
+&lt;p&gt;kernel, mask, convolution, corelation
+derivative, blurring, gaussian blurring, &lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22computer%20vision%22%5D/image-filtering/&quot;&gt;Image Filtering&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 22, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Visual Odometry]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22robotics%22%5D/visual-odometry/" />
+  <id>http://localhost:4000/%5B%22robotics%22%5D/visual-odometry</id>
+  <updated>2014-07-20 22:43:45 +0000T00:00:00-00:00</updated>
+  <published>2014-07-21T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;Visual Odometry(VO) is the process of determinig the egomotion of an agent (such as a mobile robot), given the video feed from one or more cameras mounted on the agent. It was coined by Nister in his landmark paper in 2004. Visual Odometry beats wheel odometry in situations where slipping might occur.&lt;/p&gt;
+
+&lt;h3 id=&quot;structure-from-motion-sfm&quot;&gt;Structure from Motion (SFM)&lt;/h3&gt;
+&lt;p&gt;The problem of recovering relative camera poses and 3D structure from a set of images.&lt;/p&gt;
+
+&lt;p&gt;VO is a particular case of SFM&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22robotics%22%5D/visual-odometry/&quot;&gt;Visual Odometry&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[RANSAC]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22math%22%5D/ransac/" />
+  <id>http://localhost:4000/%5B%22math%22%5D/ransac</id>
+  <updated>2014-07-21 01:48:52 +0000T00:00:00-00:00</updated>
+  <published>2014-07-21T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.&lt;/p&gt;
+
+&lt;p&gt;Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain &lt;em&gt;inliers&lt;/em&gt; and some &lt;em&gt;outliers&lt;/em&gt;. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.&lt;/p&gt;
+
+&lt;p&gt;Note that even the inliers do not &lt;em&gt;exactly&lt;/em&gt; fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-algorithm&quot;&gt;The Algorithm&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-input&quot;&gt;The Input&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Data points&lt;/li&gt;
+  &lt;li&gt;Some parametrized model (we need to estimate the parameters for this model)&lt;/li&gt;
+  &lt;li&gt;Some confidence parameters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;algo&quot;&gt;Algo&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;A set points from the original dataset are randomly selected, and are assumed to be the inliers.&lt;/li&gt;
+  &lt;li&gt;Parameters are estimated to fit to this hypothetical inlier set.&lt;/li&gt;
+  &lt;li&gt;Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.&lt;/li&gt;
+  &lt;li&gt;The points that fit the model become a part of the &lt;em&gt;consensus&lt;/em&gt; set. The model is good if a particular number of points have been classified as part of the consensus set.&lt;/li&gt;
+  &lt;li&gt;This model is then re-estimated using all the members of a consensus set.&lt;/li&gt;
+  &lt;li&gt;The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;how-many-times-do-we-repeat&quot;&gt;How many times do we repeat?&lt;/h3&gt;
+&lt;p&gt;It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22math%22%5D/ransac/&quot;&gt;RANSAC&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Parallel Programming with CUDA]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22gpu%22%5D/parallel-programming-with-cuda/" />
+  <id>http://localhost:4000/%5B%22gpu%22%5D/parallel-programming-with-cuda</id>
+  <updated>2014-07-20 20:18:16 +0000T00:00:00-00:00</updated>
+  <published>2014-07-21T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is &lt;em&gt;way&lt;/em&gt; better.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-gpus&quot;&gt;Why GPUs?&lt;/h2&gt;
+
+&lt;p&gt;CPUs are not getting any faster, due to limitation of clock speeds which have virtually remained the same since the past 5 years or so. Increasing this clock speed has become close to impossible, since increasing clock speeds increases the power consumption, which makes it difficult to cool the CPU. So, for faster computations, GPUs are the way to go.&lt;/p&gt;
+
+&lt;h2 id=&quot;gpu-vs-cpu&quot;&gt;GPU vs CPU&lt;/h2&gt;
+
+&lt;p&gt;My computer has a quad-core processor with hyper threading (an Intel i7 Ivy Bridge). This means that, in the best case, I can have at most 8-threads truly running in parallel. On the other hand, the low-end GPU that I have (nVidia GeForce GT630M) has 96 cores!&lt;/p&gt;
+
+&lt;p&gt;In general, a CPU has a few, very powerful computation cores, where as a GPU has a very large number of smaller, less powerful computation cores. The time taken to perform any one particular task is less on the CPU, but if you need to performs thousands of such tasks, then the GPU would beat the CPU.&lt;/p&gt;
+
+&lt;p&gt;One more important thing to note is that, while designing CPUs engineers optimize for &lt;em&gt;latency&lt;/em&gt;. On the other hand, maximum &lt;em&gt;thorughput&lt;/em&gt; is what the designers are aiming at while making GPUs.&lt;/p&gt;
+
+&lt;h2 id=&quot;throughput-vs-latency&quot;&gt;Throughput vs Latency&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Throughput: It is defined as the amount of work done in unit time. For example, I need to transport 50 bags of rice from ground floor of a building to the 10th floor, and I can carry at most two bags at a time. Let the time taken in each trip be 5 minutes. So, the amount of work done in one hour would be 2*(60/5) = 24 bags. I can say that the throughput is 24 bags/hr.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Latency: It is defined as the amount of time taken to perform a particular task. In the previous example, it would take take 125 minutes to take all the 50 bags, and hence the latency (measures in time units) is 125 minutes.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;cuda&quot;&gt;CUDA&lt;/h2&gt;
+
+&lt;p&gt;CUDA is a framework developed by nVidia for writing programs that run both on the GPU and the CPU. On the CPU side, you can write programs in C, and then used some extensions to C (written by nVidia) to write programs that run on the GPU. These programs that run on the GPU are called &lt;em&gt;kernels&lt;/em&gt;. A kernel looks like a serial program, but the CPU launches on a large  number of threads on the GPU. In CUDA, the CPU is referred to as the &lt;em&gt;host&lt;/em&gt; while the GPU is referred to as the &lt;em&gt;device&lt;/em&gt;. In this relationship between the CPU and the GPU, the CPU is the &lt;em&gt;alpha&lt;/em&gt;. The CPU and the GPU have separate memories, and can perform operations only on the data that is stored in their own memory. The CPU can allocate memory on the GPU, copy data from the CPU memory to the GPU memory, launch kernels on hundreds of thread on the GPU, and copy back the results from the GPU memory. The GPU, on the other hand, can only respond to call of memory copy made by the CPU, and cannot make its own requests for data transfer.&lt;/p&gt;
+
+&lt;h4 id=&quot;skeleton-of-a-cuda-program&quot;&gt;Skeleton of a CUDA program:&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Allocate memory on the GPU&lt;/li&gt;
+  &lt;li&gt;Transfer data from the CPU memory to the GPU memory&lt;/li&gt;
+  &lt;li&gt;Perform the computations on the GPU&lt;/li&gt;
+  &lt;li&gt;Copy the results from the GPU to the CPU&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A sample code in CUDA, which calculates the cubes of all integers from 1 to 64.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// here is the kernel&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;__global__&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;// Todo: Fill in this function&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threadIdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// threadIdx is a C struct having members x,y,z, other structs available are blockIdx, threaddim, blockdim&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//__global__ is what specifies that the fucntion is a kernel&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// generate the input array on the host&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// declare GPU memory pointers&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// allocate GPU memory&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// transfer the array to the GPU&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyHostToDevice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// launch the kernel&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	One block of 64 threads is being launched here. We specify the number of blocks as well as the number of threads in each block.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	Each block has a limited number of threads that it can support. Modern GPUs support 1024, older support 512.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	Can have any number of blocks. Cuda supports 2D and 3D arrangement of blocks as well.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	*/&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// copy back the result array to the CPU&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyDeviceToHost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// print out the resulting array&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%f&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you have the nVidia CUDA toolkit installed, you can compile and run the above program using:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;bash&quot;&gt;nvcc -o sample sample.c
+./sample&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22gpu%22%5D/parallel-programming-with-cuda/&quot;&gt;Parallel Programming with CUDA&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Optical Flow]]></title>
+  <link rel="alternate" type="text/html" href="http://localhost:4000/%5B%22computervision%22%5D/optical-flow/" />
+  <id>http://localhost:4000/%5B%22computervision%22%5D/optical-flow</id>
+  <updated>2014-07-20 18:26:12 +0000T00:00:00-00:00</updated>
+  <published>2014-07-20T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://localhost:4000</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;As the first article on my blog, I will make an attempt to introduce one of the most interesting and deeply studied problems in computer vision: Optical Flow.&lt;/p&gt;
+
+&lt;h2 id=&quot;whats-optical-flow&quot;&gt;What’s optical flow?&lt;/h2&gt;
+
+&lt;p&gt;Pick up a camera and take a photograph of a static scene. Now displace the camera slightly and take another picture of the same scene. In the resulting pair of photographs that you get, you will see that most of the pixels in the second photograph are slightly displaced from their position in the first photograph.&lt;/p&gt;
+
+&lt;p&gt;Now consider another another situation in which you are video-recording a dynamic scene, such as a a dance performance. If you take any two consecutive frames from this video, you will see that most of the pixels remain static(the background), while some of them have been displaced (the dancer).&lt;/p&gt;
+
+&lt;p&gt;To estimate optical flow is to estimate how much each pixel has been displaced in the two frames. As you might guess, this is an ill-posed problem. There is no sure way to find the pixel correspondences between the two frame. Given a pixel in one frame, you have no sure way of determining of where it is the second frame.&lt;/p&gt;
+
+&lt;figure&gt;
+    &lt;a href=&quot;/images/optflow_hand.jpg&quot;&gt;&lt;img src=&quot;/images/optflow_hand.jpg&quot; /&gt;&lt;/a&gt;
+    &lt;figcaption&gt;Here the optical flow field is being visualized as the blue arrows, hand is the moving part in the given pair of images&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;In the year 1981, two extremely important papers were published for the determination of optical flow:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://dspace.mit.edu/bitstream/handle/1721.1/6337/AIM-572.pdf?sequence=2&quot;&gt;Determining Optical Flow( Horn and Schunck)&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.ces.clemson.edu/~stb/klt/lucas_bruce_d_1981_1.pdf&quot;&gt;An iterative Image Registration technique (Lucas and Kanade)&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The above works were done independent of each other, and even today they remain two of the most important basic approaches for optical flow estimation.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-horn-and-schunk-method&quot;&gt;The Horn and Schunk Method&lt;/h2&gt;
+
+&lt;p&gt;There are two major assumptions that underlie the techniques used by Horn and Schunck(HS):&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Brightness Constancy&lt;/li&gt;
+  &lt;li&gt;Smoothness&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;brightness-constancy&quot;&gt;Brightness Constancy&lt;/h3&gt;
+&lt;p&gt;It is assumed that the lighting of the scene is uniform and remains unchanged during the computation of optical flow, and hence we can safely say the brightness value associated with each pixel (also called the gray-value), remains the same in both the frames, over which optical flow is being computed.&lt;/p&gt;
+
+&lt;h3 id=&quot;smoothness&quot;&gt;Smoothness&lt;/h3&gt;
+&lt;p&gt;It is assumed that nearby pixels move more or less in the same way, and hence there is no abrupt change in the optical flow field.&lt;/p&gt;
+
+&lt;h3 id=&quot;the-math&quot;&gt;The Math&lt;/h3&gt;
+
+&lt;p&gt;Brightness Constancy: Supposed a function I(x,y) represents the brightness of the pixel in row x and column y. We assume that the brightness remains constant and the pixel is displaced only by a small amount. So, we get:&lt;/p&gt;
+
+&lt;p&gt;I(x,y) = I(x+u, y+v),  where (u, v) is the optical flow associated with the pixel at (x,y).&lt;/p&gt;
+
+&lt;p&gt;Using Taylor series expansion, we get&lt;/p&gt;
+
+&lt;p&gt;I&lt;sub&gt;x&lt;/sub&gt;u + I&lt;sub&gt;y&lt;/sub&gt;v + I&lt;sub&gt;t&lt;/sub&gt; = 0&lt;/p&gt;
+
+&lt;p&gt;Here I&lt;sub&gt;x&lt;/sub&gt; denotes the derivative of the image with respect to x, I&lt;sub&gt;y&lt;/sub&gt; denotes the derivative of the image with respect to y and I&lt;sub&gt;t&lt;/sub&gt; denotes the time derivative , given the two images.&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://www.sciweavers.org/tex2img.php?eq=1%2Bsin%28mc%5E2%29%0D%0A&amp;amp;bc=White&amp;amp;fc=Black&amp;amp;im=jpg&amp;amp;fs=12&amp;amp;ff=arev&amp;amp;edit=0&quot; alt=&quot;equation&quot; /&gt;&lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://localhost:4000/%5B%22computervision%22%5D/optical-flow/&quot;&gt;Optical Flow&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://localhost:4000&quot;&gt;Avi Singh&lt;/a&gt; on July 20, 2014.&lt;/p&gt;</content>
+</entry>
 
 </feed>
