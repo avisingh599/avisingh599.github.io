@@ -5,24 +5,24 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>RANSAC &#8211; Trailblazer</title>
+<title>The Power of Habit [1/3] &#8211; Trailblazer</title>
 <meta name="description" content="">
-<meta name="keywords" content="vision, math, statistics">
+<meta name="keywords" content="nonfiction, neuroscience, review">
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RANSAC">
+<meta property="og:title" content="The Power of Habit [1/3]">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/">
+<meta property="og:url" content="http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/">
 <meta property="og:site_name" content="Trailblazer">
 
 
 
 
 
-<link rel="canonical" href="http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/">
+<link rel="canonical" href="http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/">
 <link href="http://home.iitk.ac.in/~avisingh/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
@@ -118,37 +118,35 @@
   <article>
     <div class="headline-wrap">
       
-        <h1><a href="http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/" rel="bookmark" title="RANSAC">RANSAC</a></h1>
+        <h1><a href="http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/" rel="bookmark" title="The Power of Habit [1/3]">The Power of Habit [1/3]</a></h1>
       
     </div><!--/ .headline-wrap -->
     <div class="article-wrap">
-      <p>This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.</p>
+      <p>Today I received two of the three books that I had impulsively ordered on Flipkart when I had too much free time on my hands (weekend after the midsem). One of the book is “Thinking, fast and slow”, by Daniel Kahneman, an Economics Nobel laureate who is hailed as the greatest psychologist of our time (or at least the back of the book says so). The book is not a regular popular science book (looking at you, Mr.Hawking), and is supposed to be a compilation of all the research done so far in the field of, well, ‘thinking’.</p>
 
-<p>Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain <em>inliers</em> and some <em>outliers</em>. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.</p>
+<p>I do not plan to complete the book anytime soon, and this post is about the other, lesser book that I arrived in my mail today. It is “The Power of Habit”, by Charles Duhigg (an NY Times business reporter). The book is divided into three parts, the first focuses on habits of individuals, the second on the habit of companies, and the third on the habit of societies. I went though the first part rapidly (forgetting the homework, the prelab report and the mini quiz that I had on tomorrow), and have decided to write this post as a summary of what I read.</p>
 
-<p>Note that even the inliers do not <em>exactly</em> fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.</p>
+<p>The book is mostly built on some of the recent neuroscience research carried out at the Brain and Cognitive Science Department of MIT. It talks about the Basal ganglia, also known as the ‘lizard’ brain (since lizards, and other primitive animals also posses it), and is responsible for some of our most primitive urges. It is this part of the brain where our habits reside. It tells us the story of a man who suffered severe brain damage, to the point that he could not even remember where the kitchen in his house was, but how the very same man had absolutely no trouble finding the kitchen whenever he felt hungry (courtesy the habit loop residing in his basal ganglia, which was untouched).</p>
 
-<h2 id="the-algorithm">The Algorithm</h2>
+<p>The book tells us the story of Dungy, a football coach who led two NFL teams to victory in the super bowl, simply by changing the habit loops of the players, so that they did not waste any time ‘thinking’ on the field, and all their actions were ‘automatic’, just like human reflexes.</p>
 
-<h3 id="the-input">The Input</h3>
-<ul>
-  <li>Data points</li>
-  <li>Some parametrized model (we need to estimate the parameters for this model)</li>
-  <li>Some confidence parameters</li>
-</ul>
+<p>It also tells us how the advertiser Claude Hopkins sold Pepsodent in a nation where almost no one was in the habit of brushing their teeth.</p>
 
-<h3 id="algo">Algo</h3>
-<ul>
-  <li>A set points from the original dataset are randomly selected, and are assumed to be the inliers.</li>
-  <li>Parameters are estimated to fit to this hypothetical inlier set.</li>
-  <li>Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.</li>
-  <li>The points that fit the model become a part of the <em>consensus</em> set. The model is good if a particular number of points have been classified as part of the consensus set.</li>
-  <li>This model is then re-estimated using all the members of a consensus set.</li>
-  <li>The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.</li>
-</ul>
+<p>But the main content of the book is how habits are formed, and what the essential parts of a habit loop are. A habit is basically </p>
+<figure>
+	<img src="/images/The-Habit-Loop.jpg" />
+	<figcaption>This is how a habit loop looks like.</figcaption>
+</figure>
 
-<h3 id="how-many-times-do-we-repeat">How many times do we repeat?</h3>
-<p>It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.</p>
+<p>The first part is a cue, something that triggers a habit. For alcoholics, feeling anxious is often a cue to get sloshed. The cue triggers a routine ( the process of getting drunk ), and this leads to a reward, which is a feeling of relaxation in our alcoholic case. The most interesting part, however, is the ‘craving’. After a person has gone through a habit loop, several time, he start craving the routine, instead of the reward! This set of a vicious cycle (in case of our alcoholic case), but can be something very useful if the habit happens to be a good one (like going out of a run in the morning).</p>
+
+<p>The golder rule to change a habit: Keep the cue and the reward, just change the routine. This is how people who join ‘Alcoholics Anonymous’ are able to get rid of their addiction. They basically change the routine ( by talking to their sponsor or attending a meeting instead of drinking) whenever they feel a cue (getting stressed for example). The reward remains the same (feeling relaxed).</p>
+
+<p>This post is quite unstructured, and I will probably re-write it whenever I get a little more time to organize my thoughts. </p>
+
+<p>For those of you to lazy to read the book, you can have a look at the following video:</p>
+
+<iframe width="640" height="390" src="//www.youtube.com/embed/7vubNNfhSvc" frameborder="0" allowfullscreen=""></iframe>
 
       <hr />
       <footer role="contentinfo">
@@ -172,7 +170,7 @@
 
 
         </div>
-        <p class="byline"><strong>RANSAC</strong> was published on <time datetime="2014-07-21T00:00:00+00:00">July 21, 2014</time> and last modified on <time datetime="2014-07-21">July 21, 2014</time> by <a href="http://home.iitk.ac.in/~avisingh/about" title="About Avi Singh">Avi Singh</a>.</p>
+        <p class="byline"><strong>The Power of Habit [1/3]</strong> was published on <time datetime="2014-09-30T00:00:00+00:00">September 30, 2014</time> and last modified on <time datetime="2014-09-29">September 29, 2014</time> by <a href="http://home.iitk.ac.in/~avisingh/about" title="About Avi Singh">Avi Singh</a>.</p>
       </footer>
     </div><!-- /.article-wrap -->
   
@@ -184,11 +182,11 @@
   <h4>You might also enjoy <small class="pull-right">(<a href="http://home.iitk.ac.in/~avisingh/posts/">View all posts</a>)</small></h4>
     <ul>
     
-      <li><a href="http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/" title="The Power of Habit [1/3]">The Power of Habit [1/3]</a></li>
-    
       <li><a href="http://home.iitk.ac.in/~avisingh/%5B%22vision%22%5D/visual-odometry-part-1/" title="Visual Odometry(Part 1)">Visual Odometry(Part 1)</a></li>
     
       <li><a href="http://home.iitk.ac.in/~avisingh/%5B%5D/quotes/" title="Quotes">Quotes</a></li>
+    
+      <li><a href="http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/" title="RANSAC">RANSAC</a></li>
     
     </ul>
     <hr />
@@ -203,6 +201,8 @@
 <script>window.jQuery || document.write('<script src="http://home.iitk.ac.in/~avisingh/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
 <script src="http://home.iitk.ac.in/~avisingh/assets/js/scripts.min.js"></script>
 
+
+  
 	        
 
 </body>

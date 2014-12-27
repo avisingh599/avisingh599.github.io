@@ -1,28 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
-<title type="text">Avi Singh</title>
+<title type="text">Trailblazer</title>
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
-<link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2014-08-31T17:37:53+00:00</updated>
-<id>http://avisingh599.github.io/</id>
+<link rel="self" type="application/atom+xml" href="http://home.iitk.ac.in/~avisingh/feed.xml" />
+<link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh" />
+<updated>2014-12-25T22:57:14+00:00</updated>
+<id>http://home.iitk.ac.in/~avisingh/</id>
 <author>
   <name>Avi Singh</name>
-  <uri>http://avisingh599.github.io/</uri>
+  <uri>http://home.iitk.ac.in/~avisingh/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
 
 
 <entry>
+  <title type="html"><![CDATA[The Power of Habit [1/3]]]></title>
+  <link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/" />
+  <id>http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3</id>
+  <updated>2014-09-29 21:11:30 +0000T00:00:00-00:00</updated>
+  <published>2014-09-30T00:00:00+00:00</published>
+  
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://home.iitk.ac.in/~avisingh</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;Today I received two of the three books that I had impulsively ordered on Flipkart when I had too much free time on my hands (weekend after the midsem). One of the book is “Thinking, fast and slow”, by Daniel Kahneman, an Economics Nobel laureate who is hailed as the greatest psychologist of our time (or at least the back of the book says so). The book is not a regular popular science book (looking at you, Mr.Hawking), and is supposed to be a compilation of all the research done so far in the field of, well, ‘thinking’.&lt;/p&gt;
+
+&lt;p&gt;I do not plan to complete the book anytime soon, and this post is about the other, lesser book that I arrived in my mail today. It is “The Power of Habit”, by Charles Duhigg (an NY Times business reporter). The book is divided into three parts, the first focuses on habits of individuals, the second on the habit of companies, and the third on the habit of societies. I went though the first part rapidly (forgetting the homework, the prelab report and the mini quiz that I had on tomorrow), and have decided to write this post as a summary of what I read.&lt;/p&gt;
+
+&lt;p&gt;The book is mostly built on some of the recent neuroscience research carried out at the Brain and Cognitive Science Department of MIT. It talks about the Basal ganglia, also known as the ‘lizard’ brain (since lizards, and other primitive animals also posses it), and is responsible for some of our most primitive urges. It is this part of the brain where our habits reside. It tells us the story of a man who suffered severe brain damage, to the point that he could not even remember where the kitchen in his house was, but how the very same man had absolutely no trouble finding the kitchen whenever he felt hungry (courtesy the habit loop residing in his basal ganglia, which was untouched).&lt;/p&gt;
+
+&lt;p&gt;The book tells us the story of Dungy, a football coach who led two NFL teams to victory in the super bowl, simply by changing the habit loops of the players, so that they did not waste any time ‘thinking’ on the field, and all their actions were ‘automatic’, just like human reflexes.&lt;/p&gt;
+
+&lt;p&gt;It also tells us how the advertiser Claude Hopkins sold Pepsodent in a nation where almost no one was in the habit of brushing their teeth.&lt;/p&gt;
+
+&lt;p&gt;But the main content of the book is how habits are formed, and what the essential parts of a habit loop are. A habit is basically &lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;/images/The-Habit-Loop.jpg&quot; /&gt;
+	&lt;figcaption&gt;This is how a habit loop looks like.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The first part is a cue, something that triggers a habit. For alcoholics, feeling anxious is often a cue to get sloshed. The cue triggers a routine ( the process of getting drunk ), and this leads to a reward, which is a feeling of relaxation in our alcoholic case. The most interesting part, however, is the ‘craving’. After a person has gone through a habit loop, several time, he start craving the routine, instead of the reward! This set of a vicious cycle (in case of our alcoholic case), but can be something very useful if the habit happens to be a good one (like going out of a run in the morning).&lt;/p&gt;
+
+&lt;p&gt;The golder rule to change a habit: Keep the cue and the reward, just change the routine. This is how people who join ‘Alcoholics Anonymous’ are able to get rid of their addiction. They basically change the routine ( by talking to their sponsor or attending a meeting instead of drinking) whenever they feel a cue (getting stressed for example). The reward remains the same (feeling relaxed).&lt;/p&gt;
+
+&lt;p&gt;This post is quite unstructured, and I will probably re-write it whenever I get a little more time to organize my thoughts. &lt;/p&gt;
+
+&lt;p&gt;For those of you to lazy to read the book, you can have a look at the following video:&lt;/p&gt;
+
+&lt;iframe width=&quot;640&quot; height=&quot;390&quot; src=&quot;//www.youtube.com/embed/7vubNNfhSvc&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/&quot;&gt;The Power of Habit [1/3]&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://home.iitk.ac.in/~avisingh&quot;&gt;Trailblazer&lt;/a&gt; on September 30, 2014.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
   <title type="html"><![CDATA[Visual Odometry(Part 1)]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/%5B%22vision%22%5D/visual-odometry-part-1/" />
-  <id>http://avisingh599.github.io/%5B%22vision%22%5D/visual-odometry-part-1</id>
+  <link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh/%5B%22vision%22%5D/visual-odometry-part-1/" />
+  <id>http://home.iitk.ac.in/~avisingh/%5B%22vision%22%5D/visual-odometry-part-1</id>
   <updated>2014-07-29 05:38:43 +0000T00:00:00-00:00</updated>
   <published>2014-07-29T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri>http://home.iitk.ac.in/~avisingh</uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester at IIT-Kanpur.
@@ -46,20 +88,20 @@ This post is primarily a list of some useful links which will get on acquainted 
 
 &lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/%5B%22vision%22%5D/visual-odometry-part-1/&quot;&gt;Visual Odometry(Part 1)&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Avi Singh&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://home.iitk.ac.in/~avisingh/%5B%22vision%22%5D/visual-odometry-part-1/&quot;&gt;Visual Odometry(Part 1)&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://home.iitk.ac.in/~avisingh&quot;&gt;Trailblazer&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Quotes]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/%5B%5D/quotes/" />
-  <id>http://avisingh599.github.io/%5B%5D/quotes</id>
+  <link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh/%5B%5D/quotes/" />
+  <id>http://home.iitk.ac.in/~avisingh/%5B%5D/quotes</id>
   <updated>2014-07-26 13:32:24 +0000T00:00:00-00:00</updated>
   <published>2014-07-26T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri>http://home.iitk.ac.in/~avisingh</uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down.&lt;/p&gt;
@@ -100,20 +142,20 @@ And would suffice.&lt;/p&gt;
 &lt;/blockquote&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/%5B%5D/quotes/&quot;&gt;Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Avi Singh&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://home.iitk.ac.in/~avisingh/%5B%5D/quotes/&quot;&gt;Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://home.iitk.ac.in/~avisingh&quot;&gt;Trailblazer&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[RANSAC]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/%5B%22math%22%5D/ransac/" />
-  <id>http://avisingh599.github.io/%5B%22math%22%5D/ransac</id>
+  <link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/" />
+  <id>http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac</id>
   <updated>2014-07-21 01:48:52 +0000T00:00:00-00:00</updated>
   <published>2014-07-21T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri>http://home.iitk.ac.in/~avisingh</uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.&lt;/p&gt;
@@ -144,20 +186,20 @@ And would suffice.&lt;/p&gt;
 &lt;h3 id=&quot;how-many-times-do-we-repeat&quot;&gt;How many times do we repeat?&lt;/h3&gt;
 &lt;p&gt;It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/%5B%22math%22%5D/ransac/&quot;&gt;RANSAC&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/&quot;&gt;RANSAC&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://home.iitk.ac.in/~avisingh&quot;&gt;Trailblazer&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Parallel Programming with CUDA]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/%5B%22gpu%22%5D/parallel-programming-with-cuda/" />
-  <id>http://avisingh599.github.io/%5B%22gpu%22%5D/parallel-programming-with-cuda</id>
+  <link rel="alternate" type="text/html" href="http://home.iitk.ac.in/~avisingh/%5B%22gpu%22%5D/parallel-programming-with-cuda/" />
+  <id>http://home.iitk.ac.in/~avisingh/%5B%22gpu%22%5D/parallel-programming-with-cuda</id>
   <updated>2014-07-20 20:18:16 +0000T00:00:00-00:00</updated>
   <published>2014-07-21T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri>http://home.iitk.ac.in/~avisingh</uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is &lt;em&gt;way&lt;/em&gt; better.&lt;/p&gt;
@@ -265,7 +307,7 @@ And would suffice.&lt;/p&gt;
 ./sample&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/%5B%22gpu%22%5D/parallel-programming-with-cuda/&quot;&gt;Parallel Programming with CUDA&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://home.iitk.ac.in/~avisingh/%5B%22gpu%22%5D/parallel-programming-with-cuda/&quot;&gt;Parallel Programming with CUDA&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://home.iitk.ac.in/~avisingh&quot;&gt;Trailblazer&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>
