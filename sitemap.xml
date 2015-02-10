@@ -1,70 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-        <loc>http://avisingh599.github.io</loc>
+        <loc>http://home.iitk.ac.in/~avisingh</loc>
     </url>
     
     
     <url>
-        <loc>http://avisingh599.github.io/404.html</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/404.html</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/about/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/about/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/acads/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/acads/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/contact/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/contact/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/extracurriculars/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/extracurriculars/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/feed.xml</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/feed.xml</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/index.html</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/index.html</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/posts/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/posts/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/projects/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/projects/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/sitemap.xml</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/sitemap.xml</loc>
     </url>
     
 
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22review%22%5D/the-power-of-habit-1-slash-3/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%22bookmarks%22%5D/computer-vision-blogs/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22vision%22%5D/visual-odometry-part-1/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%22review%22%5D/the-power-of-habit-1-slash-3/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%5D/quotes/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%22vision%22%5D/visual-odometry-part-1/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22math%22%5D/ransac/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%5D/quotes/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22gpu%22%5D/parallel-programming-with-cuda/</loc>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%22math%22%5D/ransac/</loc>
+    </url>
+    
+    <url>
+        <loc>http://home.iitk.ac.in/~avisingh/%5B%22gpu%22%5D/parallel-programming-with-cuda/</loc>
     </url>
     
 </urlset>
