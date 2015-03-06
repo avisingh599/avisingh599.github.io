@@ -79,11 +79,15 @@
 		        
 				<li><a href="http://avisingh599.github.io/about/" >About</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/acads/" >Academics</a></li>
+				<li><a href="http://avisingh599.github.io/assets/cv.pdf" >Resume</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/research/" >Research</a></li>
 		        
 				<li><a href="http://avisingh599.github.io/projects/" >Projects</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/assets/cv.pdf" >Resume</a></li>
+				<li><a href="http://avisingh599.github.io/acads/" >Academics</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/achievements/" >Achievements</a></li>
 		        
 				<li><a href="http://avisingh599.github.io/posts/" >Posts</a></li>
 		        
@@ -126,10 +130,7 @@
   </header>
 <div id="drawer">
 <ul id="markdown-toc">
-  <li><a href="#stereo-visual-odometry">Stereo Visual Odometry</a></li>
   <li><a href="#daant---dental-automated-analysis-tool-computer-vision-for-intraoral-cameras">DAAnT - Dental Automated Analysis Tool (Computer Vision for intraoral cameras)</a></li>
-  <li><a href="#range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</a></li>
-  <li><a href="#landmark-based-localisation-using-a-kinect-sensor-winter-2013">Landmark Based Localisation using a Kinect Sensor (Winter 2013)</a></li>
   <li><a href="#discrete-hilbert-transform-in-verilog">Discrete Hilbert Transform in Verilog</a></li>
   <li><a href="#cashless-campus-system">Cashless Campus System</a></li>
   <li><a href="#snakes-on-a-2d-led-matrix">Snakes on a 2D LED Matrix</a></li>
@@ -144,70 +145,36 @@
 </section>
 <!-- /#table-of-contents -->
 
-<h2 id="stereo-visual-odometry">Stereo Visual Odometry</h2>
-<p><em>Under the guidance of Prof.KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Ongoing since August 2014)</em></p>
-
-<ul>
-  <li>Implemented an inlier-detection based approach [Howard2008] and Model-based ICP appraoch [Jiang2014] in MATLAB.</li>
-  <li>Working on improving the accuracy of model-based ICP method, by introducing iterative optimization techniques like Levenberg-Marquardt.</li>
-  <li>Performance is being evaluated on the KITTI odometry benchmark.</li>
-</ul>
+<p>For work done in a research lab, check out the ‘Research’ page of this website..</p>
 
 <h2 id="daant---dental-automated-analysis-tool-computer-vision-for-intraoral-cameras">DAAnT - Dental Automated Analysis Tool (Computer Vision for intraoral cameras)</h2>
 <p><em>MIT RedX Camp,under Dr.Hyunsung Park, Postdoc at Camera Culture, MIT Media Lab (January 2015)</em></p>
 
 <ul>
-  <li>We devloped Computer Vision algorithms for diagnosis of dental diseased from images obtained from an intraoral camera. My contribution in the eightmember
-team was primarily in the following areas:</li>
-  <li>Stitching Images: Used Affine SIFT to overcome the difficulties in feature matching due to changes in perspective, and then computed Homography with
-RANSAC to stitch the images.</li>
-  <li>Segmenting Every tooth: Marker-controlled watershed transform was used to segment every tooth from the image. Both semi-automated and automated
-approaches were implemented and compared</li>
-</ul>
-
-<h2 id="range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</h2>
-<p><em>Under the guidance of Prof.KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Summer 2014)</em></p>
-
-<ul>
-  <li>Performed a literature review on Optical Flow, and the various approaches on extending it to 3D.</li>
-  <li>Captured RGBD Data from a Microsoft Kinect using OpenNI and OpenCV libraries, and programming
-in C++.</li>
-  <li>Implemented two approaches for estimation of Range Flow from RGB-D data, one using ’Local Least
-Squares Solution’, the other a ’Global Minimum Energy Solution’, and the above two approaches were
-evaluated for speed and accuracy.</li>
-  <li>A third approach, Physical RGBD Flow, attempting to capture the physical flow (instead of apparent
-flow) was also implemented, and was evaluated using ground truth data generated using a highly
-accurate 6-DOF tracking device, the Personal Space Tracker.</li>
-</ul>
-
-<h2 id="landmark-based-localisation-using-a-kinect-sensor-winter-2013">Landmark Based Localisation using a Kinect Sensor (Winter 2013)</h2>
-
-<ul>
-  <li>Geometric Triangulation was used to determine the pose (modelled as a set of random variables with
-Gaussian Distribution) of a robot, from information obtained from noisy landmarks.</li>
-  <li>A Microsoft Kinect was used to identify the landmarks (using color histogram based models), CAMshift
-algorithm was used to track these landmarks, and bearing measurements were calculated using the depth
-data.</li>
-  <li>An error model for the data obtained from a Kinect was used along with the Error Propagation Law
-to arrive at the uncertainty in the final pose computed using the Geometric Localisation Algorithm.</li>
+  <li>We devloped Computer Vision algorithms for automated diagnosis of dental problems from images obtained from an intraoral camera. My contribution in the eight-member team was primarily in the following areas:</li>
+  <li><strong>Stitching Images</strong>: Used <strong>Affine SIFT</strong> to overcome the difficulties in feature matching due to changes in perspective, and then computed Homography with RANSAC to stitch the images.</li>
+  <li><strong>Segmenting Every tooth</strong>: Marker-controlled <strong>watershed transform</strong> was used to segment every tooth from the image. Both semi-automated and automated
+approaches were implemented and compared.</li>
 </ul>
 
 <hr />
 
 <h2 id="discrete-hilbert-transform-in-verilog">Discrete Hilbert Transform in Verilog</h2>
+<p>(<strong>Group of 3 students</strong>)</p>
 
 <ul>
-  <li>Implemented a 32-point discrete Hilbert Transform in Verilog.</li>
-  <li>Used a sequential implementation of FFT and IFFT as intermediate steps in the calculation of the
+  <li>Implemented a 32-point <strong>discrete Hilbert Transform in Verilog</strong>.</li>
+  <li>Used a sequential implementation of <strong>FFT and IFFT</strong> as intermediate steps in the calculation of the
 Hilbert Transform.</li>
   <li>Results obtained were evaluated against the Hilbert transform obtained from Matlab.</li>
-  <li>Secured 2nd position in ECDC, Techkriti ’14(Annual Technical and Entrepreneurship Fes-
+  <li>Secured <strong>2nd position</strong> in ECDC, Techkriti ’14(Annual Technical and Entrepreneurship Fes-
 tival of IIT-Kanpur).</li>
 </ul>
 
 <hr />
 
 <h2 id="cashless-campus-system">Cashless Campus System</h2>
+<p>(<strong>Group of 4 students</strong>)</p>
 
 <iframe width="854" height="510" src="//www.youtube.com/embed/cq6SSzsLrPU" frameborder="0" allowfullscreen=""></iframe>
 
@@ -220,6 +187,7 @@ tival of IIT-Kanpur).</li>
 </ul>
 
 <h2 id="snakes-on-a-2d-led-matrix">Snakes on a 2D LED Matrix</h2>
+<p>(<strong>Group of 2 students</strong>)</p>
 
 <ul>
   <li>An 8x8 LED matrix was designed and fabricated, which was then controlled using an ATmega8 microcontroller following the principles of Persistance of Vision.</li>
@@ -227,8 +195,8 @@ tival of IIT-Kanpur).</li>
 </ul>
 
 <h2 id="laser-tag">Laser Tag</h2>
-
 <ul>
+  <li>Hardware development for the startup father.io</li>
   <li>An infrared-based ‘gun’ was developed, which fired beams modulated at 38KHz.</li>
   <li>The recieving jacket had TSOP sensors to detect the infrared beams fired at it.</li>
   <li>In order to increase the range of the gun, an amplification cirucit employing MOSFETs was used, along with optical magnification via an convex lens.</li>
@@ -237,6 +205,7 @@ tival of IIT-Kanpur).</li>
 <hr />
 
 <h2 id="frogger-game">Frogger Game</h2>
+<p>(<strong>Group of 2 students</strong>)</p>
 
 <iframe width="854" height="510" src="//www.youtube.com/embed/x7kzHQEs1rs" frameborder="0" allowfullscreen=""></iframe>
 

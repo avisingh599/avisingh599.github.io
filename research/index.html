@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Extracurriculars &#8211; Trailblazer</title>
+<title>Research &#8211; Trailblazer</title>
 <meta name="description" content="">
 <meta name="keywords" content="">
 
@@ -13,16 +13,16 @@
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Extracurriculars">
+<meta property="og:title" content="Research">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://avisingh599.github.io/extracurriculars/">
+<meta property="og:url" content="http://avisingh599.github.io/research/">
 <meta property="og:site_name" content="Trailblazer">
 
 
 
 
 
-<link rel="canonical" href="http://avisingh599.github.io/extracurriculars/">
+<link rel="canonical" href="http://avisingh599.github.io/research/">
 <link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
@@ -122,9 +122,39 @@
 
   </div>
   <article>
-    <h1>Extracurriculars</h1>
+    <h1>Research</h1>
     <div class="article-wrap">
-      
+      <h2 id="stereo-visual-odometry">Stereo Visual Odometry</h2>
+<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Ongoing since August 2014)</em></p>
+
+<ul>
+  <li>Implemented an inlier-detection based approach [Howard2008] and Model-based ICP appraoch [Jiang2014] in MATLAB.</li>
+  <li>Working on improving the accuracy of <strong>model-based ICP method</strong>, by introducing iterative optimization techniques like Levenberg-Marquardt.</li>
+  <li>Performance is being evaluated on the <strong>KITTI odometry benchmark</strong>.</li>
+</ul>
+
+<h2 id="range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</h2>
+<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Summer 2014)</em></p>
+
+<ul>
+  <li>Formulated and implemented two approaches for estimation of Range Flow from RGB-D data, one an extension of Lucas-Kanade to 3D, and the other an extension of Horn-Schunck.</li>
+  <li>A third approach attempting to capture the actual flow (instead of apparent flow) was also implemented.</li>
+  <li>The third RGBD Flow approach was evaluated against data generated using a highly accurate 6-DOF tracking device, the PST-110.</li>
+  <li>Captured RGBD Data from a <strong>Microsoft Kinect</strong> using <strong>OpenNI</strong> and <strong>OpenCV</strong> libraries, and did all the processing using C++ in OpenCV.</li>
+</ul>
+
+<h2 id="landmark-based-localisation-using-a-kinect-sensor-winter-2013">Landmark Based Localisation using a Kinect Sensor (Winter 2013)</h2>
+<p><em>Under the guidance of Arjun Bhasin, Research Associate at Mechatronics Lab, IIT-Kanpur  (Summer 2014)</em></p>
+
+<ul>
+  <li>Geometric Triangulation was used to determine the pose (modelled as a set of random variables with
+Gaussian Distribution) of a robot, from information obtained from noisy landmarks.</li>
+  <li>A Microsoft Kinect was used to identify the landmarks (using color histogram based models), CAMshift
+algorithm was used to track these landmarks, and bearing measurements were calculated using the depth
+data.</li>
+  <li>An error model for the data obtained from a Kinect was used along with the Error Propagation Law
+to arrive at the uncertainty in the final pose computed using the Geometric Localisation Algorithm.</li>
+</ul>
 
     </div><!-- /.article-wrap -->
     

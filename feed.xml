@@ -4,57 +4,13 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-02-10T06:45:24+00:00</updated>
+<updated>2015-03-06T10:42:42+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
   <uri>http://avisingh599.github.io/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
-
-
-<entry>
-  <title type="html"><![CDATA[Technical Blogs]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/%5B%22bookmarks%22%5D/computer-vision-blogs/" />
-  <id>http://avisingh599.github.io/%5B%22bookmarks%22%5D/computer-vision-blogs</id>
-  <updated>2014-12-28 18:01:55 +0000T00:00:00-00:00</updated>
-  <published>2014-12-28T00:00:00+00:00</published>
-  
-  <author>
-    <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
-    <email>avisingh599@gmail.com</email>
-  </author>
-  <content type="html">&lt;p&gt;I always prefer reading blogs by hobbyists and researchers rather than textbooks, so I have decided to make a list of some of the good computer vision 
-blogs that I have had the pleasure to  read.&lt;/p&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Computer Vision&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;ol&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://eric-yuan.me/&quot;&gt;Eric Yuan’s Blog&lt;/a&gt;
-This is the most extensive, and regularly updated CV blog that I have found so far. He also provides complete source codes (usually in C++/OpenCV), and
-the his page has a nice, minimalistic interface. The frequency of posts has somewhat reduced after this guy started looking for a job (was earlier a master’s student at NYU).&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;https://gilscvblog.wordpress.com/&quot;&gt;Gil’s CV Blog&lt;/a&gt; Some really good posts on feature detections and extraction, in which this guy completed a master’s. Most other posts provide source codes, not in-depth explanations.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://computerblindness.blogspot.in/&quot;&gt;Computer Blindness&lt;/a&gt; Witty name. Not very active anymore. More of a news blog, not a technical one.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;&lt;a href=&quot;http://aishack.in&quot;&gt;AI Shack&lt;/a&gt; Lots of programming tutorials for computer vision and machine learning.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ol&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Statistics&lt;/li&gt;
-&lt;/ul&gt;
-
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/%5B%22bookmarks%22%5D/computer-vision-blogs/&quot;&gt;Technical Blogs&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on December 28, 2014.&lt;/p&gt;</content>
-</entry>
 
 
 <entry>
@@ -148,9 +104,7 @@ This post is primarily a list of some useful links which will get on acquainted 
     <uri>http://avisingh599.github.io</uri>
     <email>avisingh599@gmail.com</email>
   </author>
-  <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down.&lt;/p&gt;
-
-&lt;p&gt;Starting with poems first, this poem by William Ernest Henley is my personal favourite.&lt;/p&gt;
+  <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down.Starting with poems first, this poem by William Ernest Henley is my personal favourite.&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Out of the night that covers me,&lt;br /&gt;
@@ -183,6 +137,32 @@ I think I know enough of hate&lt;br /&gt;
 To say that for destruction ice&lt;br /&gt;
 Is also great&lt;br /&gt;
 And would suffice.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;On to quotes now:&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;That which does not kill us makes us stronger -Friedrich Nietzsche&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Simplicity is the ultimate sophistication - Leonardo da Vinci&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Men destroy each other during war, and themselves during peace  - Nicholas N. Taleb&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;If you want to be happy, be. - Leo Tolstoy&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;True friends stab you in the front. - Oscar Wilde&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Keep your friends close, and your enemies closer. - Mario Puzo&lt;/p&gt;
 &lt;/blockquote&gt;
 
 
