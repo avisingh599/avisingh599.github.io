@@ -56,19 +56,19 @@
 
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22vision%22%5D/visual-odometry-part-1/</loc>
+        <loc>http://avisingh599.github.io/vision/visual-odometry-part-1/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%5D/quotes/</loc>
+        <loc>http://avisingh599.github.io/misc/quotes/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22math%22%5D/ransac/</loc>
+        <loc>http://avisingh599.github.io/stats/ransac/</loc>
     </url>
     
     <url>
-        <loc>http://avisingh599.github.io/%5B%22gpu%22%5D/parallel-programming-with-cuda/</loc>
+        <loc>http://avisingh599.github.io/gpu/parallel-programming-with-cuda/</loc>
     </url>
     
 </urlset>

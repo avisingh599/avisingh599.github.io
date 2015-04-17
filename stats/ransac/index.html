@@ -5,24 +5,24 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>All Posts &#8211; Trailblazer</title>
+<title>RANSAC &#8211; Trailblazer</title>
 <meta name="description" content="">
-<meta name="keywords" content="blog">
+<meta name="keywords" content="vision,, stats">
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="All Posts">
+<meta property="og:title" content="RANSAC">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://avisingh599.github.io/posts/">
+<meta property="og:url" content="http://avisingh599.github.io/stats/ransac/">
 <meta property="og:site_name" content="Trailblazer">
 
 
 
 
 
-<link rel="canonical" href="http://avisingh599.github.io/posts/">
+<link rel="canonical" href="http://avisingh599.github.io/stats/ransac/">
 <link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
@@ -63,7 +63,7 @@
 
 </head>
 
-<body class="post-index">
+<body class="post">
 
 <!--[if lt IE 9]><div class="browser-upgrade alert alert-info">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div><![endif]-->
 
@@ -98,8 +98,9 @@
 
 
 
-<div class="article-author-side">
-  
+<div id="main" role="main">
+  <div class="article-author-side">
+    
 	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
 
 <h3>Avi Singh</h3>
@@ -117,60 +118,85 @@
 
 
 
-</div>
+  </div>
+  <article>
+    <div class="headline-wrap">
+      
+        <h1><a href="http://avisingh599.github.io/stats/ransac/" rel="bookmark" title="RANSAC">RANSAC</a></h1>
+      
+    </div><!--/ .headline-wrap -->
+    <div class="article-wrap">
+      <p>This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.</p>
 
-<div id="index">
-  <h1>All Posts</h1>
-    
+<p>Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain <em>inliers</em> and some <em>outliers</em>. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.</p>
+
+<p>Note that even the inliers do not <em>exactly</em> fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.</p>
+
+<h2 id="the-algorithm">The Algorithm</h2>
+
+<h3 id="the-input">The Input</h3>
+<ul>
+  <li>Data points</li>
+  <li>Some parametrized model (we need to estimate the parameters for this model)</li>
+  <li>Some confidence parameters</li>
+</ul>
+
+<h3 id="algo">Algo</h3>
+<ul>
+  <li>A set points from the original dataset are randomly selected, and are assumed to be the inliers.</li>
+  <li>Parameters are estimated to fit to this hypothetical inlier set.</li>
+  <li>Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.</li>
+  <li>The points that fit the model become a part of the <em>consensus</em> set. The model is good if a particular number of points have been classified as part of the consensus set.</li>
+  <li>This model is then re-estimated using all the members of a consensus set.</li>
+  <li>The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.</li>
+</ul>
+
+<h3 id="how-many-times-do-we-repeat">How many times do we repeat?</h3>
+<p>It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.</p>
+
+      <hr />
+      <footer role="contentinfo">
+        <div class="article-author-bottom">
+          
+	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
+
+<h3>Avi Singh</h3>
+<p>Undergraduate, interested in Computer Vision</p>
+
+<a href="http://facebook.com/avisingh94" class="author-social" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a>
+<a href="http://plus.google.com/+avisingh599" class="author-social" target="_blank"><i class="fa fa-google-plus-square"></i> Google+</a>
+
+
+
+<a href="http://github.com/avisingh599" class="author-social" target="_blank"><i class="fa fa-github"></i> Github</a>
+
+
+
+
+
+
+        </div>
+        <p class="byline"><strong>RANSAC</strong> was published on <time datetime="2014-07-21T00:00:00+00:00">July 21, 2014</time> and last modified on <time datetime="2014-07-21">July 21, 2014</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
+      </footer>
+    </div><!-- /.article-wrap -->
   
-    <h3>2014</h3>
-    
-    <article>
-      
-        <h2><a href="http://avisingh599.github.io/vision/visual-odometry-part-1/" title="Visual Odometry(Part 1)">Visual Odometry(Part 1)</a></h2>
-        <p>I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester ...</p>
-      
-    </article>
-    
-  
-      
-      
-      
-    
-    <article>
-      
-        <h2><a href="http://avisingh599.github.io/misc/quotes/" title="Quotes">Quotes</a></h2>
-        <p>I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down...</p>
-      
-    </article>
-    
-  
-      
-      
-      
-    
-    <article>
-      
-        <h2><a href="http://avisingh599.github.io/stats/ransac/" title="RANSAC">RANSAC</a></h2>
-        <p>This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widel...</p>
-      
-    </article>
-    
-  
-      
-      
-      
-    
-    <article>
-      
-        <h2><a href="http://avisingh599.github.io/gpu/parallel-programming-with-cuda/" title="Parallel Programming with CUDA">Parallel Programming with CUDA</a></h2>
-        <p>I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image proc...</p>
-      
-    </article>
-  
-</div><!-- /#index -->
+  </article>
+</div><!-- /#main -->
 
 <div class="footer-wrap">
+  <div class="related-articles">
+  <h4>You might also enjoy <small class="pull-right">(<a href="http://avisingh599.github.io/posts/">View all posts</a>)</small></h4>
+    <ul>
+    
+      <li><a href="http://avisingh599.github.io/vision/visual-odometry-part-1/" title="Visual Odometry(Part 1)">Visual Odometry(Part 1)</a></li>
+    
+      <li><a href="http://avisingh599.github.io/misc/quotes/" title="Quotes">Quotes</a></li>
+    
+      <li><a href="http://avisingh599.github.io/gpu/parallel-programming-with-cuda/" title="Parallel Programming with CUDA">Parallel Programming with CUDA</a></li>
+    
+    </ul>
+    <hr />
+  </div><!-- /.related-articles -->
   <footer>
     <span>&copy; 2015 Avi Singh. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/minimal-mistakes/">Minimal Mistakes</a> theme.</span>
 
@@ -181,7 +207,7 @@
 <script>window.jQuery || document.write('<script src="http://avisingh599.github.io/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
 <script src="http://avisingh599.github.io/assets/js/scripts.min.js"></script>
 
+	        
 
-  
 </body>
 </html>
