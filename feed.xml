@@ -4,13 +4,111 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-23T17:41:10+00:00</updated>
+<updated>2015-05-23T19:00:35+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
   <uri>http://avisingh599.github.io/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Stitching Intra-Oral Images]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/stichting-story/" />
+  <id>http://avisingh599.github.io/vision/stichting-story</id>
+  <published>2015-05-23T00:00:00+00:00</published>
+  <updated>2015-05-23T00:00:00+00:00</updated>
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://avisingh599.github.io</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Most intraoral cameras have a relative narrow field of view, and the entire jaw is never visible in a single image. We are trying to stitch several images into one, so that the user has complete view of the jaw, and we can then segment the tooth from it, and keep a track for every individual tooth.&lt;/p&gt;
+
+&lt;p&gt;A basic image stitching pipeline has the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Matching features between two images&lt;/li&gt;
+  &lt;li&gt;Computing the homography with RANSAC (minimal set is four matches)&lt;/li&gt;
+  &lt;li&gt;Transforming , concatenating and blending the images.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Most of the existing panaroma building algorithms are well-suited for applications in which the object being photographed is quite far away from the camera, such as in the image shown below (&lt;a href=&quot;http://www.cs.bath.ac.uk/brown/autostitch/autostitch.html&quot;&gt;obtained from the Autostitch page&lt;/a&gt;):&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/panaroma.png&quot; /&gt;
+	&lt;figcaption&gt;Panorama construction&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;However, we are photographing the teeth at a really close range, and minor changes in perspective are fatal for these algorithms. In order to overcome the problems imposed by changes in perspective, we are using ASIFT, a feature detection/description/matching algorithm which is robust to perspective changes when compared to SIFT. The next steps (homography computation, blending) are pretty standard, and here are some results:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/stitched.png&quot; /&gt;
+	&lt;figcaption&gt;A stitch of three images taken from an intraoral camera&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/stichting-story/&quot;&gt;Stitching Intra-Oral Images&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
+</entry>
+
+
+<entry>
+  <title type="html"><![CDATA[Every Tooth Tracked]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/segmenting-teeth/" />
+  <id>http://avisingh599.github.io/vision/segmenting-teeth</id>
+  <published>2015-05-23T00:00:00+00:00</published>
+  <updated>2015-05-23T00:00:00+00:00</updated>
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://avisingh599.github.io</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/30/dental-imaging-project-every-tooth-tracked/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We want to track the health of every tooth over time, and therefore wanted an algorithm that could extract the image of every single tooth from the stitch that we obtained in our previous step. Our first attempt was at a completely automated approach, and we soon found a &lt;a href=&quot;http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=6482414&amp;amp;tag=1&quot;&gt;paper&lt;/a&gt; which attempted to solve a problem that was a subset of ours. They wanted to separate the teeth part from the rest of the image, while we wanted to segment every teeth from the rest of the image. The algorithm that these guys had used was pretty basic (&lt;a href=&quot;http://cdanup.com/10.1.1.2.1828.pdf&quot;&gt;Active Contours Without Edges&lt;/a&gt;), and I got it working within half an hour on MATLAB, with the following results:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/3k_with_removal.png&quot; /&gt;
+	&lt;figcaption&gt;Obtained using Active Contours Without Edges (Chan-Vese)&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;But this approach had a few problems. It was computationally expensive (~ 2min to run on my Intel Core i7 machine), and could not be used to segment an individual tooth out.&lt;/p&gt;
+
+&lt;p&gt;So, I started looking at other algorithms, and soon stumbled across the &lt;a href=&quot;http://www.cs.rug.nl/~roe/publications/parwshed.pdf&quot;&gt;Watershed transform&lt;/a&gt;. In order to generate good results, watershed needs certain markers, and these markers can be generated using both automated or manual methods. One popular automated method for generating these markers is ‘opening-by-reconstruction’ and ‘closing-by-reconstruction’. The following results were obtained using MATLAB’s watershed example:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_final.png&quot; /&gt;
+	&lt;figcaption&gt;Vanilla Watershed with automatic marker generation&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;As you can see, the above is a complete mess. A lot of unwanted segments are obtained, and some superpixels (clusters of pixels) flow into each other.
+So, I then tried a manual-marker approach, and the results were much better:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_final.png&quot; /&gt;
+	&lt;figcaption&gt;Watershed with manually-annotated markers&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;A &lt;a href=&quot;http://www.mathworks.com/matlabcentral/fileexchange/44469-gui-image-mask-sample&quot;&gt;matlab-based GUI&lt;/a&gt; is used to generate the masks as follows:&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/gui_marker.png&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The mask file looks something like this:&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_msk.png&quot; /&gt;
+	&lt;figcaption&gt;The mask used to generate the above results&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;In the final product, we can assume to have a touchscreen based user interface, wherein the user slashes with his finger across every tooth once, and then gets the segmented image as an output. One several such images have been mannually annotated, we could use a learning algorithm that can automatically generate these masks.&lt;/p&gt;
+
+&lt;p&gt;The Dental Imaging Team: Hyunsung, Avi, Ujjwal, Raghu, Meghasyam, Ashish, Ashray, Pratima, Samriddh&lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/segmenting-teeth/&quot;&gt;Every Tooth Tracked&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>

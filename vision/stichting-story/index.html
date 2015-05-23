@@ -5,24 +5,24 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>RANSAC &#8211; Trailblazer</title>
+<title>Stitching Intra-Oral Images &#8211; Trailblazer</title>
 <meta name="description" content="">
-<meta name="keywords" content="vision,, stats">
+<meta name="keywords" content="vision,, healthtech">
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="RANSAC">
+<meta property="og:title" content="Stitching Intra-Oral Images">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://avisingh599.github.io/stats/ransac/">
+<meta property="og:url" content="http://avisingh599.github.io/vision/stichting-story/">
 <meta property="og:site_name" content="Trailblazer">
 
 
 
 
 
-<link rel="canonical" href="http://avisingh599.github.io/stats/ransac/">
+<link rel="canonical" href="http://avisingh599.github.io/vision/stichting-story/">
 <link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
@@ -133,37 +133,35 @@
   <article>
     <div class="headline-wrap">
       
-        <h1><a href="http://avisingh599.github.io/stats/ransac/" rel="bookmark" title="RANSAC">RANSAC</a></h1>
+        <h1><a href="http://avisingh599.github.io/vision/stichting-story/" rel="bookmark" title="Stitching Intra-Oral Images">Stitching Intra-Oral Images</a></h1>
       
     </div><!--/ .headline-wrap -->
     <div class="article-wrap">
-      <p>This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.</p>
+      <p><em>Note: This is a repost of my <a href="https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/">January post</a> on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.</em></p>
 
-<p>Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain <em>inliers</em> and some <em>outliers</em>. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.</p>
+<p>Most intraoral cameras have a relative narrow field of view, and the entire jaw is never visible in a single image. We are trying to stitch several images into one, so that the user has complete view of the jaw, and we can then segment the tooth from it, and keep a track for every individual tooth.</p>
 
-<p>Note that even the inliers do not <em>exactly</em> fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.</p>
+<p>A basic image stitching pipeline has the following steps:</p>
 
-<h2 id="the-algorithm">The Algorithm</h2>
+<ol>
+  <li>Matching features between two images</li>
+  <li>Computing the homography with RANSAC (minimal set is four matches)</li>
+  <li>Transforming , concatenating and blending the images.</li>
+</ol>
 
-<h3 id="the-input">The Input</h3>
-<ul>
-  <li>Data points</li>
-  <li>Some parametrized model (we need to estimate the parameters for this model)</li>
-  <li>Some confidence parameters</li>
-</ul>
+<p>Most of the existing panaroma building algorithms are well-suited for applications in which the object being photographed is quite far away from the camera, such as in the image shown below (<a href="http://www.cs.bath.ac.uk/brown/autostitch/autostitch.html">obtained from the Autostitch page</a>):</p>
 
-<h3 id="algo">Algo</h3>
-<ul>
-  <li>A set points from the original dataset are randomly selected, and are assumed to be the inliers.</li>
-  <li>Parameters are estimated to fit to this hypothetical inlier set.</li>
-  <li>Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.</li>
-  <li>The points that fit the model become a part of the <em>consensus</em> set. The model is good if a particular number of points have been classified as part of the consensus set.</li>
-  <li>This model is then re-estimated using all the members of a consensus set.</li>
-  <li>The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.</li>
-</ul>
+<figure>
+	<img src="/images/dental/panaroma.png" />
+	<figcaption>Panorama construction</figcaption>
+</figure>
 
-<h3 id="how-many-times-do-we-repeat">How many times do we repeat?</h3>
-<p>It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.</p>
+<p>However, we are photographing the teeth at a really close range, and minor changes in perspective are fatal for these algorithms. In order to overcome the problems imposed by changes in perspective, we are using ASIFT, a feature detection/description/matching algorithm which is robust to perspective changes when compared to SIFT. The next steps (homography computation, blending) are pretty standard, and here are some results:</p>
+
+<figure>
+	<img src="/images/dental/stitched.png" />
+	<figcaption>A stitch of three images taken from an intraoral camera</figcaption>
+</figure>
 
       <hr />
       <footer role="contentinfo">
@@ -187,7 +185,7 @@
 
 
         </div>
-        <p class="byline"><strong>RANSAC</strong> was published on <time datetime="2014-07-21T00:00:00+00:00">July 21, 2014</time> and last modified on <time datetime="2014-07-21">July 21, 2014</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
+        <p class="byline"><strong>Stitching Intra-Oral Images</strong> was published on <time datetime="2015-05-23T00:00:00+00:00">May 23, 2015</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
       </footer>
     </div><!-- /.article-wrap -->
   
@@ -199,11 +197,11 @@
   <h4>You might also enjoy <small class="pull-right">(<a href="http://avisingh599.github.io/posts/">View all posts</a>)</small></h4>
     <ul>
     
-      <li><a href="http://avisingh599.github.io/vision/stichting-story/" title="Stitching Intra-Oral Images">Stitching Intra-Oral Images</a></li>
-    
       <li><a href="http://avisingh599.github.io/vision/segmenting-teeth/" title="Every Tooth Tracked">Every Tooth Tracked</a></li>
     
       <li><a href="http://avisingh599.github.io/vision/visual-odometry-part-1/" title="Visual Odometry(Part 1)">Visual Odometry(Part 1)</a></li>
+    
+      <li><a href="http://avisingh599.github.io/misc/quotes/" title="Quotes">Quotes</a></li>
     
     </ul>
     <hr />
@@ -218,6 +216,8 @@
 <script>window.jQuery || document.write('<script src="http://avisingh599.github.io/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
 <script src="http://avisingh599.github.io/assets/js/scripts.min.js"></script>
 
+
+  
 	        
 
 </body>
