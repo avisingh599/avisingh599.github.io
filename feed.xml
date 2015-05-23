@@ -4,7 +4,7 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-23T19:00:35+00:00</updated>
+<updated>2015-05-23T21:04:40+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
@@ -103,8 +103,6 @@ So, I then tried a manual-marker approach, and the results were much better:&lt;
 &lt;/figure&gt;
 
 &lt;p&gt;In the final product, we can assume to have a touchscreen based user interface, wherein the user slashes with his finger across every tooth once, and then gets the segmented image as an output. One several such images have been mannually annotated, we could use a learning algorithm that can automatically generate these masks.&lt;/p&gt;
-
-&lt;p&gt;The Dental Imaging Team: Hyunsung, Avi, Ujjwal, Raghu, Meghasyam, Ashish, Ashray, Pratima, Samriddh&lt;/p&gt;
 
 
   &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/segmenting-teeth/&quot;&gt;Every Tooth Tracked&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
