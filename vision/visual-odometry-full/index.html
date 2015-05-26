@@ -1,0 +1,580 @@
+<!doctype html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7" lang="en"> <![endif]-->
+<!--[if (IE 7)&!(IEMobile)]><html class="no-js lt-ie9 lt-ie8" lang="en"><![endif]-->
+<!--[if (IE 8)&!(IEMobile)]><html class="no-js lt-ie9" lang="en"><![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
+<head>
+<meta charset="utf-8">
+<title>Visual Odmetry from scratch - A tutorial for beginners &#8211; Trailblazer</title>
+<meta name="description" content="">
+<meta name="keywords" content="vision,, robotics">
+
+
+<!-- Open Graph -->
+<meta property="og:locale" content="en_US">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Visual Odmetry from scratch - A tutorial for beginners">
+<meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
+<meta property="og:url" content="http://avisingh599.github.io/vision/visual-odometry-full/">
+<meta property="og:site_name" content="Trailblazer">
+
+
+
+
+
+<link rel="canonical" href="http://avisingh599.github.io/vision/visual-odometry-full/">
+<link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
+<link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
+
+<!-- http://t.co/dKP3o1e -->
+<meta name="HandheldFriendly" content="True">
+<meta name="MobileOptimized" content="320">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Google Webfonts -->
+<link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700|PT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
+<!-- For all browsers -->
+<link rel="stylesheet" href="http://avisingh599.github.io/assets/css/main.min.css">
+
+<meta http-equiv="cleartype" content="on">
+
+<!-- HTML5 Shiv and Media Query Support -->
+<!--[if lt IE 9]>
+	<script src="http://avisingh599.github.io/assets/js/vendor/html5shiv.min.js"></script>
+	<script src="http://avisingh599.github.io/assets/js/vendor/respond.min.js"></script>
+<![endif]-->
+
+<!-- Modernizr -->
+<script src="http://avisingh599.github.io/assets/js/vendor/modernizr-2.7.1.custom.min.js"></script>
+
+<!-- Icons -->
+<!-- 16x16 -->
+<link rel="shortcut icon" href="http://avisingh599.github.io/favicon.ico">
+<!-- 32x32 -->
+<link rel="shortcut icon" href="http://avisingh599.github.io/favicon.png">
+<!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
+<link rel="apple-touch-icon-precomposed" href="http://avisingh599.github.io/images/apple-touch-icon-precomposed.png">
+<!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://avisingh599.github.io/images/apple-touch-icon-72x72-precomposed.png">
+<!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://avisingh599.github.io/images/apple-touch-icon-114x114-precomposed.png">
+<!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://avisingh599.github.io/images/apple-touch-icon-144x144-precomposed.png">
+
+</head>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-63278661-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<body class="post">
+
+<!--[if lt IE 9]><div class="browser-upgrade alert alert-info">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</div><![endif]-->
+
+<div class="navigation-wrapper">
+	<div class="site-name">
+		<a href="http://avisingh599.github.io">Trailblazer</a>
+	</div><!-- /.site-name -->
+	<div class="top-navigation">
+		<nav role="navigation" id="site-nav" class="nav">
+		    <ul>
+		        
+				<li><a href="http://avisingh599.github.io/" >Home</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/about/" >About</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/assets/cv.pdf" >Resume</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/research/" >Research</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/projects/" >Projects</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/acads/" >Academics</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/achievements/" >Achievements</a></li>
+		        
+				<li><a href="http://avisingh599.github.io/posts/" >Posts</a></li>
+		        
+		    </ul>
+		</nav>
+	</div><!-- /.top-navigation -->
+</div><!-- /.navigation-wrapper -->
+
+
+
+<div id="main" role="main">
+  <div class="article-author-side">
+    
+	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
+
+<h3>Avi Singh</h3>
+<p>Undergraduate, interested in Computer Vision</p>
+
+<a href="http://facebook.com/avisingh94" class="author-social" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a>
+<a href="http://plus.google.com/+avisingh599" class="author-social" target="_blank"><i class="fa fa-google-plus-square"></i> Google+</a>
+
+
+
+<a href="http://github.com/avisingh599" class="author-social" target="_blank"><i class="fa fa-github"></i> Github</a>
+
+
+
+
+
+
+  </div>
+  <article>
+    <div class="headline-wrap">
+      
+        <h1><a href="http://avisingh599.github.io/vision/visual-odometry-full/" rel="bookmark" title="Visual Odmetry from scratch - A tutorial for beginners">Visual Odmetry from scratch - A tutorial for beginners</a></h1>
+      
+    </div><!--/ .headline-wrap -->
+    <div class="article-wrap">
+      <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<p>I made a post regarding Visual Odometry several months ago, but 
+never followed it up with a post on the actual work that I did.
+I am hoping that this blog post will serve as a starting point for 
+beginners looking to implement a Visual Odometry system for their robots.
+I will basically present the algorithm described in the paper
+<a href="https://www-robotics.jpl.nasa.gov/publications/Andrew_Howard/howard_iros08_visodom.pdf">Real-Time Stereo Visual Odometry for Autonomous Ground Vehicles(Howard2008)</a>. It’s a somewhat old paper,
+but very easy to understand, which is why I used it for my very first implementation. The MATLAB
+source code for the same is available on <a href="https://github.com/avisingh599/vo-howard08">github</a>.</p>
+
+<h3 id="what-is-odometry">What is odometry?</h3>
+
+<p>Have you seen that little gadget on a car’s dashboard that tells you how much
+distance the car has travelled? It’s called an <a href="http://en.wikipedia.org/wiki/Odometer">odometer</a>.
+It (probably) measures the number of rotations that the wheel is undergoing, and multiplies that
+by the circumference to get an estimate of the distance travlled by the car. <a href="http://simreal.com/content/Odometry">Odometry</a>
+in Robotics is a more general term, and often refers to estimating not only the distance traveled, 
+but the entire trajectory of a moving robot. So for every time instance <script type="math/tex">t</script>, there is a vector 
+<script type="math/tex">[ x^{t} y^{t} z^{t} \alpha^{t} \beta^{t} \gamma^{t}]</script> which describes the complete <a href="http://en.wikipedia.org/wiki/Pose_(computer_vision)">pose</a> of the robot at that instance. 
+Note that <script type="math/tex">\alpha^{t}, \beta^{t}, \gamma^{t}</script> here are the <a href="http://mathworld.wolfram.com/EulerAngles.html">euler angles</a>, 
+while <script type="math/tex">x^{t}, y^{t} ,z^{t}</script> are <a href="http://en.wikipedia.org/wiki/Cartesian_coordinate_system"> caetesian coordinates</a> of the robot.</p>
+
+<h3 id="whats-visual-odometry">What’s visual odometry?</h3>
+
+<p>There are more than one ways to determine the trajectory of a moving robot, but the one that we
+will focus on in this blog post is called Visual Odometry. In this approach we have a camera (or an 
+array of cameras) rigidly attached to a moving object (such as a car or a robot), and our job is
+to construct a <a href="http://en.wikipedia.org/wiki/Six_degrees_of_freedom">6-DOF</a> trajectory using the
+video stream coming from this camera(s). When we are using just one camera, it’s called 
+<strong><em>Monocular Visual Odometry</em></strong>. When we’re using two (or more) cameras, it’s refered to as
+<strong><em>Stereo Visual Odometry</em></strong>.</p>
+
+<h3 id="why-stereo-or-why-monocular">Why stereo, or why monocular?</h3>
+
+<p>There are certain advantages and disadvantages associated with both the stereo and the monocular
+scheme of things, and I’ll briefly describe some of the main ones here. (Note that this blog post will
+only concentrate on stereo as of now, but I might document and post my monocular implementation also).
+The advantage of stereo is that you can estimate the exact trajectory, while in monocular you can
+only estimate the trajectory, <a href="http://stackoverflow.com/questions/17114880/up-to-a-scale-factor">unique only up to a scale factor</a>. 
+So, in monocular VO, you can only say that you moved one unit in x, two units in y, and so on, while in stereo, 
+you can say that you moved one meter in x, two meters in y, and so on. Also, stereo VO is usually much more robust 
+(due to more data being available). But, in cases where the distance of the objects from the camera are too high (
+as compared to the distance between to the two cameras of the stereo system), the stereo case degenerates to the monocular case.
+So, let’s say you have a very small robot (like the <a href="http://robobees.seas.harvard.edu/publications">robobees</a>), then 
+it’s useless to have a stereo system, and you would be much better off with a monocular VO algorithm like <a href="https://github.com/uzh-rpg/rpg_svo">SVO</a>. Alos, there’s a general trend of drones becoming smaller and smaller, so groups like those of <a href="http://rpg.ifi.uzh.ch/people_scaramuzza.html">Davide Scaramuzza</a> are now focusing more on monocular VO approaches (or so he said in a talk that I happened to attend).</p>
+
+<h3 id="enough-english-lets-talk-math-now">Enough english, let’s talk math now</h3>
+
+<h4 id="formulation-of-the-problem">Formulation of the problem</h4>
+
+<h5 id="input"><strong>Input</strong></h5>
+<p>We have a stream of (grayscale/color) images coming from a pair of cameras. Let the left and right frames, captured at time t and t+1 be referred to as <script type="math/tex">\mathit{I}_l^t</script>, <script type="math/tex">\mathit{I}_r^t</script>, <script type="math/tex">\mathit{I}_l^{t+1}</script>, <script type="math/tex">\mathit{I}_r^{t+1}</script>. We have prior knowledge of all the intrinsic as well as extrinsic calibration parameters of the stereo rig, obtained via any one of the numerous stereo calibration algorithms available.</p>
+
+<h5 id="output"><strong>Output</strong></h5>
+<p>For every pair of stereo images, we need to find the rotation matrix <script type="math/tex">R</script> and the translation vector <script type="math/tex">t</script>, which describes the motion of the vehicle between the two frames.</p>
+
+<h3 id="the-algorithm">The algorithm</h3>
+<p>An outline:</p>
+
+<ol>
+  <li>
+    <p>Capture images: <script type="math/tex">\mathit{I}_l^t</script>, <script type="math/tex">\mathit{I}_r^t</script>, <script type="math/tex">\mathit{I}_l^{t+1}</script>, <script type="math/tex">\mathit{I}_r^{t+1}</script></p>
+  </li>
+  <li>
+    <p>Undistort, Rectify the above images.</p>
+  </li>
+  <li>
+    <p>Compute the disparity map <script type="math/tex">\mathit{D}^t</script> from <script type="math/tex">\mathit{I}_l^t</script>, <script type="math/tex">\mathit{I}_r^t</script> and the map <script type="math/tex">\mathit{D}^{t+1}</script> from <script type="math/tex">\mathit{I}_l^{t+1}</script>, <script type="math/tex">\mathit{I}_r^{t+1}</script>.</p>
+  </li>
+  <li>
+    <p>Use FAST algorithm to detect features in  <script type="math/tex">\mathit{I}_l^t</script>,  <script type="math/tex">\mathit{I}_l^{t+1}</script> and match them.</p>
+  </li>
+  <li>
+    <p>Use the disparity maps <script type="math/tex">\mathit{D}^t</script>, <script type="math/tex">\mathit{D}^{t+1}</script> to calculate the 3D posistions of the features detected in the previous steps. Two point Clouds <script type="math/tex">\mathcal{W}^{t}</script>, <script type="math/tex">\mathcal{W}^{t+1}</script> will be obtained</p>
+  </li>
+  <li>
+    <p>Select a subset of points from the above point cloud such that all the matches are mutually compatible.</p>
+  </li>
+  <li>
+    <p>Estimate <script type="math/tex">R, t</script> from the inliers that were detected in the previous step.</p>
+  </li>
+</ol>
+
+<p>Do not worry if you do not understand some of the terminologies like disparity maps or FAST features that you see above.
+Most of them will be explained in greater detail in the text to follow, along with the code to use them in MATLAB.</p>
+
+<h4 id="undistortion-rectification">Undistortion, Rectification</h4>
+<p>Before computing the disparity maps, we must perform a number of preprocessing steps.</p>
+
+<p>Undistrortion: This step compensates for lens distortion. It is performed with the help of the distortion parameters that were obtained during calibration.</p>
+
+<p>Rectification: This step is performed so as to ease up the problem of disparity map computation. After this step, all the epipolar lines become parallel to the horizontal, and the disparity computation step needs to perform its search for matching blocks only in one direction.</p>
+
+<figure>
+  <img src="/images/visodo/epi.jpg" />
+  <figcaption>Stereo images overlayed from KITTI dataset, notice the feature matches are along parallel (horizontal) lines</figcaption>
+</figure>
+
+<p>Both of these operations are implemented in MATLAB, and since the KITTI Visual Odometry dataset that I used in my implmentation
+already has these operations implemented, you won’t find the code for them in my implmenation. You can see how to use these functions <a href="http://www.mathworks.com/help/vision/ref/rectifystereoimages.html?searchHighlight=rectifyStereoImages">here</a> and <a href="http://www.mathworks.com/help/vision/ref/undistortimage.html">here</a>. Note that you need the Computer Vision Toolbox, and MATLAB R2014a or newer for these functions.</p>
+
+<h4 id="disparity-map-computation">Disparity Map Computation</h4>
+
+<p>Given a pair of images from a stereo camera, we can compute a disparity map. Suppose a particular 3D in the physical world <script type="math/tex">F</script> is located at the position <script type="math/tex">(x,y)</script> in the left image, and the same feature is located on <script type="math/tex">(x+d,y)</script> in the second image, then the location <script type="math/tex">(x,y)</script> on the disparity map holds the value <script type="math/tex">d</script>. Note that the y-cordinates are the same since the images have been rectified. Thus, we can define disparity at each point in the image plane as: 
+<script type="math/tex">
+\begin{equation}
+d = x_{l} - x_{r}
+\end{equation}
+</script></p>
+
+<figure>
+  <img src="/images/visodo/disp.jpg" />
+  <figcaption>A disparity map computed on frames from KITTI VO dataset</figcaption>
+</figure>
+
+<h5 id="block-matching-algorithm">Block-Matching Algorithm</h5>
+<p>Disparity at each point is computed using a sliding window. 
+For every pixel in the left image a 15x15 pixels wide window is generated around it, 
+and the value of all the pixels in the windows is stored. This window is then constructed
+at the same coordinate in the right image, and is slid horizontally, until the Sum-of-Absolute-Differences (SAD) is minimized.
+The algorithm used in our implementation is an advanced version of this block-matching technique, called the <a href="http://zone.ni.com/reference/en-XX/help/372916M-01/nivisionconceptsdita/guid-53310181-e4af-4093-bba1-f80b8c5da2f4/">Semi-Global Block Matching algorithm</a>. A function directly implements this algorithm in MATLAB:</p>
+
+<div class="highlight"><pre><code class="matlab"><span class="n">disparityMap1</span> <span class="p">=</span> <span class="n">disparity</span><span class="p">(</span><span class="n">I1_l</span><span class="p">,</span><span class="n">I1_r</span><span class="p">,</span> <span class="s">&#39;DistanceThreshold&#39;</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span></code></pre></div>
+
+<h4 id="feature-detection">Feature Detection</h4>
+<p>My approach uses the FAST corner detector. I’ll now explain in brief how the detector works, though you must have a look at the <a href="http://www.edwardrosten.com/work/fast.html">original paper and source code</a> if you want to really understand how it works. Suppose there is a point <script type="math/tex">\mathbf{P}</script> which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor <script type="math/tex">\mathbf{I}</script> and for another set of contiguous pixels if the intensity is less by at least the same factor <script type="math/tex">\mathbf{I}</script>. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least <script type="math/tex">\mathbf{I}</script>, or must have an intensity lower by the same amount <script type="math/tex">\mathbf{I}</script> for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.</p>
+
+<figure>
+  <img src="/images/visodo/fast.png" />
+  <figcaption>Image from the original FAST feature detection paper</figcaption>
+</figure>
+
+<p>Another thing that we do in this approach is something that is called “bucketing”.
+If we just run a feature detector over an entire image, there is a very good chance
+that most of the features would be concentrated in certain rich regions of the image,
+while certain other regions would not have any representation. This is not good for
+our algorithm, since it relies on the assumption of a static scene, and to find the 
+“true” static scene, we must look at all of the image, instead of just certain regions
+of it. In order to tackle this issue, we divide the images into grids (of roughly 100x100px),
+and extract at most 20 features from each of this grid, thus maintaing a more uniform distribution
+of fetures.</p>
+
+<p>In the code, you will find the following line:</p>
+
+<div class="highlight"><pre><code class="matlab"><span class="n">points1_l</span> <span class="p">=</span> <span class="n">bucketFeatures</span><span class="p">(</span><span class="n">I1_l</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">h_break</span><span class="p">,</span> <span class="n">b_break</span><span class="p">,</span> <span class="n">numCorners</span><span class="p">);</span></code></pre></div>
+
+<p>This line calls the following function:</p>
+
+<div class="highlight"><pre><code class="matlab"><span class="k">function</span><span class="w"> </span>points <span class="p">=</span><span class="w"> </span><span class="nf">bucketFeatures</span><span class="p">(</span>I, h, b, h_break, b_break, numCorners<span class="p">)</span><span class="w"></span>
+<span class="c">% input image I should be grayscale</span>
+
+<span class="n">y</span> <span class="p">=</span> <span class="nb">floor</span><span class="p">(</span><span class="nb">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">h</span> <span class="o">-</span> <span class="n">h</span><span class="o">/</span><span class="n">h_break</span><span class="p">,</span> <span class="n">h_break</span><span class="p">));</span>
+<span class="n">x</span> <span class="p">=</span> <span class="nb">floor</span><span class="p">(</span><span class="nb">linspace</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">-</span> <span class="n">b</span><span class="o">/</span><span class="n">b_break</span><span class="p">,</span> <span class="n">b_break</span><span class="p">));</span>
+
+<span class="n">final_points</span> <span class="p">=</span> <span class="p">[];</span>
+<span class="k">for</span> <span class="nb">i</span><span class="p">=</span><span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">y</span><span class="p">)</span>
+    <span class="k">for</span> <span class="nb">j</span><span class="p">=</span><span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">roi</span> <span class="p">=</span>   <span class="p">[</span><span class="n">x</span><span class="p">(</span><span class="nb">j</span><span class="p">),</span><span class="n">y</span><span class="p">(</span><span class="nb">i</span><span class="p">),</span><span class="nb">floor</span><span class="p">(</span><span class="n">b</span><span class="o">/</span><span class="n">b_break</span><span class="p">),</span><span class="nb">floor</span><span class="p">(</span><span class="n">h</span><span class="o">/</span><span class="n">h_break</span><span class="p">)];</span>
+    <span class="n">corners</span> <span class="p">=</span> <span class="n">detectFASTFeatures</span><span class="p">(</span><span class="n">I</span><span class="p">,</span> <span class="s">&#39;MinQuality&#39;</span><span class="p">,</span> <span class="mf">0.00</span><span class="p">,</span> <span class="s">&#39;MinContrast&#39;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="s">&#39;ROI&#39;</span><span class="p">,</span><span class="n">roi</span> <span class="p">);</span>
+    <span class="n">corners</span> <span class="p">=</span> <span class="n">corners</span><span class="p">.</span><span class="n">selectStrongest</span><span class="p">(</span><span class="n">numCorners</span><span class="p">);</span>
+    <span class="n">final_points</span> <span class="p">=</span> <span class="n">vertcat</span><span class="p">(</span><span class="n">final_points</span><span class="p">,</span> <span class="n">corners</span><span class="p">.</span><span class="n">Location</span><span class="p">);</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+<span class="n">points</span> <span class="p">=</span> <span class="n">cornerPoints</span><span class="p">(</span><span class="n">final_points</span><span class="p">);</span></code></pre></div>
+
+<p>As you can see, the image is divided into grids, and the strongest corners from each grid are
+selected for the subsequent steps.</p>
+
+<h4 id="feature-description-and-matching">Feature Description and Matching</h4>
+
+<p>The fast corners detected in the previous step are fed to the next step, which uses a <a href="https://www.ces.clemson.edu/~stb/klt/">KLT tracker</a>. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in <script type="math/tex">\mathit{I}_{l}^{t}</script> are tracked in <script type="math/tex">\mathit{I}_{l}^{t+1}</script> Let the set of features detected in <script type="math/tex">\mathit{I}_{l}^{t}</script> be <script type="math/tex">\mathcal{F}^{t}</script> , and the set of corresponding features in <script type="math/tex">\mathit{I}_{l}^{t+1}</script> be <script type="math/tex">\mathcal{F}^{t+1}</script>.</p>
+
+<p>In MATLAB, this is again super-easy to do, and the following three lines intialize the tracker, and run it once. </p>
+
+<div class="highlight"><pre><code class="matlab"><span class="n">tracker</span> <span class="p">=</span> <span class="n">vision</span><span class="p">.</span><span class="n">PointTracker</span><span class="p">(</span><span class="s">&#39;MaxBidirectionalError&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+<span class="n">initialize</span><span class="p">(</span><span class="n">tracker</span><span class="p">,</span> <span class="n">points1_l</span><span class="p">.</span><span class="n">Location</span><span class="p">,</span> <span class="n">I1_l</span><span class="p">);</span>
+<span class="p">[</span><span class="n">points2_l</span><span class="p">,</span> <span class="n">validity</span><span class="p">]</span> <span class="p">=</span> <span class="n">step</span><span class="p">(</span><span class="n">tracker</span><span class="p">,</span> <span class="n">I2_l</span><span class="p">);</span></code></pre></div>
+
+<p>Note that in my current implementation, I am just tracking the point from one frame to the next, and then again doing the detection part,
+but in a better implmentation, one would track these points as long as the number of points do not drop below a particular threshold.</p>
+
+<h4 id="triangulation-of-3d-pointcloud">Triangulation of 3D PointCloud</h4>
+<p>The real world 3D coordinates of all the point in <script type="math/tex">\mathcal{F}^{t}</script> and <script type="math/tex">\mathcal{F}^{t+1}</script> are computed with respect to the left camera using the disparity value corresponding to these features from the disparity map, and the known projection matrices of the two cameras <script type="math/tex">\mathbf{P}_{1}</script> and <script type="math/tex">\mathbf{P}_{2}</script>.
+We first form the reprojection matrix <script type="math/tex">\mathbf{Q}</script>, using data from <script type="math/tex">\mathbf{P1}</script> and <script type="math/tex">\mathbf{P2}</script>:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+
+  Q=
+  \left[ {\begin{array}{cccc}
+   1 & 0 & 0 & -c_{x} \\
+   0 & 1 & 0 & -c_{y} \\
+   0 & 0 & 0 & -f \\
+   0 & 0 & -1/T_{x} & 0  \\
+  \end{array} } \right]
+
+ %]]></script>
+
+<p><script type="math/tex">c_{x}</script> = x-coordinate of the optical center of the left camera (in pixels)<br />
+<script type="math/tex">c_{y}</script> = y-coordinate of the optical center of the left camera (in pixels)<br />
+<script type="math/tex">f</script> = focal length of the first camera<br />
+<script type="math/tex">T_{x}</script> = The x-coordinate of the right camera with respect to the first camera (in meters)</p>
+
+<p>We use the following relation to obtain the 3D coordinates of every feature in <script type="math/tex">\mathcal{F}_{l}^{t}</script> and <script type="math/tex">\mathcal{F}_{l}^{t+1}</script></p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\left[ \begin{array}{c} X \\ Y \\ Z \\ 1\end{array} \right] = \mathbf{Q} \times \left[ \begin{array}{c} x \\ y \\ d \\ 1\end{array} \right]
+\end{equation}
+</script>
+
+<p>Let the set of point clouds obtained from be referred to as <script type="math/tex">\mathcal{W}^{t}</script> and <script type="math/tex">\mathcal{W}^{t+1}</script>. To have a better understanding of
+the geometry that goes on in the above equations, you can have a look at the Bible of visual geometry i.e. Hartley and Zisserman’s <a href="http://www.robots.ox.ac.uk/~vgg/hzbook/">Multiple View Geometry</a>.</p>
+
+<h4 id="the-inlier-detection-step">The Inlier Detection Step</h4>
+<p>This algorithm defers from most other visual odometry algorithms in the sense that it does not have an outlier detection step, but it has an inlier detection step. We assume that the scene is rigid, and hence it must not change between the time instance <script type="math/tex">t</script> and <script type="math/tex">t+1</script>. As a result, the distance between any two features in the point cloud <script type="math/tex">\mathcal{W}^{t}</script> must be same as the distance between the corresponding points in <script type="math/tex">\mathcal{W}^{t+1}</script>. If any such distance is not same, then either there is an error in 3D triangulation of at least one of the two features, or we have triangulated a moving, which we cannot use in the next step. In order to have the maximum set of consistent matches, we form the  consistency matrix <script type="math/tex">\mathbf{M}</script> such that:</p>
+
+<script type="math/tex; mode=display">% <![CDATA[
+
+\begin{equation}
+\mathbf{M}_{i,j} = \begin{cases} 1, & \mbox{if the distance between i and j points is same in both the point clouds} \\ 0, & \mbox{otherwise} \end{cases}
+\end{equation}
+ %]]></script>
+
+<p>From the original point clouds, we now wish to select the largest subset such that they are all the points in this subset are consistent with each other (every element in the reduced consistency matrix is 1). This problem is equivalent to the <a href="http://en.wikipedia.org/wiki/Clique_problem">Maximum Clique Problem</a>, with <script type="math/tex">\mathbf{M}</script> as an adjacency matrix. A cliques is basically a subset of a graph, that only contains nodes that are all connected to each other. An easy way to visualise this is to think of a graph as a social network, and then trying to find the largest group of people who all know each other. </p>
+
+<figure>
+  <img src="/images/visodo/clique.png" />
+  <figcaption>This is how clique looks like.</figcaption>
+</figure>
+
+<p>This problem is known to be NP-complete, and thus an optimal solution cannot be found for any practical situation. We therefore employ a greedy heuristic that gives us a clique which is close to the optimal solution:</p>
+
+<ol>
+  <li>Select the node with the maximum degree, and initialize the clique to contain this node.</li>
+  <li>From the existing clique, determine the subset of nodes <script type="math/tex">\mathit{v}</script> which are connected to all the nodes present in the clique.</li>
+  <li>From the set <script type="math/tex">\mathit{v}</script>, select a node which is connected to the maximum number of other nodes in <script type="math/tex">\mathit{v}</script>. Repeat from step 2 till no more nodes can be added to the clique.</li>
+</ol>
+
+<p>The above algorithm is implemented in the following two functions in my code:</p>
+
+<div class="highlight"><pre><code class="matlab"><span class="k">function</span><span class="w"> </span>cl <span class="p">=</span><span class="w"> </span><span class="nf">updateClique</span><span class="p">(</span>potentialNodes, clique, M<span class="p">)</span><span class="w"></span>
+
+
+<span class="n">maxNumMatches</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">curr_max</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">for</span> <span class="nb">i</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">potentialNodes</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">potentialNodes</span><span class="p">(</span><span class="nb">i</span><span class="p">)</span><span class="o">==</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">numMatches</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+        <span class="k">for</span> <span class="nb">j</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">potentialNodes</span><span class="p">)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">potentialNodes</span><span class="p">(</span><span class="nb">j</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">M</span><span class="p">(</span><span class="nb">i</span><span class="p">,</span><span class="nb">j</span><span class="p">))</span>
+                <span class="n">numMatches</span> <span class="p">=</span> <span class="n">numMatches</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">numMatches</span><span class="o">&gt;</span><span class="p">=</span><span class="n">maxNumMatches</span><span class="p">)</span>
+            <span class="n">curr_max</span> <span class="p">=</span> <span class="nb">i</span><span class="p">;</span>
+            <span class="n">maxNumMatches</span> <span class="p">=</span> <span class="n">numMatches</span><span class="p">;</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="n">maxNumMatches</span><span class="o">~=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">clique</span><span class="p">(</span><span class="nb">length</span><span class="p">(</span><span class="n">clique</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="p">=</span> <span class="n">curr_max</span><span class="p">;</span>
+<span class="k">end</span>
+
+<span class="n">cl</span> <span class="p">=</span> <span class="n">clique</span><span class="p">;</span>
+
+
+<span class="k">function</span><span class="w"> </span>newSet <span class="p">=</span><span class="w"> </span><span class="nf">findPotentialNodes</span><span class="p">(</span>clique, M<span class="p">)</span><span class="w"></span>
+
+<span class="n">newSet</span> <span class="p">=</span> <span class="n">M</span><span class="p">(:,</span><span class="n">clique</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">clique</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span>  
+    <span class="k">for</span> <span class="nb">i</span><span class="p">=</span><span class="mi">2</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">clique</span><span class="p">)</span>
+        <span class="n">newSet</span> <span class="p">=</span> <span class="n">newSet</span> <span class="o">&amp;</span> <span class="n">M</span><span class="p">(:,</span><span class="n">clique</span><span class="p">(</span><span class="nb">i</span><span class="p">));</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="k">for</span> <span class="nb">i</span><span class="p">=</span><span class="mi">1</span><span class="p">:</span><span class="nb">length</span><span class="p">(</span><span class="n">clique</span><span class="p">)</span>
+    <span class="n">newSet</span><span class="p">(</span><span class="n">clique</span><span class="p">(</span><span class="nb">i</span><span class="p">))</span> <span class="p">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">end</span></code></pre></div>
+
+<h4 id="computation-of-mathbfr-and-mathbft">Computation of <script type="math/tex">\mathbf{R}</script> and <script type="math/tex">\mathbf{t}</script></h4>
+<p>In order to determine the rotation matrix <script type="math/tex">\mathbf{R}</script> and translation vector <script type="math/tex">\mathbf{t}</script>, we use Levenberg-Marquardt non-linear least squares minimization to minimize the following sum:</p>
+
+<script type="math/tex; mode=display">
+\begin{equation}
+\epsilon = \sum_{\mathcal{F}^{t}, \mathcal{F}^{t+1}} (\mathbf{j_{t}} - \mathbf{P}\mathbf{T}\mathbf{w_{t+1}})^{2} + (\mathbf{j_{t+1}} - \mathbf{P}\mathbf{T^{-1}}\mathbf{w_{t}})^{2}
+\end{equation}
+</script>
+
+<p><script type="math/tex">\mathcal{F}^{t}, \mathcal{F}^{t+1}</script>: Features in the left image at time <script type="math/tex">t</script> and <script type="math/tex">t+1</script>
+<script type="math/tex">\mathbf{j_{t}}, \mathbf{j_{t+1}}</script>: 2D Homogeneous coordinates of the features <script type="math/tex">\mathcal{F}^{t}, \mathcal{F}^{t+1}</script><br />
+<script type="math/tex">\mathbf{w_{t}}, \mathbf{w_{t+1}}</script>: 3D Homogeneous coordinates of the features <script type="math/tex">\mathcal{F}^{t}, \mathcal{F}^{t+1}</script><br />
+<script type="math/tex">\mathbf{P}</script>: <script type="math/tex">3\times4</script> Projection matrix of left camera<br />
+<script type="math/tex">\mathbf{T}</script>: <script type="math/tex">4\times4</script> Homogeneous Transformation matrix\</p>
+
+<p>The Optimization Toolbox in MATLAB directly implements the Levenberg-Marquardt algorithm in the function lsqnonlin, which needs to be supplied with a vector objective function that needs to be minimized, and a set of parameters that can be varied.</p>
+
+<p>This is how the function to be minimized is represented in MATLAB. This part of the algorithm, 
+is the most computationally expensive one.</p>
+
+<div class="highlight"><pre><code class="matlab"><span class="k">function</span><span class="w"> </span>F <span class="p">=</span><span class="w"> </span><span class="nf">minimize</span><span class="p">(</span>PAR, F1, F2, W1, W2, P1<span class="p">)</span><span class="w"></span>
+<span class="n">r</span> <span class="p">=</span> <span class="n">PAR</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">);</span>
+<span class="n">t</span> <span class="p">=</span> <span class="n">PAR</span><span class="p">(</span><span class="mi">4</span><span class="p">:</span><span class="mi">6</span><span class="p">);</span>
+<span class="c">%F1, F2 -&gt; 2d coordinates of features in I1_l, I2_l</span>
+<span class="c">%W1, W2 -&gt; 3d coordinates of the features that have been triangulated</span>
+<span class="c">%P1, P2 -&gt; Projection matrices for the two cameras</span>
+<span class="c">%r, t -&gt; 3x1 vectors, need to be varied for the minimization</span>
+<span class="n">F</span> <span class="p">=</span> <span class="nb">zeros</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="nb">size</span><span class="p">(</span><span class="n">F1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">);</span>
+<span class="n">reproj1</span> <span class="p">=</span> <span class="nb">zeros</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">F1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">);</span>
+<span class="n">reproj2</span> <span class="p">=</span> <span class="nb">zeros</span><span class="p">(</span><span class="nb">size</span><span class="p">(</span><span class="n">F1</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="mi">3</span><span class="p">);</span>
+
+<span class="n">dcm</span> <span class="p">=</span> <span class="n">angle2dcm</span><span class="p">(</span> <span class="n">r</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">r</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span> <span class="n">r</span><span class="p">(</span><span class="mi">3</span><span class="p">),</span> <span class="s">&#39;ZXZ&#39;</span> <span class="p">);</span>
+<span class="n">tran</span> <span class="p">=</span> <span class="p">[</span> <span class="n">horzcat</span><span class="p">(</span><span class="n">dcm</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">0</span> <span class="mi">0</span> <span class="mi">1</span><span class="p">]];</span>
+
+<span class="k">for</span> <span class="n">k</span> <span class="p">=</span> <span class="mi">1</span><span class="p">:</span><span class="nb">size</span><span class="p">(</span><span class="n">F1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">f1</span> <span class="p">=</span> <span class="n">F1</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span><span class="o">&#39;</span><span class="p">;</span>
+    <span class="n">f1</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">w2</span> <span class="p">=</span> <span class="n">W2</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span><span class="o">&#39;</span><span class="p">;</span>
+    <span class="n">w2</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+    
+    <span class="n">f2</span> <span class="p">=</span> <span class="n">F2</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span><span class="o">&#39;</span><span class="p">;</span>
+    <span class="n">f2</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="n">w1</span> <span class="p">=</span> <span class="n">W1</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span><span class="o">&#39;</span><span class="p">;</span>
+    <span class="n">w1</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span> <span class="p">=</span> <span class="mi">1</span><span class="p">;</span>
+    
+    <span class="n">f1_repr</span> <span class="p">=</span> <span class="n">P1</span><span class="o">*</span><span class="p">(</span><span class="n">tran</span><span class="p">)</span><span class="o">*</span><span class="n">w2</span><span class="p">;</span>
+    <span class="n">f1_repr</span> <span class="p">=</span> <span class="n">f1_repr</span><span class="o">/</span><span class="n">f1_repr</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    <span class="n">f2_repr</span> <span class="p">=</span> <span class="n">P1</span><span class="o">*</span><span class="n">pinv</span><span class="p">(</span><span class="n">tran</span><span class="p">)</span><span class="o">*</span><span class="n">w1</span><span class="p">;</span>
+    <span class="n">f2_repr</span> <span class="p">=</span> <span class="n">f2_repr</span><span class="o">/</span><span class="n">f2_repr</span><span class="p">(</span><span class="mi">3</span><span class="p">);</span>
+    
+    <span class="n">reproj1</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span> <span class="p">=</span> <span class="p">(</span><span class="n">f1</span> <span class="o">-</span> <span class="n">f1_repr</span><span class="p">);</span>
+    <span class="n">reproj2</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">:)</span> <span class="p">=</span> <span class="p">(</span><span class="n">f2</span> <span class="o">-</span> <span class="n">f2_repr</span><span class="p">);</span>    
+<span class="k">end</span>
+
+<span class="n">F</span> <span class="p">=</span> <span class="p">[</span><span class="n">reproj1</span><span class="p">;</span> <span class="n">reproj2</span><span class="p">];</span></code></pre></div>
+
+<h4 id="validation-of-results">Validation of results</h4>
+<p>A particular set of <script type="math/tex">\mathbf{R}</script> and <script type="math/tex">\mathbf{t}</script> is said to be valid if it satisfies the following conditions:</p>
+
+<ol>
+  <li>If the number of features in the clique is at least 8.</li>
+  <li>The reprojection error <script type="math/tex">\epsilon</script> is less than a certain threshold.</li>
+</ol>
+
+<p>The above constraints help in dealing with noisy data.</p>
+
+<h4 id="an-important-hack">An important “hack”</h4>
+<p>If you run the above algorithm on real-world sequences, you will encounter a 
+rather big problem. The assumption of scene rigidity stops holding when a large vehicle
+such as a truck or a van occupies a majority of the field of view of the camera. In order
+to deal with such data, we introduce a simple hack: accept a tranlsation/rotation matrix
+only if the dominant motion is in the forward direction. This is known to improve results
+significantly on the KITTI dataset, though you won’t find in this hack explicitly written 
+in most of the papers that are published on the same!</p>
+
+
+      <hr />
+      <footer role="contentinfo">
+        <div class="article-author-bottom">
+          
+	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
+
+<h3>Avi Singh</h3>
+<p>Undergraduate, interested in Computer Vision</p>
+
+<a href="http://facebook.com/avisingh94" class="author-social" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a>
+<a href="http://plus.google.com/+avisingh599" class="author-social" target="_blank"><i class="fa fa-google-plus-square"></i> Google+</a>
+
+
+
+<a href="http://github.com/avisingh599" class="author-social" target="_blank"><i class="fa fa-github"></i> Github</a>
+
+
+
+
+
+
+        </div>
+        <p class="byline"><strong>Visual Odmetry from scratch - A tutorial for beginners</strong> was published on <time datetime="2015-05-25T00:00:00+00:00">May 25, 2015</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
+      </footer>
+    </div><!-- /.article-wrap -->
+  
+    <section id="disqus_thread"></section><!-- /#disqus_thread -->
+  
+  </article>
+</div><!-- /#main -->
+
+<div class="footer-wrap">
+  <div class="related-articles">
+  <h4>You might also enjoy <small class="pull-right">(<a href="http://avisingh599.github.io/posts/">View all posts</a>)</small></h4>
+    <ul>
+    
+      <li><a href="http://avisingh599.github.io/vision/stichting-story/" title="Stitching Intra-Oral Images">Stitching Intra-Oral Images</a></li>
+    
+      <li><a href="http://avisingh599.github.io/vision/segmenting-teeth/" title="Every Tooth Tracked">Every Tooth Tracked</a></li>
+    
+      <li><a href="http://avisingh599.github.io/vision/visual-odometry-read/" title="Visual Odometry - The Reading List">Visual Odometry - The Reading List</a></li>
+    
+    </ul>
+    <hr />
+  </div><!-- /.related-articles -->
+  <footer>
+    <span>&copy; 2015 Avi Singh. Powered by <a href="http://jekyllrb.com">Jekyll</a> using the <a href="http://mademistakes.com/minimal-mistakes/">Minimal Mistakes</a> theme.</span>
+
+  </footer>
+</div><!-- /.footer-wrap -->
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="http://avisingh599.github.io/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="http://avisingh599.github.io/assets/js/scripts.min.js"></script>
+
+
+  
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+    var disqus_shortname = 'avisingh599'; // required: replace example with your forum shortname
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+	        
+
+</body>
+</html>

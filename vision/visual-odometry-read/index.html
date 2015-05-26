@@ -5,24 +5,24 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Stitching Intra-Oral Images &#8211; Trailblazer</title>
+<title>Visual Odometry - The Reading List &#8211; Trailblazer</title>
 <meta name="description" content="">
-<meta name="keywords" content="vision,, healthtech">
+<meta name="keywords" content="robotics,, vision">
 
 
 <!-- Open Graph -->
 <meta property="og:locale" content="en_US">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Stitching Intra-Oral Images">
+<meta property="og:title" content="Visual Odometry - The Reading List">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://avisingh599.github.io/vision/stichting-story/">
+<meta property="og:url" content="http://avisingh599.github.io/vision/visual-odometry-read/">
 <meta property="og:site_name" content="Trailblazer">
 
 
 
 
 
-<link rel="canonical" href="http://avisingh599.github.io/vision/stichting-story/">
+<link rel="canonical" href="http://avisingh599.github.io/vision/visual-odometry-read/">
 <link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
@@ -133,35 +133,30 @@
   <article>
     <div class="headline-wrap">
       
-        <h1><a href="http://avisingh599.github.io/vision/stichting-story/" rel="bookmark" title="Stitching Intra-Oral Images">Stitching Intra-Oral Images</a></h1>
+        <h1><a href="http://avisingh599.github.io/vision/visual-odometry-read/" rel="bookmark" title="Visual Odometry - The Reading List">Visual Odometry - The Reading List</a></h1>
       
     </div><!--/ .headline-wrap -->
     <div class="article-wrap">
-      <p><em>Note: This is a repost of my <a href="https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/">January post</a> on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.</em></p>
+      <p>I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester at IIT-Kanpur.
+This post is primarily a list of some useful links which will get one acquainted with the basics of Visual Odometry.</p>
 
-<p>Most intraoral cameras have a relative narrow field of view, and the entire jaw is never visible in a single image. We are trying to stitch several images into one, so that the user has complete view of the jaw, and we can then segment the tooth from it, and keep a track for every individual tooth.</p>
+<p>The first thing that anyone should read is this wonderful two-part review by Davide Scaramuzza and Friedrich Fraundorfer:</p>
 
-<p>A basic image stitching pipeline has the following steps:</p>
+<ul>
+  <li><a href="http://www.roboticsschool.ethz.ch/airobots/programme/presentations/VO_part_I.pdf">Visual Odometry Tutorial Part 1</a></li>
+  <li><a href="http://rpg.ifi.uzh.ch/docs/VO_Part_II_Scaramuzza.pdf">Visual Odometry Tutorial Part 2</a></li>
+</ul>
 
-<ol>
-  <li>Matching features between two images</li>
-  <li>Computing the homography with RANSAC (minimal set is four matches)</li>
-  <li>Transforming , concatenating and blending the images.</li>
-</ol>
+<p>One thing that I did not understand from the above tutorials was the ‘5-point algorithm’ by Nister in 2003. The original paper is <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1288525">here</a>. But, this paper also seemed quite complicated for me to implement without any background, so I moved onto a simpler algorithm, called the ‘8-point algorithm’, which was published a long time ago by Longuet-Higgins. You can find it <a href="http://www2.ece.ohio-state.edu/~aleix/Longuet-Higgins.pdf">here</a>. There are some lecture slides which explain this in a simple manner, and you can find them <a href="http://www.cse.psu.edu/~rcollins/CSE486/lecture20_6pp.pdf">here</a>.</p>
 
-<p>Most of the existing panaroma building algorithms are well-suited for applications in which the object being photographed is quite far away from the camera, such as in the image shown below (<a href="http://www.cs.bath.ac.uk/brown/autostitch/autostitch.html">obtained from the Autostitch page</a>):</p>
+<p>Note, there are more papers that one should read regarding this, most notably:</p>
 
-<figure>
-	<img src="/images/dental/panaroma.png" />
-	<figcaption>Panorama construction</figcaption>
-</figure>
+<ul>
+  <li><a href="http://www.cse.unr.edu/~bebis/CS485/Handouts/hartley.pdf">In Defense of the 8-point Algorithmm</a></li>
+  <li><a href="http://users.cecs.anu.edu.au/~hongdong/new5pt_cameraREady_ver_1.pdf">5-point Motion Estimation Made Easy</a></li>
+</ul>
 
-<p>However, we are photographing the teeth at a really close range, and minor changes in perspective are fatal for these algorithms. In order to overcome the problems imposed by changes in perspective, we are using ASIFT, a feature detection/description/matching algorithm which is robust to perspective changes when compared to SIFT. The next steps (homography computation, blending) are pretty standard, and here are some results:</p>
-
-<figure>
-	<img src="/images/dental/stitched.png" />
-	<figcaption>A stitch of three images taken from an intraoral camera</figcaption>
-</figure>
+<p>In my next post, I will hopefully start working on my implementation.</p>
 
       <hr />
       <footer role="contentinfo">
@@ -185,7 +180,7 @@
 
 
         </div>
-        <p class="byline"><strong>Stitching Intra-Oral Images</strong> was published on <time datetime="2015-05-23T00:00:00+00:00">May 23, 2015</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
+        <p class="byline"><strong>Visual Odometry - The Reading List</strong> was published on <time datetime="2014-07-29T00:00:00+00:00">July 29, 2014</time> and last modified on <time datetime="2014-07-29">July 29, 2014</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
       </footer>
     </div><!-- /.article-wrap -->
   
@@ -201,9 +196,9 @@
     
       <li><a href="http://avisingh599.github.io/vision/visual-odometry-full/" title="Visual Odmetry from scratch - A tutorial for beginners">Visual Odmetry from scratch - A tutorial for beginners</a></li>
     
-      <li><a href="http://avisingh599.github.io/vision/segmenting-teeth/" title="Every Tooth Tracked">Every Tooth Tracked</a></li>
+      <li><a href="http://avisingh599.github.io/vision/stichting-story/" title="Stitching Intra-Oral Images">Stitching Intra-Oral Images</a></li>
     
-      <li><a href="http://avisingh599.github.io/vision/visual-odometry-read/" title="Visual Odometry - The Reading List">Visual Odometry - The Reading List</a></li>
+      <li><a href="http://avisingh599.github.io/vision/segmenting-teeth/" title="Every Tooth Tracked">Every Tooth Tracked</a></li>
     
     </ul>
     <hr />

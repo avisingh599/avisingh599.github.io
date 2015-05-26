@@ -4,13 +4,386 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-23T21:04:40+00:00</updated>
+<updated>2015-05-26T02:35:14+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
   <uri>http://avisingh599.github.io/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Visual Odmetry from scratch - A tutorial for beginners]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/visual-odometry-full/" />
+  <id>http://avisingh599.github.io/vision/visual-odometry-full</id>
+  <published>2015-05-25T00:00:00+00:00</published>
+  <updated>2015-05-25T00:00:00+00:00</updated>
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://avisingh599.github.io</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;I made a post regarding Visual Odometry several months ago, but 
+never followed it up with a post on the actual work that I did.
+I am hoping that this blog post will serve as a starting point for 
+beginners looking to implement a Visual Odometry system for their robots.
+I will basically present the algorithm described in the paper
+&lt;a href=&quot;https://www-robotics.jpl.nasa.gov/publications/Andrew_Howard/howard_iros08_visodom.pdf&quot;&gt;Real-Time Stereo Visual Odometry for Autonomous Ground Vehicles(Howard2008)&lt;/a&gt;. It’s a somewhat old paper,
+but very easy to understand, which is why I used it for my very first implementation. The MATLAB
+source code for the same is available on &lt;a href=&quot;https://github.com/avisingh599/vo-howard08&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-odometry&quot;&gt;What is odometry?&lt;/h3&gt;
+
+&lt;p&gt;Have you seen that little gadget on a car’s dashboard that tells you how much
+distance the car has travelled? It’s called an &lt;a href=&quot;http://en.wikipedia.org/wiki/Odometer&quot;&gt;odometer&lt;/a&gt;.
+It (probably) measures the number of rotations that the wheel is undergoing, and multiplies that
+by the circumference to get an estimate of the distance travlled by the car. &lt;a href=&quot;http://simreal.com/content/Odometry&quot;&gt;Odometry&lt;/a&gt;
+in Robotics is a more general term, and often refers to estimating not only the distance traveled, 
+but the entire trajectory of a moving robot. So for every time instance &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, there is a vector 
+&lt;script type=&quot;math/tex&quot;&gt;[ x^{t} y^{t} z^{t} \alpha^{t} \beta^{t} \gamma^{t}]&lt;/script&gt; which describes the complete &lt;a href=&quot;http://en.wikipedia.org/wiki/Pose_(computer_vision)&quot;&gt;pose&lt;/a&gt; of the robot at that instance. 
+Note that &lt;script type=&quot;math/tex&quot;&gt;\alpha^{t}, \beta^{t}, \gamma^{t}&lt;/script&gt; here are the &lt;a href=&quot;http://mathworld.wolfram.com/EulerAngles.html&quot;&gt;euler angles&lt;/a&gt;, 
+while &lt;script type=&quot;math/tex&quot;&gt;x^{t}, y^{t} ,z^{t}&lt;/script&gt; are &lt;a href=&quot;http://en.wikipedia.org/wiki/Cartesian_coordinate_system&quot;&gt; caetesian coordinates&lt;/a&gt; of the robot.&lt;/p&gt;
+
+&lt;h3 id=&quot;whats-visual-odometry&quot;&gt;What’s visual odometry?&lt;/h3&gt;
+
+&lt;p&gt;There are more than one ways to determine the trajectory of a moving robot, but the one that we
+will focus on in this blog post is called Visual Odometry. In this approach we have a camera (or an 
+array of cameras) rigidly attached to a moving object (such as a car or a robot), and our job is
+to construct a &lt;a href=&quot;http://en.wikipedia.org/wiki/Six_degrees_of_freedom&quot;&gt;6-DOF&lt;/a&gt; trajectory using the
+video stream coming from this camera(s). When we are using just one camera, it’s called 
+&lt;strong&gt;&lt;em&gt;Monocular Visual Odometry&lt;/em&gt;&lt;/strong&gt;. When we’re using two (or more) cameras, it’s refered to as
+&lt;strong&gt;&lt;em&gt;Stereo Visual Odometry&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;why-stereo-or-why-monocular&quot;&gt;Why stereo, or why monocular?&lt;/h3&gt;
+
+&lt;p&gt;There are certain advantages and disadvantages associated with both the stereo and the monocular
+scheme of things, and I’ll briefly describe some of the main ones here. (Note that this blog post will
+only concentrate on stereo as of now, but I might document and post my monocular implementation also).
+The advantage of stereo is that you can estimate the exact trajectory, while in monocular you can
+only estimate the trajectory, &lt;a href=&quot;http://stackoverflow.com/questions/17114880/up-to-a-scale-factor&quot;&gt;unique only up to a scale factor&lt;/a&gt;. 
+So, in monocular VO, you can only say that you moved one unit in x, two units in y, and so on, while in stereo, 
+you can say that you moved one meter in x, two meters in y, and so on. Also, stereo VO is usually much more robust 
+(due to more data being available). But, in cases where the distance of the objects from the camera are too high (
+as compared to the distance between to the two cameras of the stereo system), the stereo case degenerates to the monocular case.
+So, let’s say you have a very small robot (like the &lt;a href=&quot;http://robobees.seas.harvard.edu/publications&quot;&gt;robobees&lt;/a&gt;), then 
+it’s useless to have a stereo system, and you would be much better off with a monocular VO algorithm like &lt;a href=&quot;https://github.com/uzh-rpg/rpg_svo&quot;&gt;SVO&lt;/a&gt;. Alos, there’s a general trend of drones becoming smaller and smaller, so groups like those of &lt;a href=&quot;http://rpg.ifi.uzh.ch/people_scaramuzza.html&quot;&gt;Davide Scaramuzza&lt;/a&gt; are now focusing more on monocular VO approaches (or so he said in a talk that I happened to attend).&lt;/p&gt;
+
+&lt;h3 id=&quot;enough-english-lets-talk-math-now&quot;&gt;Enough english, let’s talk math now&lt;/h3&gt;
+
+&lt;h4 id=&quot;formulation-of-the-problem&quot;&gt;Formulation of the problem&lt;/h4&gt;
+
+&lt;h5 id=&quot;input&quot;&gt;&lt;strong&gt;Input&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;We have a stream of (grayscale/color) images coming from a pair of cameras. Let the left and right frames, captured at time t and t+1 be referred to as &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;. We have prior knowledge of all the intrinsic as well as extrinsic calibration parameters of the stereo rig, obtained via any one of the numerous stereo calibration algorithms available.&lt;/p&gt;
+
+&lt;h5 id=&quot;output&quot;&gt;&lt;strong&gt;Output&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;For every pair of stereo images, we need to find the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; and the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, which describes the motion of the vehicle between the two frames.&lt;/p&gt;
+
+&lt;h3 id=&quot;the-algorithm&quot;&gt;The algorithm&lt;/h3&gt;
+&lt;p&gt;An outline:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Capture images: &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Undistort, Rectify the above images.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Compute the disparity map &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^t&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt; and the map &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^{t+1}&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Use FAST algorithm to detect features in  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;,  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt; and match them.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Use the disparity maps &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^{t+1}&lt;/script&gt; to calculate the 3D posistions of the features detected in the previous steps. Two point Clouds &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt; will be obtained&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Select a subset of points from the above point cloud such that all the matches are mutually compatible.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Estimate &lt;script type=&quot;math/tex&quot;&gt;R, t&lt;/script&gt; from the inliers that were detected in the previous step.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Do not worry if you do not understand some of the terminologies like disparity maps or FAST features that you see above.
+Most of them will be explained in greater detail in the text to follow, along with the code to use them in MATLAB.&lt;/p&gt;
+
+&lt;h4 id=&quot;undistortion-rectification&quot;&gt;Undistortion, Rectification&lt;/h4&gt;
+&lt;p&gt;Before computing the disparity maps, we must perform a number of preprocessing steps.&lt;/p&gt;
+
+&lt;p&gt;Undistrortion: This step compensates for lens distortion. It is performed with the help of the distortion parameters that were obtained during calibration.&lt;/p&gt;
+
+&lt;p&gt;Rectification: This step is performed so as to ease up the problem of disparity map computation. After this step, all the epipolar lines become parallel to the horizontal, and the disparity computation step needs to perform its search for matching blocks only in one direction.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/epi.jpg&quot; /&gt;
+  &lt;figcaption&gt;Stereo images overlayed from KITTI dataset, notice the feature matches are along parallel (horizontal) lines&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Both of these operations are implemented in MATLAB, and since the KITTI Visual Odometry dataset that I used in my implmentation
+already has these operations implemented, you won’t find the code for them in my implmenation. You can see how to use these functions &lt;a href=&quot;http://www.mathworks.com/help/vision/ref/rectifystereoimages.html?searchHighlight=rectifyStereoImages&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://www.mathworks.com/help/vision/ref/undistortimage.html&quot;&gt;here&lt;/a&gt;. Note that you need the Computer Vision Toolbox, and MATLAB R2014a or newer for these functions.&lt;/p&gt;
+
+&lt;h4 id=&quot;disparity-map-computation&quot;&gt;Disparity Map Computation&lt;/h4&gt;
+
+&lt;p&gt;Given a pair of images from a stereo camera, we can compute a disparity map. Suppose a particular 3D in the physical world &lt;script type=&quot;math/tex&quot;&gt;F&lt;/script&gt; is located at the position &lt;script type=&quot;math/tex&quot;&gt;(x,y)&lt;/script&gt; in the left image, and the same feature is located on &lt;script type=&quot;math/tex&quot;&gt;(x+d,y)&lt;/script&gt; in the second image, then the location &lt;script type=&quot;math/tex&quot;&gt;(x,y)&lt;/script&gt; on the disparity map holds the value &lt;script type=&quot;math/tex&quot;&gt;d&lt;/script&gt;. Note that the y-cordinates are the same since the images have been rectified. Thus, we can define disparity at each point in the image plane as: 
+&lt;script type=&quot;math/tex&quot;&gt;
+\begin{equation}
+d = x_{l} - x_{r}
+\end{equation}
+&lt;/script&gt;&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/disp.jpg&quot; /&gt;
+  &lt;figcaption&gt;A disparity map computed on frames from KITTI VO dataset&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h5 id=&quot;block-matching-algorithm&quot;&gt;Block-Matching Algorithm&lt;/h5&gt;
+&lt;p&gt;Disparity at each point is computed using a sliding window. 
+For every pixel in the left image a 15x15 pixels wide window is generated around it, 
+and the value of all the pixels in the windows is stored. This window is then constructed
+at the same coordinate in the right image, and is slid horizontally, until the Sum-of-Absolute-Differences (SAD) is minimized.
+The algorithm used in our implementation is an advanced version of this block-matching technique, called the &lt;a href=&quot;http://zone.ni.com/reference/en-XX/help/372916M-01/nivisionconceptsdita/guid-53310181-e4af-4093-bba1-f80b8c5da2f4/&quot;&gt;Semi-Global Block Matching algorithm&lt;/a&gt;. A function directly implements this algorithm in MATLAB:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;disparityMap1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disparity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;DistanceThreshold&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;feature-detection&quot;&gt;Feature Detection&lt;/h4&gt;
+&lt;p&gt;My approach uses the FAST corner detector. I’ll now explain in brief how the detector works, though you must have a look at the &lt;a href=&quot;http://www.edwardrosten.com/work/fast.html&quot;&gt;original paper and source code&lt;/a&gt; if you want to really understand how it works. Suppose there is a point &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt; which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; and for another set of contiguous pixels if the intensity is less by at least the same factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;, or must have an intensity lower by the same amount &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/fast.png&quot; /&gt;
+  &lt;figcaption&gt;Image from the original FAST feature detection paper&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Another thing that we do in this approach is something that is called “bucketing”.
+If we just run a feature detector over an entire image, there is a very good chance
+that most of the features would be concentrated in certain rich regions of the image,
+while certain other regions would not have any representation. This is not good for
+our algorithm, since it relies on the assumption of a static scene, and to find the 
+“true” static scene, we must look at all of the image, instead of just certain regions
+of it. In order to tackle this issue, we divide the images into grids (of roughly 100x100px),
+and extract at most 20 features from each of this grid, thus maintaing a more uniform distribution
+of fetures.&lt;/p&gt;
+
+&lt;p&gt;In the code, you will find the following line:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;points1_l&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bucketFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCorners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This line calls the following function:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;points &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;bucketFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;I, h, b, h_break, b_break, numCorners&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;% input image I should be grayscale&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;roi&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;detectFASTFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;MinQuality&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.00&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;MinContrast&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;ROI&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;roi&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;selectStrongest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numCorners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vertcat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Location&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cornerPoints&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;As you can see, the image is divided into grids, and the strongest corners from each grid are
+selected for the subsequent steps.&lt;/p&gt;
+
+&lt;h4 id=&quot;feature-description-and-matching&quot;&gt;Feature Description and Matching&lt;/h4&gt;
+
+&lt;p&gt;The fast corners detected in the previous step are fed to the next step, which uses a &lt;a href=&quot;https://www.ces.clemson.edu/~stb/klt/&quot;&gt;KLT tracker&lt;/a&gt;. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t}&lt;/script&gt; are tracked in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t+1}&lt;/script&gt; Let the set of features detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; , and the set of corresponding features in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t+1}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;In MATLAB, this is again super-easy to do, and the following three lines intialize the tracker, and run it once. &lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vision&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PointTracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;MaxBidirectionalError&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Location&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;validity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;step&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;I2_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that in my current implementation, I am just tracking the point from one frame to the next, and then again doing the detection part,
+but in a better implmentation, one would track these points as long as the number of points do not drop below a particular threshold.&lt;/p&gt;
+
+&lt;h4 id=&quot;triangulation-of-3d-pointcloud&quot;&gt;Triangulation of 3D PointCloud&lt;/h4&gt;
+&lt;p&gt;The real world 3D coordinates of all the point in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt; are computed with respect to the left camera using the disparity value corresponding to these features from the disparity map, and the known projection matrices of the two cameras &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}_{1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}_{2}&lt;/script&gt;.
+We first form the reprojection matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{Q}&lt;/script&gt;, using data from &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P2}&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+
+
+  Q=
+  \left[ {\begin{array}{cccc}
+   1 &amp; 0 &amp; 0 &amp; -c_{x} \\
+   0 &amp; 1 &amp; 0 &amp; -c_{y} \\
+   0 &amp; 0 &amp; 0 &amp; -f \\
+   0 &amp; 0 &amp; -1/T_{x} &amp; 0  \\
+  \end{array} } \right]
+
+ %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;c_{x}&lt;/script&gt; = x-coordinate of the optical center of the left camera (in pixels)&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;c_{y}&lt;/script&gt; = y-coordinate of the optical center of the left camera (in pixels)&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;f&lt;/script&gt; = focal length of the first camera&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;T_{x}&lt;/script&gt; = The x-coordinate of the right camera with respect to the first camera (in meters)&lt;/p&gt;
+
+&lt;p&gt;We use the following relation to obtain the 3D coordinates of every feature in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}_{l}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}_{l}^{t+1}&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{equation}
+\left[ \begin{array}{c} X \\ Y \\ Z \\ 1\end{array} \right] = \mathbf{Q} \times \left[ \begin{array}{c} x \\ y \\ d \\ 1\end{array} \right]
+\end{equation}
+&lt;/script&gt;
+
+&lt;p&gt;Let the set of point clouds obtained from be referred to as &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt;. To have a better understanding of
+the geometry that goes on in the above equations, you can have a look at the Bible of visual geometry i.e. Hartley and Zisserman’s &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Multiple View Geometry&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-inlier-detection-step&quot;&gt;The Inlier Detection Step&lt;/h4&gt;
+&lt;p&gt;This algorithm defers from most other visual odometry algorithms in the sense that it does not have an outlier detection step, but it has an inlier detection step. We assume that the scene is rigid, and hence it must not change between the time instance &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt;. As a result, the distance between any two features in the point cloud &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt; must be same as the distance between the corresponding points in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt;. If any such distance is not same, then either there is an error in 3D triangulation of at least one of the two features, or we have triangulated a moving, which we cannot use in the next step. In order to have the maximum set of consistent matches, we form the  consistency matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{M}&lt;/script&gt; such that:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+
+\begin{equation}
+\mathbf{M}_{i,j} = \begin{cases} 1, &amp; \mbox{if the distance between i and j points is same in both the point clouds} \\ 0, &amp; \mbox{otherwise} \end{cases}
+\end{equation}
+ %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;From the original point clouds, we now wish to select the largest subset such that they are all the points in this subset are consistent with each other (every element in the reduced consistency matrix is 1). This problem is equivalent to the &lt;a href=&quot;http://en.wikipedia.org/wiki/Clique_problem&quot;&gt;Maximum Clique Problem&lt;/a&gt;, with &lt;script type=&quot;math/tex&quot;&gt;\mathbf{M}&lt;/script&gt; as an adjacency matrix. A cliques is basically a subset of a graph, that only contains nodes that are all connected to each other. An easy way to visualise this is to think of a graph as a social network, and then trying to find the largest group of people who all know each other. &lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/clique.png&quot; /&gt;
+  &lt;figcaption&gt;This is how clique looks like.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;This problem is known to be NP-complete, and thus an optimal solution cannot be found for any practical situation. We therefore employ a greedy heuristic that gives us a clique which is close to the optimal solution:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Select the node with the maximum degree, and initialize the clique to contain this node.&lt;/li&gt;
+  &lt;li&gt;From the existing clique, determine the subset of nodes &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt; which are connected to all the nodes present in the clique.&lt;/li&gt;
+  &lt;li&gt;From the set &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt;, select a node which is connected to the maximum number of other nodes in &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt;. Repeat from step 2 till no more nodes can be added to the clique.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The above algorithm is implemented in the following two functions in my code:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;cl &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;updateClique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;potentialNodes, clique, M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;newSet &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;findPotentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;clique, M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(:,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(:,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;computation-of-mathbfr-and-mathbft&quot;&gt;Computation of &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt;&lt;/h4&gt;
+&lt;p&gt;In order to determine the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and translation vector &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt;, we use Levenberg-Marquardt non-linear least squares minimization to minimize the following sum:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+\begin{equation}
+\epsilon = \sum_{\mathcal{F}^{t}, \mathcal{F}^{t+1}} (\mathbf{j_{t}} - \mathbf{P}\mathbf{T}\mathbf{w_{t+1}})^{2} + (\mathbf{j_{t+1}} - \mathbf{P}\mathbf{T^{-1}}\mathbf{w_{t}})^{2}
+\end{equation}
+&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;: Features in the left image at time &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{j_{t}}, \mathbf{j_{t+1}}&lt;/script&gt;: 2D Homogeneous coordinates of the features &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{w_{t}}, \mathbf{w_{t+1}}&lt;/script&gt;: 3D Homogeneous coordinates of the features &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt;: &lt;script type=&quot;math/tex&quot;&gt;3\times4&lt;/script&gt; Projection matrix of left camera&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{T}&lt;/script&gt;: &lt;script type=&quot;math/tex&quot;&gt;4\times4&lt;/script&gt; Homogeneous Transformation matrix\&lt;/p&gt;
+
+&lt;p&gt;The Optimization Toolbox in MATLAB directly implements the Levenberg-Marquardt algorithm in the function lsqnonlin, which needs to be supplied with a vector objective function that needs to be minimized, and a set of parameters that can be varied.&lt;/p&gt;
+
+&lt;p&gt;This is how the function to be minimized is represented in MATLAB. This part of the algorithm, 
+is the most computationally expensive one.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;F &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;minimize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;PAR, F1, F2, W1, W2, P1&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PAR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PAR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%F1, F2 -&amp;gt; 2d coordinates of features in I1_l, I2_l&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%W1, W2 -&amp;gt; 3d coordinates of the features that have been triangulated&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%P1, P2 -&amp;gt; Projection matrices for the two cameras&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%r, t -&amp;gt; 3x1 vectors, need to be varied for the minimization&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;dcm&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;angle2dcm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;ZXZ&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;horzcat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dcm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pinv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;    
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;validation-of-results&quot;&gt;Validation of results&lt;/h4&gt;
+&lt;p&gt;A particular set of &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt; is said to be valid if it satisfies the following conditions:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;If the number of features in the clique is at least 8.&lt;/li&gt;
+  &lt;li&gt;The reprojection error &lt;script type=&quot;math/tex&quot;&gt;\epsilon&lt;/script&gt; is less than a certain threshold.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The above constraints help in dealing with noisy data.&lt;/p&gt;
+
+&lt;h4 id=&quot;an-important-hack&quot;&gt;An important “hack”&lt;/h4&gt;
+&lt;p&gt;If you run the above algorithm on real-world sequences, you will encounter a 
+rather big problem. The assumption of scene rigidity stops holding when a large vehicle
+such as a truck or a van occupies a majority of the field of view of the camera. In order
+to deal with such data, we introduce a simple hack: accept a tranlsation/rotation matrix
+only if the dominant motion is in the forward direction. This is known to improve results
+significantly on the KITTI dataset, though you won’t find in this hack explicitly written 
+in most of the papers that are published on the same!&lt;/p&gt;
+
+
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/visual-odometry-full/&quot;&gt;Visual Odmetry from scratch - A tutorial for beginners&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 25, 2015.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
@@ -110,9 +483,9 @@ So, I then tried a manual-marker approach, and the results were much better:&lt;
 
 
 <entry>
-  <title type="html"><![CDATA[Visual Odometry(Part 1)]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/visual-odometry-part-1/" />
-  <id>http://avisingh599.github.io/vision/visual-odometry-part-1</id>
+  <title type="html"><![CDATA[Visual Odometry - The Reading List]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/visual-odometry-read/" />
+  <id>http://avisingh599.github.io/vision/visual-odometry-read</id>
   <updated>2014-07-29 05:38:43 +0000T00:00:00-00:00</updated>
   <published>2014-07-29T00:00:00+00:00</published>
   
@@ -142,7 +515,7 @@ This post is primarily a list of some useful links which will get one acquainted
 
 &lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/visual-odometry-part-1/&quot;&gt;Visual Odometry(Part 1)&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/visual-odometry-read/&quot;&gt;Visual Odometry - The Reading List&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
 </entry>
 
 
