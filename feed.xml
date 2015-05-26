@@ -4,7 +4,7 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-26T02:35:14+00:00</updated>
+<updated>2015-05-26T03:01:37+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
@@ -31,7 +31,7 @@ never followed it up with a post on the actual work that I did.
 I am hoping that this blog post will serve as a starting point for 
 beginners looking to implement a Visual Odometry system for their robots.
 I will basically present the algorithm described in the paper
-&lt;a href=&quot;https://www-robotics.jpl.nasa.gov/publications/Andrew_Howard/howard_iros08_visodom.pdf&quot;&gt;Real-Time Stereo Visual Odometry for Autonomous Ground Vehicles(Howard2008)&lt;/a&gt;. It’s a somewhat old paper,
+&lt;a href=&quot;https://www-robotics.jpl.nasa.gov/publications/Andrew_Howard/howard_iros08_visodom.pdf&quot;&gt;Real-Time Stereo Visual Odometry for Autonomous Ground Vehicles(Howard2008)&lt;/a&gt;, with some of my own changes. It’s a somewhat old paper,
 but very easy to understand, which is why I used it for my very first implementation. The MATLAB
 source code for the same is available on &lt;a href=&quot;https://github.com/avisingh599/vo-howard08&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
 
