@@ -4,13 +4,165 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-26T04:51:53+00:00</updated>
+<updated>2015-05-27T23:37:52+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
   <uri>http://avisingh599.github.io/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Recognizing Human Activities with Kinect - Choosing a temporal model]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/machinelearning/classifying-human-activites-kinect/" />
+  <id>http://avisingh599.github.io/machinelearning/classifying-human-activites-kinect</id>
+  <published>2015-05-27T00:00:00+00:00</published>
+  <updated>2015-05-27T00:00:00+00:00</updated>
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://avisingh599.github.io</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;p&gt;In this blog post, I will very briefly talk about some popular models used for &lt;strong&gt;temporal/sequence classification&lt;/strong&gt;, 
+their advantages/disadvantages, which one I used for my human activity recognition project, and why. 
+This post is intended for people who would like to delve into sequence classification, but don’t know where to start. 
+I plan to follow up on this post with another post that explains in detail our implementation of recognizing human 
+activities from RGBD data.  However, if you want to have a look at it now, 
+&lt;a href=&quot;/assets/activity-classification.pdf&quot;&gt;here&lt;/a&gt; are the slides.&lt;/p&gt;
+
+&lt;p&gt;In one my graduate-level course &lt;strong&gt;Machine Learning for Computer Vision&lt;/strong&gt;, we were asked to select
+a research paper to review and present. We selected the paper 
+&lt;a href=&quot;http://www.cs.cornell.edu/~jysung/paper/unstructured_human_activity_learning.pdf&quot;&gt;Unstructured Human Activity Detection from RGBD Images&lt;/a&gt;.
+Our reasons for this selection were several: it was fairly recent (2012), had a large number of citations (according to google scholar, at least), and it dealt with sequential data (RGBD videos). Temporal models, or sequence classification, was
+something that was not covered in our course, and so we were eager to explore this area of Machine Learning. 
+We read the paper, made a &lt;a href=&quot;/assets/activity-poster.pdf&quot;&gt;poster&lt;/a&gt; out of it, and presented it to our peers, TAs and the professor. &lt;/p&gt;
+
+&lt;p&gt;The next part of the course was more interesting, and it involved us picking up a Machine Learning problem, and
+we then had the option of either implementing an existing approach to the problem, or we could come with our
+own approach to solve it. We could have implemented the paper that we reviewed, but it seemed to more interesting
+to have a look at the models available for sequence classification, and then use one 
+such model for our problem. &lt;/p&gt;
+
+&lt;p&gt;So we started looking around, and found that that following three models (and their variations)
+seem to be the most popular:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Hidden Markov Models (HMMs)&lt;/li&gt;
+  &lt;li&gt;Maximum Entropy Markov Models (MEMMs)&lt;/li&gt;
+  &lt;li&gt;Conditional Random Fields (CRFs)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Here’s the very basic intuition about temporal models: Suppose you are reading some text character by character. The first 
+character that you observe is an “i”. Now, what do you think are the chances of you observing another “i”. Pretty slim, right?
+This is because consecutive “i” are pretty rare while reading english text. Modeling such probabilistic relationships
+in a mathematical form is precisely why we use temporal models, instead of just using some regular classifier (such as
+logistic regression). There’s two more popular models for sequential classification (or structured prediction, as some people
+like to call it), and they are: 1) &lt;strong&gt;Structural SVM&lt;/strong&gt;, 2) &lt;strong&gt;Recurrent Neural Nets&lt;/strong&gt;. I won’t talk about for either of them,
+as I have not used them, but you are welcome to check them out.&lt;/p&gt;
+
+&lt;p&gt;Hidden Markov Models are the oldest, and have been used in things like speech-to-text since the 1960s. MEMMs came
+around in 2000, only to be followed (and overshadowed) by Conditional Random Fields an year later. Both MEMMs and CRF
+came from the &lt;a href=&quot;http://people.cs.umass.edu/~mccallum/&quot;&gt;Andrew McCallum’s research group&lt;/a&gt;, and were focused on &lt;a href=&quot;http://en.wikipedia.org/wiki/Natural_language_processing&quot;&gt;Natural Language Processing&lt;/a&gt; tasks.
+However, once you have extracted features from sequential data, you can use these models as long as your features
+satisfy the assumptions made by these models. Note that all of these models are special cases of 
+&lt;a href=&quot;http://en.wikipedia.org/wiki/Graphical_model&quot;&gt;probabilistic graphical models&lt;/a&gt;, so all the inference and learning algorithms from 
+there can directly be applied here. &lt;/p&gt;
+
+&lt;h3 id=&quot;hidden-markov-models&quot;&gt;Hidden Markov Models&lt;/h3&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/hmm.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Model Representation of a stack of HMMs&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;As I mentioned earlier, Hidden Markov Models have been around for a long time, and were heavily used by the speech processing community.
+I won’t much into the details/code of HMMs, as there are a large number of resources that describe the topic, targeted both at 
+&lt;a href=&quot;http://www.comp.leeds.ac.uk/roger/HiddenMarkovModels/html_dev/main.html&quot;&gt;beginners&lt;/a&gt; and those who want to go into all the 
+&lt;a href=&quot;http://www.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf&quot;&gt;details&lt;/a&gt;. 
+HMMs are &lt;a href=&quot;http://en.wikipedia.org/wiki/Generative_model&quot;&gt;&lt;strong&gt;generative models&lt;/strong&gt;&lt;/a&gt;, and efficient dynamic programming algorithms 
+are available for both training and inference. The models uses &lt;strong&gt;hidden states&lt;/strong&gt;, and assumes that the &lt;strong&gt;observed states&lt;/strong&gt; are independent of each other, given their hidden states. A common way to go about doing classification with HMMS is the following: Train an HMM
+for every class, and then for every new example, find the probability of that example being generated by each HMM, the HMM that gives the
+maximum probability is your final class. &lt;/p&gt;
+
+&lt;p&gt;However, with HMMs come a number of disadvantages, with the major ones being:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Requires enumeration of all possible observation sequences.&lt;/li&gt;
+  &lt;li&gt;Requires the observations to be independent of each other (given the hidden state).&lt;/li&gt;
+  &lt;li&gt;Generative approach for solving a conditional problem leading to unnecessary computations.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;maximum-entropy-markov-models&quot;&gt;Maximum Entropy Markov Models&lt;/h3&gt;
+
+&lt;p&gt;So, let’s move onto a new model, which, in theory, solves all of the above problems: MEMMs.
+MEMMs were introduced in 2000, and were at that time used in NLP tasks, and showed
+improvements in tasks where assumption [2] mentioned above was not true. MEMMs are discriminative models, so
+they also do away with problems [1] and [3]. There’s also a hierarchical version of the same model, 
+and a Hierarchical MEMM is what was used in the &lt;a href=&quot;http://www.cs.cornell.edu/~jysung/paper/unstructured_human_activity_learning.pdf&quot;&gt;paper&lt;/a&gt; 
+that we reviewed. The paper contains an interesting way of selecting graph structure, and I recommend checking it out.&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/kinect_activity/memm.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of an MEMM. Note how the direction of arrow from observation to hidden state has been reversed.
+	&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;But along with MEMMs comes it’s own problem, commonly called as the label-bias problem.&lt;/p&gt;
+
+&lt;h4 id=&quot;label-bias-problem&quot;&gt;Label bias problem&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;States with low-entropy transition distributions ”effectively ignore” their observations. States with lower transitions have ”unfair advantage”.&lt;/li&gt;
+  &lt;li&gt;Since training is always done with respect to known previous tags, so the model struggles at test time when there is uncertainty in the previous tag.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;It is impossible to understand the above without some background on what MEMMs are, so it is advisable
+to first look at &lt;a href=&quot;http://courses.ischool.berkeley.edu/i290-dm/s11/SECURE/gidofalvi.pdf&quot;&gt;how MEMMs work&lt;/a&gt;
+, and then at the original &lt;a href=&quot;http://www.cs.columbia.edu/~jebara/6772/papers/crf.pdf&quot;&gt;CRF paper&lt;/a&gt;
+which talks about the label bias problem.&lt;/p&gt;
+
+&lt;h3 id=&quot;conditional-random-fields---star-of-the-show&quot;&gt;Conditional Random Fields -&amp;gt; Star of the show&lt;/h3&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/crf.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of a CRF. Note that this an undirected graphical model, as opposed to HMM/MEMM&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;To overcome the label-bias problem of MEMMs, CRFs were introduced an year later, and demonstrated superior or
+equivalent performance in almost every NLP task that the authors tested it on. CRFs (and its variants) are considered as 
+state-of-the-art in a  number of machine learning problems, specially in Computer Vision. They are used not only 
+for temporal modeling, but can also model more complicated relationships in high-dimensional data, and some applications include
+image segmentation and depth estimation from monocular images. Understanding CRFs is a little more challenging than
+HMMs or MEMMs, so I will list a few resources for you to get started with. For beginners, the best resource is this 
+&lt;a href=&quot;http://videolectures.net/cikm08_elkan_llmacrf/&quot;&gt;short course&lt;/a&gt; by &lt;a href=&quot;http://cseweb.ucsd.edu/~elkan/&quot;&gt;Charles Elkan&lt;/a&gt;.
+It also has accompanying course notes,
+and if you go to this guy’s academic website, you can also find some programming assignments to implement CRFs. 
+&lt;a href=&quot;https://onionesquereality.wordpress.com/2011/08/20/conditional-random-fields-a-beginners-survey/&quot;&gt;Here&lt;/a&gt; is a 
+more comprehensive list of resources related to CRFs, and it’s pretty thorough.&lt;/p&gt;
+
+&lt;p&gt;Now, in 2006, there was an extension to CRF by the MIT CSAIL lab, called hidden CRFs. Here is the original paper&lt;a href=&quot;http://people.csail.mit.edu/sybor/cvpr06_wang.pdf&quot;&gt;original paper&lt;/a&gt;. What this does, in essence, is to introduce another layer of hidden states, and is designed to
+assign a single label to every sequence. This is different from MEMMs and CRFs, which assigned a label to every observation in
+a sequence, and different from HMMs too (wherein a stack of HMMs was trained for classification).&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/hcrf.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of an hCRF. Note the extra hidden layer.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The original hCRF paper applied it to gesture recognition from RGB videos, and demonstrated superior
+performance to CRF in classifying gestures, so we zeroed down on this model, to be used for our
+Human Activity Classification task (note that activities are not exactly the same as gestures).&lt;/p&gt;
+
+&lt;p&gt;The real icing on the cake was this-&amp;gt; MIT CSAIL had released a well documented &lt;a href=&quot;http://sourceforge.net/projects/hcrf/&quot;&gt;toolbox&lt;/a&gt;,
+making it ridiculously easy for us to use this model on whichever dataset that we wanted, and 
+the only major programming part that was left to us now was was the feature extraction stage.&lt;/p&gt;
+
+&lt;p&gt;In a future blog post, I will describe in detail the implementation of our project: the dataset, the features we used,
+and what results we got.&lt;/p&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/machinelearning/classifying-human-activites-kinect/&quot;&gt;Recognizing Human Activities with Kinect - Choosing a temporal model&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 27, 2015.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
