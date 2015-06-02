@@ -4,7 +4,7 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-05-28T03:24:44+00:00</updated>
+<updated>2015-06-02T16:19:50+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
@@ -604,7 +604,7 @@ in most of the papers that are published on the same!&lt;/p&gt;
 &lt;p&gt;So, I started looking at other algorithms, and soon stumbled across the &lt;a href=&quot;http://www.cs.rug.nl/~roe/publications/parwshed.pdf&quot;&gt;Watershed transform&lt;/a&gt;. In order to generate good results, watershed needs certain markers, and these markers can be generated using both automated or manual methods. One popular automated method for generating these markers is ‘opening-by-reconstruction’ and ‘closing-by-reconstruction’. The following results were obtained using MATLAB’s watershed example:&lt;/p&gt;
 
 &lt;figure&gt;
-	&lt;img src=&quot;/images/dental/49_final.png&quot; /&gt;
+	&lt;img src=&quot;/images/dental/49_seg_man.png&quot; /&gt;
 	&lt;figcaption&gt;Vanilla Watershed with automatic marker generation&lt;/figcaption&gt;
 &lt;/figure&gt;
 
