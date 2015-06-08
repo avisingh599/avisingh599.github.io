@@ -4,13 +4,230 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-06-08T19:26:42+00:00</updated>
+<updated>2015-06-08T23:42:08+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
   <uri>http://avisingh599.github.io/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
+
+
+<entry>
+  <title type="html"><![CDATA[Monocular Visual Odometry using OpenCV]]></title>
+  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/monocular-vo/" />
+  <id>http://avisingh599.github.io/vision/monocular-vo</id>
+  <published>2015-06-08T00:00:00+00:00</published>
+  <updated>2015-06-08T00:00:00+00:00</updated>
+  <author>
+    <name>Avi Singh</name>
+    <uri>http://avisingh599.github.io</uri>
+    <email>avisingh599@gmail.com</email>
+  </author>
+  <content type="html">&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Last month, I made a &lt;a href=&quot;/vision/visual-odometry-full/&quot;&gt;post&lt;/a&gt; on Stereo Visual Odometry and its implementation in MATLAB. 
+This post would be focussing on &lt;strong&gt;Monocular Visual Odometry&lt;/strong&gt;, and how we can implement it in &lt;strong&gt;OpenCV/C++&lt;/strong&gt;.
+The implementation that I describe in this post is once again freely available on &lt;a href=&quot;https://github.com/avisingh599/mono-vo&quot;&gt;github&lt;/a&gt;.
+It is also simpler to understand, and runs at 5fps, which is much faster than my older stereo implementation.&lt;/p&gt;
+
+&lt;p&gt;If you are new to Visual Odometry, I suggest having a look at the first few paragraphs (before all the math starts) of my 
+&lt;a href=&quot;/vision/visual-odometry-full/&quot;&gt;old post&lt;/a&gt;. It talks about what Visual Odometry is, why we 
+need it, and also compares the monocular and stereo approaches.&lt;/p&gt;
+
+&lt;p&gt;Acquanted with all the basics of visual odometry? Cool. Let’s go ahead.&lt;/p&gt;
+
+&lt;h2 id=&quot;demo&quot;&gt;Demo&lt;/h2&gt;
+&lt;p&gt;Before I move onto describing the implementation, have a look at the algorithm in action!&lt;/p&gt;
+
+&lt;iframe width=&quot;854&quot; height=&quot;510&quot; src=&quot;https://www.youtube.com/embed/homos4vd_Zs&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;
+
+&lt;p&gt;Pretty cool, eh? Let’s dive into implementing it in OpenCV now.&lt;/p&gt;
+
+&lt;h3 id=&quot;formulation-of-the-problem&quot;&gt;Formulation of the problem&lt;/h3&gt;
+
+&lt;h4 id=&quot;input&quot;&gt;Input&lt;/h4&gt;
+&lt;p&gt;We have a stream of gray scale images coming from a camera. Let the frames, captured at time &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt; be referred to as
+&lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;. We have prior knowledge of all the intrinsic parameters, obtained via calibration, 
+which can also be done in &lt;a href=&quot;http://docs.opencv.org/3.0.0/d9/d0c/group__calib3d.html&quot;&gt;OpenCV&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;output&quot;&gt;Output&lt;/h4&gt;
+&lt;p&gt;For every pair of images, we need to find the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; and the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, which describes the motion of the vehicle between the two frames. The vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; can only be computed upto a scale factor in our monocular scheme. &lt;/p&gt;
+
+&lt;h3 id=&quot;algorithm-outline&quot;&gt;Algorithm Outline&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Capture images: &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;, &lt;/li&gt;
+  &lt;li&gt;Undistort the above images.&lt;/li&gt;
+  &lt;li&gt;Use FAST algorithm to detect features in  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^t&lt;/script&gt;, and track those features to &lt;script type=&quot;math/tex&quot;&gt;{I}^{t+1}&lt;/script&gt;. A new detection is triggered if the number of features drop below a certain threshold.&lt;/li&gt;
+  &lt;li&gt;Use Nister’s 5-point alogirthm with RANSAC to compute the essential matrix. &lt;/li&gt;
+  &lt;li&gt;Estimate &lt;script type=&quot;math/tex&quot;&gt;R, t&lt;/script&gt; from the essential matrix that was computed in the previous step. &lt;/li&gt;
+  &lt;li&gt;Take scale information from some external source (like a speedometer), and concatenate the translation vectors, and rotation matrices. &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You may or may not understand all the steps that have been metioned above, but don’t worry. All the points
+above will be explained in great detail in the text to follow.&lt;/p&gt;
+
+&lt;h3 id=&quot;undistortion&quot;&gt;Undistortion&lt;/h3&gt;
+
+&lt;p&gt;Distortion happens when lines that are straight in the real world become curved in the images. T
+his step compensates for this lens distortion. It is performed with the help of the distortion parameters 
+that were obtained during calibration. Since the KITTI dataset that I’m using already comes with 
+undistorted images, I won’t write the code about it here. However, it is relatively straightforward to 
+&lt;a href=&quot;http://docs.opencv.org/modules/imgproc/doc/geometric_transformations.html#undistort&quot;&gt;undistort&lt;/a&gt; with OpenCV.&lt;/p&gt;
+
+&lt;h3 id=&quot;feature-detection&quot;&gt;Feature Detection&lt;/h3&gt;
+&lt;p&gt;My approach uses the FAST corner detector, just like my stereo implementation. I’ll now explain in brief how the detector works, though you must have a look at the &lt;a href=&quot;http://www.edwardrosten.com/work/fast.html&quot;&gt;original paper and source code&lt;/a&gt; if you want to really understand how it works. Suppose there is a point &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt; which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; and for another set of contiguous pixels if the intensity is less by at least the same factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;, or must have an intensity lower by the same amount &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/fast.png&quot; /&gt;
+  &lt;figcaption&gt;Image from the original FAST feature detection paper&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Using OpenCV, detecting features is trivial, and here is the code that does it.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c--&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;featureDetection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KeyPoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast_threshold&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nonmaxSuppression&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;FAST&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast_threshold&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nonmaxSuppression&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;KeyPoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The parameters in the code above are set such that it gives ~4000 features on one image from the KITTI dataset. You may want
+tune these parameters so as to obtain the best performance on your own data.
+Note that the code above also converts the datatype of the detected feature points from KeyPoints to a vector of Point2f, so 
+that we can directly pass it to the feature tracking step, described below:&lt;/p&gt;
+
+&lt;h3 id=&quot;feature-tracking&quot;&gt;Feature Tracking&lt;/h3&gt;
+
+&lt;p&gt;The fast corners detected in the previous step are fed to the next step, which uses a &lt;a href=&quot;https://www.ces.clemson.edu/~stb/klt/&quot;&gt;KLT tracker&lt;/a&gt;. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt; are tracked in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;. Let the set of features detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; , and the set of corresponding features in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt;. Here is the function that does feature tracking in OpenCV using the KLT tracker:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c--&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;featureTracking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;uchar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+
+&lt;span class=&quot;c1&quot;&gt;//this function automatically gets rid of points for which tracking fails&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;					
+  &lt;span class=&quot;n&quot;&gt;Size&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;winSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;																								
+  &lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;termcrit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;COUNT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EPS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.01&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;calcOpticalFlowPyrLK&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;winSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;termcrit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.001&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//getting rid of points for which the KLT tracking failed or those who have gone outside the frame&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     		  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     		  	&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     		  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;erase&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;erase&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;feature-re-detection&quot;&gt;Feature Re-Detection&lt;/h4&gt;
+&lt;p&gt;Note that while doing KLT tracking, we will eventually lose some points (as they move out of the field of view of the car), and 
+we thus trigger a redetection whenver the total number of features go below a certain threshold (2000 in my implementation).&lt;/p&gt;
+
+&lt;h3 id=&quot;essential-matrix-estimation&quot;&gt;Essential Matrix Estimation&lt;/h3&gt;
+&lt;p&gt;Once we have point-correspondences, we have several techniques for the computation of an essential matrix. The essential matrix is defined as follows:
+&lt;script type=&quot;math/tex&quot;&gt;
+\begin{equation}
+y_{1}^{T}Ey_{2} = 0
+\end{equation}
+&lt;/script&gt;
+Here, &lt;script type=&quot;math/tex&quot;&gt;y_{1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;y_{2}&lt;/script&gt; are homogenous normalised image coordinates. 
+While a simple algorithm requiring eight point correspondences exists\cite{Higgins81}, a more recent approach that is shown to give better results is the five point algorithm&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. It solves a number of non-linear equations, and requires the minimum number of points possible, since the Essential Matrix has only five degrees of freedom.&lt;/p&gt;
+
+&lt;h4 id=&quot;ransac&quot;&gt;RANSAC&lt;/h4&gt;
+&lt;p&gt;If all of our point correspondences were perfect, then we would have need only 
+five feature correspondences between two successive frames to estimate motion accurately. 
+However, the feature tracking algorithms are not perfect, and therefore we have several 
+erroneous correspondence. A standard technique of handling outliers when doing model estimation
+is RANSAC. It is an iterative algorithm. At every iteration, it randomly samples five 
+points from out set of correspondences, estimates the Essential Matrix, and then checks
+if the other points are inliers when using this essential matrix. The algorithm terminates
+after a fixed number of iterations, and the Essential matrix with which the maximum number of points agree, is used.&lt;/p&gt;
+
+&lt;p&gt;Using the above in OpenCV is again pretty straightforward, and all you need is one line:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c--&quot;&gt;&lt;span class=&quot;n&quot;&gt;E&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;findEssentialMat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;focal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RANSAC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;computing-r-t-from-the-essential-matrix&quot;&gt;Computing R, t from the Essential Matrix&lt;/h3&gt;
+&lt;p&gt;Another definition of the Essential Matrix (consistent) with the definition mentioned earlier is as follows:
+&lt;script type=&quot;math/tex&quot;&gt;
+\begin{equation}
+E = R[t]_{x}
+\end{equation}
+&lt;/script&gt;
+Here, &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; is the rotation matrix, while &lt;script type=&quot;math/tex&quot;&gt;[t]_{x}&lt;/script&gt; is  the matrix representation of a cross product with &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;. Taking the SVD of the essential matrix, and then exploiting the constraints on the rotation matrix, we get the following:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+E = U\Sigma V^{T}
+&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+[t]_{x} = VW\Sigma V^{T}
+&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+R = UW^{-1}V^{T}
+&lt;/script&gt;
+
+&lt;p&gt;Here’s the one-liner that implements it in OpenCV:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;c--&quot;&gt;&lt;span class=&quot;n&quot;&gt;recoverPose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;E&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;focal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;constructing-trajectory&quot;&gt;Constructing Trajectory&lt;/h3&gt;
+&lt;p&gt;Let the pose of the camera be denoted by &lt;script type=&quot;math/tex&quot;&gt;R_{pos}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;t_{pos}&lt;/script&gt;. We can then track the trajectory using the following equation:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+R_{pos} = R R_{pos}
+&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;
+t_{pos} = t_{pos} + t R_{pos}
+&lt;/script&gt;
+
+&lt;p&gt;Note that the scale information of the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; has to be obtained from some other source before concatenating.
+In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.&lt;/p&gt;
+
+&lt;h3 id=&quot;heuristics&quot;&gt;Heuristics&lt;/h3&gt;
+&lt;p&gt;Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception.&lt;/p&gt;
+
+&lt;h4 id=&quot;dominant-motion-is-forward&quot;&gt;Dominant Motion is Forward&lt;/h4&gt;
+&lt;p&gt;The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion. &lt;/p&gt;
+
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;/h2&gt;
+&lt;p&gt;So, how good is the performance of the algorithm on the KITTI dataset? See for yourself.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/2K.png&quot; /&gt;
+  &lt;figcaption&gt;Image from the original FAST feature detection paper&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;what-next&quot;&gt;What next?&lt;/h2&gt;
+&lt;p&gt;A major limitation of my implementation is that it cannot evaluate relative scale. I did try implementing some methods, but I 
+encountered the problem which is known as “scale drift” i.e. small errors accumulate, leading to bad odometry estimates.
+I hope I’ll soon implement a more robust relative scale computation pipeline, and write a post about it!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;David Nister An efficient solution to the five-point relative pose problem (2004) &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/monocular-vo/&quot;&gt;Monocular Visual Odometry using OpenCV&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on June 08, 2015.&lt;/p&gt;</content>
+</entry>
 
 
 <entry>
