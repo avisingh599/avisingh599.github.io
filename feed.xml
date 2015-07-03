@@ -4,7 +4,7 @@
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
 <link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
 <link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-06-09T00:15:46+00:00</updated>
+<updated>2015-07-03T04:43:21+00:00</updated>
 <id>http://avisingh599.github.io/</id>
 <author>
   <name>Avi Singh</name>
@@ -198,7 +198,8 @@ t_{pos} = t_{pos} + t R_{pos}
 In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.&lt;/p&gt;
 
 &lt;h3 id=&quot;heuristics&quot;&gt;Heuristics&lt;/h3&gt;
-&lt;p&gt;Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception.&lt;/p&gt;
+&lt;p&gt;Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception. The
+heuristive that we use is explained below:&lt;/p&gt;
 
 &lt;h4 id=&quot;dominant-motion-is-forward&quot;&gt;Dominant Motion is Forward&lt;/h4&gt;
 &lt;p&gt;The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion. &lt;/p&gt;
@@ -1098,10 +1099,10 @@ This post is primarily a list of some useful links which will get one acquainted
 
 
 <entry>
-  <title type="html"><![CDATA[Quotes]]></title>
+  <title type="html"><![CDATA[Poems and Quotes]]></title>
   <link rel="alternate" type="text/html" href="http://avisingh599.github.io/misc/quotes/" />
   <id>http://avisingh599.github.io/misc/quotes</id>
-  <updated>2014-07-26 13:32:24 +0000T00:00:00-00:00</updated>
+  <updated>2015-07-03 04:34:24 +0000T00:00:00-00:00</updated>
   <published>2014-07-26T00:00:00+00:00</published>
   
   <author>
@@ -1109,7 +1110,7 @@ This post is primarily a list of some useful links which will get one acquainted
     <uri>http://avisingh599.github.io</uri>
     <email>avisingh599@gmail.com</email>
   </author>
-  <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down.Starting with poems first, this poem by William Ernest Henley is my personal favourite.&lt;/p&gt;
+  <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down. Starting with poems first, &lt;strong&gt;Invictus&lt;/strong&gt; by &lt;strong&gt;William Ernest Henley&lt;/strong&gt; is my personal favourite. &lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Out of the night that covers me,&lt;br /&gt;
@@ -1130,7 +1131,40 @@ I am the master of my fate:&lt;br /&gt;
 I am the captain of my soul.&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;p&gt;Another one that I particularly like (though it is not inspiring in any way) is this one by Robert Frost.&lt;/p&gt;
+&lt;p&gt;This one’s titled &lt;strong&gt;Desiderata&lt;/strong&gt;, and was written by &lt;strong&gt;Max Ehrmann&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;Go placidly amid the noise and haste, and remember what peace there may be in silence.&lt;br /&gt;
+As far as possible without surrender be on good terms with all persons.&lt;br /&gt;
+Speak your truth quietly and clearly; and listen to others, even the dull and ignorant; they too have their story.&lt;br /&gt;
+Avoid loud and aggressive persons, they are vexations to the spirit.&lt;br /&gt;
+If you compare yourself with others, you may become vain and bitter;&lt;br /&gt;
+for always there will be greater and lesser persons than yourself.&lt;br /&gt;
+&lt;br /&gt;
+Enjoy your achievements as well as your plans.&lt;br /&gt;
+Keep interested in your career, however humble; it is a real possession in the changing fortunes of time.&lt;br /&gt;
+Exercise caution in your business affairs; for the world is full of trickery.&lt;br /&gt;
+But let this not blind you to what virtue there is; many persons strive for high ideals;&lt;br /&gt;
+and everywhere life is full of heroism.&lt;br /&gt;
+&lt;br /&gt;
+Be yourself.&lt;br /&gt;
+Especially, do not feign affection.&lt;br /&gt;
+Neither be critical about love; for in the face of all aridity and disenchantment it is as perennial as the grass.&lt;br /&gt;
+&lt;br /&gt;
+Take kindly the counsel of the years, gracefully surrendering the things of youth.&lt;br /&gt;
+Nurture strength of spirit to shield you in sudden misfortune. But do not distress yourself with imaginings.&lt;br /&gt;
+Many fears are born of fatigue and loneliness. Beyond a wholesome discipline, be gentle with yourself.&lt;br /&gt;
+&lt;br /&gt;
+You are a child of the universe, no less than the trees and the stars;&lt;br /&gt;
+you have a right to be here.&lt;br /&gt;
+And whether or not it is clear to you, no doubt the universe is unfolding as it should.&lt;br /&gt;
+&lt;br /&gt;
+Therefore be at peace with God, whatever you conceive Him to be,&lt;br /&gt;
+and whatever your labors and aspirations, in the noisy confusion of life keep peace with your soul.&lt;br /&gt;
+With all its sham, drudgery and broken dreams, it is still a beautiful world. Be careful. Strive to be happy.\&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Another one that I particularly like (though it is not inspiring in any way) is this one by &lt;strong&gt;Robert Frost&lt;/strong&gt;.&lt;/p&gt;
 
 &lt;blockquote&gt;
   &lt;p&gt;Some say the world will end in fire,&lt;br /&gt;
@@ -1170,14 +1204,14 @@ And would suffice.&lt;/p&gt;
   &lt;p&gt;Keep your friends close, and your enemies closer. - Vito Corleone&lt;/p&gt;
 &lt;/blockquote&gt;
 
-&lt;blockquote&gt;
-  &lt;p&gt;No friends, no enemies. Only allies and adversaries. -Jango Fett&lt;/p&gt;
-&lt;/blockquote&gt;
+&lt;!---
+&gt; No friends, no enemies. Only allies and adversaries. -Jango Fett
+--&gt;
 
 &lt;p&gt;Note: Quotes by fictional characters are attributed to the character who said them, not to the author.&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/misc/quotes/&quot;&gt;Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/misc/quotes/&quot;&gt;Poems and Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
 </entry>
 
 

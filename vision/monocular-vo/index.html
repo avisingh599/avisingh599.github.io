@@ -313,7 +313,8 @@ t_{pos} = t_{pos} + t R_{pos}
 In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.</p>
 
 <h3 id="heuristics">Heuristics</h3>
-<p>Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception.</p>
+<p>Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception. The
+heuristive that we use is explained below:</p>
 
 <h4 id="dominant-motion-is-forward">Dominant Motion is Forward</h4>
 <p>The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion. </p>
