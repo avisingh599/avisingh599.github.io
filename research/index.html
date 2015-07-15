@@ -137,28 +137,41 @@
     <div class="article-wrap">
       <p>For work done outside a research lab, check out <a href="http://avisingh599.github.io/projects">Projects</a>.</p>
 
+<h2 id="brain4cars-anticipating-driving-maneuvers-via-temporal--models">Brain4Cars: Anticipating Driving Maneuvers via Temporal  Models</h2>
+<p><em>Under the guidance of Prof. Ashutosh Saxena, Robot Learning Lab, Computer Science, Cornell University (May 2015 - July 2015)</em></p>
+
+<p><br />
+Brain4Cars takes input from driver-facing and road-facing cameras, and predicts what maneuvers the driver is going to perform in the next few seconds. My contribution to the project was in the following areas:</p>
+
+<ul>
+  <li>Incorporated a <strong>Constrained Local Neural Field</strong> model for improved head pose tracking of the driver.</li>
+  <li>Implemented <strong>Gaussian Mixture Model</strong>-based initialization, and <strong>LBFG-S</strong> optimization for training Autoregressive Input Output Hidden Markov Models</li>
+  <li>The above changes improved the performance of the anticipation system from a Precision/Recall of <strong>77.4/71.2 to 86.7/78.2</strong>. </li>
+</ul>
+
+<hr />
+
 <h2 id="visual-odometry">Visual Odometry</h2>
-<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Ongoing since August 2014)</em></p>
+<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, Electrical Engineering, IIT-Kanpur  (Aug 2014 to Dec 2014)</em></p>
 
 <h4 id="stereo-visual-odometry">Stereo Visual Odometry</h4>
 
 <ul>
-  <li>Implemented an inlier-detection based approach [Howard2008] and Model-based ICP appraoch [Jiang2014] in MATLAB.</li>
-  <li>Working on improving the accuracy of <strong>model-based ICP method</strong>, by introducing iterative optimization techniques like Levenberg-Marquardt.</li>
-  <li>Performance evaluated on the <strong>KITTI odometry benchmark</strong>.</li>
+  <li>Jiang2014: Model Based ICP: 3D points triangulated from stereo data, inliers detected via the use Iterative Closest Point Algorithm that uses a 1-DOF motion model for initial estimate. Efficient PnP Algorithm is then used on the selected inliers to obtain the final rotation and translation</li>
+  <li>Howard2008: Inlier detection using an assumption of scene rigidity. Problem reduced to finding the maximum clique in a graph, solved using a heuristic. Levenberg-Marquardt used for minimizing the reprojection error on the selected inliers. Implmentation available on <a href="https://github.com/avisingh599/vo-howard08">Github</a>.</li>
 </ul>
 
 <h4 id="monocular-visual-odometry">Monocular Visual Odometry</h4>
 
 <ul>
   <li>A simple approach utilizing Nister’s Five Point Algorithm was implemented. </li>
-  <li>Performance evaluated on the KITTI benchmark (using only one frame from the stereo pairs available, absolute scale information extracted from ground truth)</li>
+  <li>Implmentation available on <a href="https://github.com/avisingh599/mono-vo">Github</a>.</li>
 </ul>
 
 <hr />
 
 <h2 id="range-flow-rgbd-version-of-optical-flow">Range Flow (RGBD version of Optical Flow)</h2>
-<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, IIT-Kanpur  (Summer 2014)</em></p>
+<p><em>Under the guidance of Prof. KS Venkatesh, Computer Vision Lab, Electrical Engineering, IIT-Kanpur  (May 2014 - July 2014)</em></p>
 
 <ul>
   <li>Formulated and implemented two approaches for estimation of Range Flow from RGB-D data, one an extension of Lucas-Kanade to 3D, and the other an extension of Horn-Schunck.</li>
@@ -170,7 +183,7 @@
 <hr />
 
 <h2 id="landmark-based-robot-localisation-using-a-kinect-sensor">Landmark Based Robot Localisation using a Kinect Sensor</h2>
-<p><em>Under the guidance of Arjun Bhasin, Project Engineer at Mechatronics Lab, IIT-Kanpur  (Winter 2013)</em></p>
+<p><em>Under the guidance of Arjun Bhasin, Project Engineer at Mechatronics Lab, Mechanical Engineering, IIT-Kanpur  (Dec 2013)</em></p>
 
 <ul>
   <li>Geometric Triangulation was used to determine the pose (modelled as a set of random variables with
