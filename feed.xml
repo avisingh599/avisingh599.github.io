@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
-<title type="text">Trailblazer</title>
+<title type="text">Avi Singh</title>
 <generator uri="https://github.com/jekyll/jekyll">Jekyll</generator>
-<link rel="self" type="application/atom+xml" href="http://avisingh599.github.io/feed.xml" />
-<link rel="alternate" type="text/html" href="http://avisingh599.github.io" />
-<updated>2015-08-12T16:34:02+00:00</updated>
-<id>http://avisingh599.github.io/</id>
+<link rel="self" type="application/atom+xml" href="/feed.xml" />
+<link rel="alternate" type="text/html" href="" />
+<updated>2015-09-11T13:32:12+00:00</updated>
+<id>/</id>
 <author>
   <name>Avi Singh</name>
-  <uri>http://avisingh599.github.io/</uri>
+  <uri>/</uri>
   <email>avisingh599@gmail.com</email>
 </author>
 
 
 <entry>
   <title type="html"><![CDATA[Monocular Visual Odometry using OpenCV]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/monocular-vo/" />
-  <id>http://avisingh599.github.io/vision/monocular-vo</id>
+  <link rel="alternate" type="text/html" href="/vision/monocular-vo/" />
+  <id>/vision/monocular-vo</id>
   <published>2015-06-08T00:00:00+00:00</published>
   <updated>2015-06-08T00:00:00+00:00</updated>
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
@@ -227,19 +227,19 @@ I hope I’ll soon implement a more robust relative scale computation pipeline, 
   &lt;/ol&gt;
 &lt;/div&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/monocular-vo/&quot;&gt;Monocular Visual Odometry using OpenCV&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on June 08, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/vision/monocular-vo/&quot;&gt;Monocular Visual Odometry using OpenCV&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on June 08, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Recognizing Human Activities with Kinect - The implementation]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/" />
-  <id>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2</id>
+  <link rel="alternate" type="text/html" href="/machinelearning/classifying-human-activities-kinect-2/" />
+  <id>/machinelearning/classifying-human-activities-kinect-2</id>
   <published>2015-06-02T00:00:00+00:00</published>
   <updated>2015-06-02T00:00:00+00:00</updated>
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;&lt;em&gt;Disclaimer: The work described in this post was done by me and my classmate at IIT-Kanpur, Ankit Goyal. &lt;a href=&quot;/assets/activity-classification.pdf&quot;&gt;Here&lt;/a&gt; is a link to the presentation that we gave.&lt;/em&gt;&lt;/p&gt;
@@ -433,20 +433,20 @@ explicitly. &lt;/p&gt;
 &lt;p&gt;If we do get around to improving this model, I will post it here. &lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/&quot;&gt;Recognizing Human Activities with Kinect - The implementation&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on June 02, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/machinelearning/classifying-human-activities-kinect-2/&quot;&gt;Recognizing Human Activities with Kinect - The implementation&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on June 02, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Recognizing Human Activities with Kinect - Choosing a temporal model]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/" />
-  <id>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect</id>
+  <link rel="alternate" type="text/html" href="/machinelearning/classifying-human-activities-kinect/" />
+  <id>/machinelearning/classifying-human-activities-kinect</id>
   <updated>2015-06-02T00:00:00-00:00</updated>
   <published>2015-05-27T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;&lt;em&gt;Update: I have posted the sequel to this post &lt;a href=&quot;/machinelearning/classifying-human-activities-kinect-2/&quot;&gt;here&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
@@ -588,19 +588,19 @@ the only major programming part that was left to us now was was the feature extr
 &lt;p&gt;In a future blog post, I will describe in detail the implementation of our project: the dataset, the features we used,
 and what results we got.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/&quot;&gt;Recognizing Human Activities with Kinect - Choosing a temporal model&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 27, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/machinelearning/classifying-human-activities-kinect/&quot;&gt;Recognizing Human Activities with Kinect - Choosing a temporal model&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on May 27, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Visual Odmetry from scratch - A tutorial for beginners]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/visual-odometry-full/" />
-  <id>http://avisingh599.github.io/vision/visual-odometry-full</id>
+  <link rel="alternate" type="text/html" href="/vision/visual-odometry-full/" />
+  <id>/vision/visual-odometry-full</id>
   <published>2015-05-25T00:00:00+00:00</published>
   <updated>2015-05-25T00:00:00+00:00</updated>
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
@@ -961,19 +961,19 @@ significantly on the KITTI dataset, though you won’t find in this hack explici
 in most of the papers that are published on the same!&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/visual-odometry-full/&quot;&gt;Visual Odmetry from scratch - A tutorial for beginners&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 25, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/vision/visual-odometry-full/&quot;&gt;Visual Odmetry from scratch - A tutorial for beginners&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on May 25, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Stitching Intra-Oral Images]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/stichting-story/" />
-  <id>http://avisingh599.github.io/vision/stichting-story</id>
+  <link rel="alternate" type="text/html" href="/vision/stichting-story/" />
+  <id>/vision/stichting-story</id>
   <published>2015-05-23T00:00:00+00:00</published>
   <updated>2015-05-23T00:00:00+00:00</updated>
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
@@ -1002,19 +1002,19 @@ in most of the papers that are published on the same!&lt;/p&gt;
 	&lt;figcaption&gt;A stitch of three images taken from an intraoral camera&lt;/figcaption&gt;
 &lt;/figure&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/stichting-story/&quot;&gt;Stitching Intra-Oral Images&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/vision/stichting-story/&quot;&gt;Stitching Intra-Oral Images&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Every Tooth Tracked]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/segmenting-teeth/" />
-  <id>http://avisingh599.github.io/vision/segmenting-teeth</id>
+  <link rel="alternate" type="text/html" href="/vision/segmenting-teeth/" />
+  <id>/vision/segmenting-teeth</id>
   <published>2015-05-23T00:00:00+00:00</published>
   <updated>2015-05-23T00:00:00+00:00</updated>
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/30/dental-imaging-project-every-tooth-tracked/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
@@ -1057,20 +1057,20 @@ So, I then tried a manual-marker approach, and the results were much better:&lt;
 &lt;p&gt;In the final product, we can assume to have a touchscreen based user interface, wherein the user slashes with his finger across every tooth once, and then gets the segmented image as an output. One several such images have been mannually annotated, we could use a learning algorithm that can automatically generate these masks.&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/segmenting-teeth/&quot;&gt;Every Tooth Tracked&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/vision/segmenting-teeth/&quot;&gt;Every Tooth Tracked&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on May 23, 2015.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Visual Odometry - The Reading List]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/vision/visual-odometry-read/" />
-  <id>http://avisingh599.github.io/vision/visual-odometry-read</id>
+  <link rel="alternate" type="text/html" href="/vision/visual-odometry-read/" />
+  <id>/vision/visual-odometry-read</id>
   <updated>2014-07-29 05:38:43 +0000T00:00:00-00:00</updated>
   <published>2014-07-29T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester at IIT-Kanpur.
@@ -1094,20 +1094,20 @@ This post is primarily a list of some useful links which will get one acquainted
 
 &lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/vision/visual-odometry-read/&quot;&gt;Visual Odometry - The Reading List&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/vision/visual-odometry-read/&quot;&gt;Visual Odometry - The Reading List&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on July 29, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Poems and Quotes]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/misc/quotes/" />
-  <id>http://avisingh599.github.io/misc/quotes</id>
+  <link rel="alternate" type="text/html" href="/misc/quotes/" />
+  <id>/misc/quotes</id>
   <updated>2015-07-03 04:34:24 +0000T00:00:00-00:00</updated>
   <published>2014-07-26T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I will keep updating this page with quotes (and occasionally poems) that I find most memorable, and worth noting down. Starting with poems first, &lt;strong&gt;Invictus&lt;/strong&gt; by &lt;strong&gt;William Ernest Henley&lt;/strong&gt; is my personal favourite. &lt;/p&gt;
@@ -1211,20 +1211,20 @@ And would suffice.&lt;/p&gt;
 &lt;p&gt;Note: Quotes by fictional characters are attributed to the character who said them, not to the author.&lt;/p&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/misc/quotes/&quot;&gt;Poems and Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/misc/quotes/&quot;&gt;Poems and Quotes&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on July 26, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[RANSAC]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/stats/ransac/" />
-  <id>http://avisingh599.github.io/stats/ransac</id>
+  <link rel="alternate" type="text/html" href="/stats/ransac/" />
+  <id>/stats/ransac</id>
   <updated>2014-07-21 01:48:52 +0000T00:00:00-00:00</updated>
   <published>2014-07-21T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.&lt;/p&gt;
@@ -1255,20 +1255,20 @@ And would suffice.&lt;/p&gt;
 &lt;h3 id=&quot;how-many-times-do-we-repeat&quot;&gt;How many times do we repeat?&lt;/h3&gt;
 &lt;p&gt;It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.&lt;/p&gt;
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/stats/ransac/&quot;&gt;RANSAC&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/stats/ransac/&quot;&gt;RANSAC&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
 </entry>
 
 
 <entry>
   <title type="html"><![CDATA[Parallel Programming with CUDA]]></title>
-  <link rel="alternate" type="text/html" href="http://avisingh599.github.io/gpu/parallel-programming-with-cuda/" />
-  <id>http://avisingh599.github.io/gpu/parallel-programming-with-cuda</id>
+  <link rel="alternate" type="text/html" href="/gpu/parallel-programming-with-cuda/" />
+  <id>/gpu/parallel-programming-with-cuda</id>
   <updated>2014-07-20 20:18:16 +0000T00:00:00-00:00</updated>
   <published>2014-07-21T00:00:00+00:00</published>
   
   <author>
     <name>Avi Singh</name>
-    <uri>http://avisingh599.github.io</uri>
+    <uri></uri>
     <email>avisingh599@gmail.com</email>
   </author>
   <content type="html">&lt;p&gt;I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is &lt;em&gt;way&lt;/em&gt; better.&lt;/p&gt;
@@ -1376,7 +1376,7 @@ And would suffice.&lt;/p&gt;
 ./sample&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
 
 
-  &lt;p&gt;&lt;a href=&quot;http://avisingh599.github.io/gpu/parallel-programming-with-cuda/&quot;&gt;Parallel Programming with CUDA&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;http://avisingh599.github.io&quot;&gt;Trailblazer&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
+  &lt;p&gt;&lt;a href=&quot;/gpu/parallel-programming-with-cuda/&quot;&gt;Parallel Programming with CUDA&lt;/a&gt; was originally published by Avi Singh at &lt;a href=&quot;&quot;&gt;Avi Singh&lt;/a&gt; on July 21, 2014.&lt;/p&gt;</content>
 </entry>
 
 </feed>

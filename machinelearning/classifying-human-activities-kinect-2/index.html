@@ -5,7 +5,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en"><!--<![endif]-->
 <head>
 <meta charset="utf-8">
-<title>Recognizing Human Activities with Kinect - The implementation &#8211; Trailblazer</title>
+<title>Recognizing Human Activities with Kinect - The implementation &#8211; Avi Singh</title>
 <meta name="description" content="">
 <meta name="keywords" content="machinelearning,, computervision,, kinect,, classification,, hcrf">
 
@@ -15,15 +15,15 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="Recognizing Human Activities with Kinect - The implementation">
 <meta property="og:description" content="The personal webpage and weblog of Avi Singh.">
-<meta property="og:url" content="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/">
-<meta property="og:site_name" content="Trailblazer">
+<meta property="og:url" content="/machinelearning/classifying-human-activities-kinect-2/">
+<meta property="og:site_name" content="Avi Singh">
 
 
 
 
 
-<link rel="canonical" href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/">
-<link href="http://avisingh599.github.io/feed.xml" type="application/atom+xml" rel="alternate" title="Trailblazer Feed">
+<link rel="canonical" href="/machinelearning/classifying-human-activities-kinect-2/">
+<link href="/feed.xml" type="application/atom+xml" rel="alternate" title="Avi Singh Feed">
 <link rel="author" href="http://plus.google.com/+avisingh599?rel=author">
 
 <!-- http://t.co/dKP3o1e -->
@@ -34,32 +34,32 @@
 <!-- Google Webfonts -->
 <link href='http://fonts.googleapis.com/css?family=PT+Sans+Narrow:400,700|PT+Serif:400,700,400italic' rel='stylesheet' type='text/css'>
 <!-- For all browsers -->
-<link rel="stylesheet" href="http://avisingh599.github.io/assets/css/main.min.css">
+<link rel="stylesheet" href="/assets/css/main.min.css">
 
 <meta http-equiv="cleartype" content="on">
 
 <!-- HTML5 Shiv and Media Query Support -->
 <!--[if lt IE 9]>
-	<script src="http://avisingh599.github.io/assets/js/vendor/html5shiv.min.js"></script>
-	<script src="http://avisingh599.github.io/assets/js/vendor/respond.min.js"></script>
+	<script src="/assets/js/vendor/html5shiv.min.js"></script>
+	<script src="/assets/js/vendor/respond.min.js"></script>
 <![endif]-->
 
 <!-- Modernizr -->
-<script src="http://avisingh599.github.io/assets/js/vendor/modernizr-2.7.1.custom.min.js"></script>
+<script src="/assets/js/vendor/modernizr-2.7.1.custom.min.js"></script>
 
 <!-- Icons -->
 <!-- 16x16 -->
-<link rel="shortcut icon" href="http://avisingh599.github.io/favicon.ico">
+<link rel="shortcut icon" href="/favicon.ico">
 <!-- 32x32 -->
-<link rel="shortcut icon" href="http://avisingh599.github.io/favicon.png">
+<link rel="shortcut icon" href="/favicon.png">
 <!-- 57x57 (precomposed) for iPhone 3GS, pre-2011 iPod Touch and older Android devices -->
-<link rel="apple-touch-icon-precomposed" href="http://avisingh599.github.io/images/apple-touch-icon-precomposed.png">
+<link rel="apple-touch-icon-precomposed" href="/images/apple-touch-icon-precomposed.png">
 <!-- 72x72 (precomposed) for 1st generation iPad, iPad 2 and iPad mini -->
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="http://avisingh599.github.io/images/apple-touch-icon-72x72-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="/images/apple-touch-icon-72x72-precomposed.png">
 <!-- 114x114 (precomposed) for iPhone 4, 4S, 5 and post-2011 iPod Touch -->
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="http://avisingh599.github.io/images/apple-touch-icon-114x114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="/images/apple-touch-icon-114x114-precomposed.png">
 <!-- 144x144 (precomposed) for iPad 3rd and 4th generation -->
-<link rel="apple-touch-icon-precomposed" sizes="144x144" href="http://avisingh599.github.io/images/apple-touch-icon-144x144-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="144x144" href="/images/apple-touch-icon-144x144-precomposed.png">
 
 </head>
 
@@ -80,27 +80,21 @@
 
 <div class="navigation-wrapper">
 	<div class="site-name">
-		<a href="http://avisingh599.github.io">Trailblazer</a>
+		<a href="">Avi Singh</a>
 	</div><!-- /.site-name -->
 	<div class="top-navigation">
 		<nav role="navigation" id="site-nav" class="nav">
 		    <ul>
 		        
-				<li><a href="http://avisingh599.github.io/" >Home</a></li>
+				<li><a href="/" >Home</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/about/" >About</a></li>
+				<li><a href="/research/" >Research</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/assets/cv.pdf" >Resume</a></li>
+				<li><a href="/projects/" >Projects</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/research/" >Research</a></li>
+				<li><a href="/assets/cv.pdf" >Resume</a></li>
 		        
-				<li><a href="http://avisingh599.github.io/projects/" >Projects</a></li>
-		        
-				<li><a href="http://avisingh599.github.io/acads/" >Academics</a></li>
-		        
-				<li><a href="http://avisingh599.github.io/achievements/" >Achievements</a></li>
-		        
-				<li><a href="http://avisingh599.github.io/posts/" >Posts</a></li>
+				<li><a href="/blog/" >Blog</a></li>
 		        
 		    </ul>
 		</nav>
@@ -112,10 +106,10 @@
 <div id="main" role="main">
   <div class="article-author-side">
     
-	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
+	<img src="/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
 
 <h3>Avi Singh</h3>
-<p>Undergraduate, interested in Computer Vision</p>
+<p>Undergraduate, interested in Computer Vision and Machine Learning</p>
 
 <a href="http://facebook.com/avisingh94" class="author-social" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a>
 <a href="http://linkedin.com/pub/avi-singh/7b/444/681" class="author-social" target="_blank"><i class="fa fa-linkedin-square"></i> LinkedIn</a>
@@ -135,7 +129,7 @@
   <article>
     <div class="headline-wrap">
       
-        <h1><a href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/" rel="bookmark" title="Recognizing Human Activities with Kinect - The implementation">Recognizing Human Activities with Kinect - The implementation</a></h1>
+        <h1><a href="/machinelearning/classifying-human-activities-kinect-2/" rel="bookmark" title="Recognizing Human Activities with Kinect - The implementation">Recognizing Human Activities with Kinect - The implementation</a></h1>
       
     </div><!--/ .headline-wrap -->
     <div class="article-wrap">
@@ -334,10 +328,10 @@ explicitly. </p>
       <footer role="contentinfo">
         <div class="article-author-bottom">
           
-	<img src="http://avisingh599.github.io/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
+	<img src="/images/bio-photo.jpg" class="bio-photo" alt="Avi Singh bio photo"></a>
 
 <h3>Avi Singh</h3>
-<p>Undergraduate, interested in Computer Vision</p>
+<p>Undergraduate, interested in Computer Vision and Machine Learning</p>
 
 <a href="http://facebook.com/avisingh94" class="author-social" target="_blank"><i class="fa fa-facebook-square"></i> Facebook</a>
 <a href="http://linkedin.com/pub/avi-singh/7b/444/681" class="author-social" target="_blank"><i class="fa fa-linkedin-square"></i> LinkedIn</a>
@@ -354,7 +348,7 @@ explicitly. </p>
 
 
         </div>
-        <p class="byline"><strong>Recognizing Human Activities with Kinect - The implementation</strong> was published on <time datetime="2015-06-02T00:00:00+00:00">June 02, 2015</time> by <a href="http://avisingh599.github.io/about" title="About Avi Singh">Avi Singh</a>.</p>
+        <p class="byline"><strong>Recognizing Human Activities with Kinect - The implementation</strong> was published on <time datetime="2015-06-02T00:00:00+00:00">June 02, 2015</time> by <a href="/about" title="About Avi Singh">Avi Singh</a>.</p>
       </footer>
     </div><!-- /.article-wrap -->
   
@@ -365,14 +359,14 @@ explicitly. </p>
 
 <div class="footer-wrap">
   <div class="related-articles">
-  <h4>You might also enjoy <small class="pull-right">(<a href="http://avisingh599.github.io/posts/">View all posts</a>)</small></h4>
+  <h4>You might also enjoy <small class="pull-right">(<a href="/posts/">View all posts</a>)</small></h4>
     <ul>
     
-      <li><a href="http://avisingh599.github.io/vision/monocular-vo/" title="Monocular Visual Odometry using OpenCV">Monocular Visual Odometry using OpenCV</a></li>
+      <li><a href="/vision/monocular-vo/" title="Monocular Visual Odometry using OpenCV">Monocular Visual Odometry using OpenCV</a></li>
     
-      <li><a href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/" title="Recognizing Human Activities with Kinect - Choosing a temporal model">Recognizing Human Activities with Kinect - Choosing a temporal model</a></li>
+      <li><a href="/machinelearning/classifying-human-activities-kinect/" title="Recognizing Human Activities with Kinect - Choosing a temporal model">Recognizing Human Activities with Kinect - Choosing a temporal model</a></li>
     
-      <li><a href="http://avisingh599.github.io/vision/visual-odometry-full/" title="Visual Odmetry from scratch - A tutorial for beginners">Visual Odmetry from scratch - A tutorial for beginners</a></li>
+      <li><a href="/vision/visual-odometry-full/" title="Visual Odmetry from scratch - A tutorial for beginners">Visual Odmetry from scratch - A tutorial for beginners</a></li>
     
     </ul>
     <hr />
@@ -384,8 +378,8 @@ explicitly. </p>
 </div><!-- /.footer-wrap -->
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="http://avisingh599.github.io/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
-<script src="http://avisingh599.github.io/assets/js/scripts.min.js"></script>
+<script>window.jQuery || document.write('<script src="/assets/js/vendor/jquery-1.9.1.min.js"><\/script>')</script>
+<script src="/assets/js/scripts.min.js"></script>
 
 
   
