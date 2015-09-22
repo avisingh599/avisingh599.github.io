@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="An introduction to the popular RANSAC algorithm for outlier rejection.">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="stats">
+    <link rel="canonical" href="http://avisingh599.github.io/stats/ransac/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="RANSAC">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/stats/ransac/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="RANSAC" />
+    <meta name="twitter:description" content="An introduction to the popular RANSAC algorithm for outlier rejection." />
+    <meta name="twitter:url" content="http://avisingh599.github.io/stats/ransac/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h2>RANSAC</h2>
+  <span class="post-meta">Jul 21, 2014</span><br>
+  
+  <span class="post-meta small">
+  
+    2 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p>This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.</p>
+
+<p>Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain <em>inliers</em> and some <em>outliers</em>. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.</p>
+
+<p>Note that even the inliers do not <em>exactly</em> fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.</p>
+
+<h2 id="the-algorithm">The Algorithm</h2>
+
+<h3 id="the-input">The Input</h3>
+<ul>
+  <li>Data points</li>
+  <li>Some parametrized model (we need to estimate the parameters for this model)</li>
+  <li>Some confidence parameters</li>
+</ul>
+
+<h3 id="algo">Algo</h3>
+<ul>
+  <li>A set points from the original dataset are randomly selected, and are assumed to be the inliers.</li>
+  <li>Parameters are estimated to fit to this hypothetical inlier set.</li>
+  <li>Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.</li>
+  <li>The points that fit the model become a part of the <em>consensus</em> set. The model is good if a particular number of points have been classified as part of the consensus set.</li>
+  <li>This model is then re-estimated using all the members of a consensus set.</li>
+  <li>The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.</li>
+</ul>
+
+<h3 id="how-many-times-do-we-repeat">How many times do we repeat?</h3>
+<p>It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.</p>
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/stats/ransac';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

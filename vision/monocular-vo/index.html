@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Homepage and blog">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="vision">
+    <link rel="canonical" href="http://avisingh599.github.io/vision/monocular-vo/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Monocular Visual Odometry using OpenCV">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/vision/monocular-vo/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Monocular Visual Odometry using OpenCV" />
+    <meta name="twitter:description" content="Homepage and blog" />
+    <meta name="twitter:url" content="http://avisingh599.github.io/vision/monocular-vo/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h2>Monocular Visual Odometry using OpenCV</h2>
+  <span class="post-meta">Jun 8, 2015</span><br>
+  
+  <span class="post-meta small">
+  
+    8 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<p>Last month, I made a <a href="/vision/visual-odometry-full/">post</a> on Stereo Visual Odometry and its implementation in MATLAB. 
+This post would be focussing on <strong>Monocular Visual Odometry</strong>, and how we can implement it in <strong>OpenCV/C++</strong>.
+The implementation that I describe in this post is once again freely available on <a href="https://github.com/avisingh599/mono-vo">github</a>.
+It is also simpler to understand, and runs at 5fps, which is much faster than my older stereo implementation.</p>
+
+<p>If you are new to Visual Odometry, I suggest having a look at the first few paragraphs (before all the math starts) of my 
+<a href="/vision/visual-odometry-full/">old post</a>. It talks about what Visual Odometry is, why we 
+need it, and also compares the monocular and stereo approaches.</p>
+
+<p>Acquanted with all the basics of visual odometry? Cool. Let’s go ahead.</p>
+
+<h2 id="demo">Demo</h2>
+<p>Before I move onto describing the implementation, have a look at the algorithm in action!</p>
+
+<style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style>
+<div class="embed-container"><iframe src="https://www.youtube.com/embed/homos4vd_Zs" frameborder="0" allowfullscreen=""></iframe></div>
+
+<p>Pretty cool, eh? Let’s dive into implementing it in OpenCV now.</p>
+
+<h3 id="formulation-of-the-problem">Formulation of the problem</h3>
+
+<h4 id="input">Input</h4>
+<p>We have a stream of gray scale images coming from a camera. Let the frames, captured at time <script type="math/tex">t</script> and <script type="math/tex">t+1</script> be referred to as
+<script type="math/tex">\mathit{I}^{t}</script>, <script type="math/tex">\mathit{I}^{t+1}</script>. We have prior knowledge of all the intrinsic parameters, obtained via calibration, 
+which can also be done in <a href="http://docs.opencv.org/3.0.0/d9/d0c/group__calib3d.html">OpenCV</a>.</p>
+
+<h4 id="output">Output</h4>
+<p>For every pair of images, we need to find the rotation matrix <script type="math/tex">R</script> and the translation vector <script type="math/tex">t</script>, which describes the motion of the vehicle between the two frames. The vector <script type="math/tex">t</script> can only be computed upto a scale factor in our monocular scheme.</p>
+
+<h3 id="algorithm-outline">Algorithm Outline</h3>
+
+<ol>
+  <li>Capture images: <script type="math/tex">\mathit{I}^t</script>, <script type="math/tex">\mathit{I}^{t+1}</script>,</li>
+  <li>Undistort the above images.</li>
+  <li>Use FAST algorithm to detect features in  <script type="math/tex">\mathit{I}^t</script>, and track those features to <script type="math/tex">{I}^{t+1}</script>. A new detection is triggered if the number of features drop below a certain threshold.</li>
+  <li>Use Nister’s 5-point alogirthm with RANSAC to compute the essential matrix.</li>
+  <li>Estimate <script type="math/tex">R, t</script> from the essential matrix that was computed in the previous step.</li>
+  <li>Take scale information from some external source (like a speedometer), and concatenate the translation vectors, and rotation matrices.</li>
+</ol>
+
+<p>You may or may not understand all the steps that have been metioned above, but don’t worry. All the points
+above will be explained in great detail in the text to follow.</p>
+
+<h3 id="undistortion">Undistortion</h3>
+
+<p>Distortion happens when lines that are straight in the real world become curved in the images. T
+his step compensates for this lens distortion. It is performed with the help of the distortion parameters 
+that were obtained during calibration. Since the KITTI dataset that I’m using already comes with 
+undistorted images, I won’t write the code about it here. However, it is relatively straightforward to 
+<a href="http://docs.opencv.org/modules/imgproc/doc/geometric_transformations.html#undistort">undistort</a> with OpenCV.</p>
+
+<h3 id="feature-detection">Feature Detection</h3>
+<p>My approach uses the FAST corner detector, just like my stereo implementation. I’ll now explain in brief how the detector works, though you must have a look at the <a href="http://www.edwardrosten.com/work/fast.html">original paper and source code</a> if you want to really understand how it works. Suppose there is a point <script type="math/tex">\mathbf{P}</script> which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor <script type="math/tex">\mathbf{I}</script> and for another set of contiguous pixels if the intensity is less by at least the same factor <script type="math/tex">\mathbf{I}</script>. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least <script type="math/tex">\mathbf{I}</script>, or must have an intensity lower by the same amount <script type="math/tex">\mathbf{I}</script> for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.</p>
+
+<figure>
+  <img src="/images/visodo/fast.png" />
+  <figcaption>Image from the original FAST feature detection paper</figcaption>
+</figure>
+
+<p>Using OpenCV, detecting features is trivial, and here is the code that does it.</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">featureDetection</span><span class="p">(</span><span class="n">Mat</span> <span class="n">img_1</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Point2f</span><span class="o">&gt;&amp;</span> <span class="n">points1</span><span class="p">)</span>	<span class="p">{</span> 
+  <span class="n">vector</span><span class="o">&lt;</span><span class="n">KeyPoint</span><span class="o">&gt;</span> <span class="n">keypoints_1</span><span class="p">;</span>
+  <span class="kt">int</span> <span class="n">fast_threshold</span> <span class="o">=</span> <span class="mi">20</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="n">nonmaxSuppression</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+  <span class="n">FAST</span><span class="p">(</span><span class="n">img_1</span><span class="p">,</span> <span class="n">keypoints_1</span><span class="p">,</span> <span class="n">fast_threshold</span><span class="p">,</span> <span class="n">nonmaxSuppression</span><span class="p">);</span>
+  <span class="n">KeyPoint</span><span class="o">::</span><span class="n">convert</span><span class="p">(</span><span class="n">keypoints_1</span><span class="p">,</span> <span class="n">points1</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">());</span>
+<span class="p">}</span></code></pre></div>
+
+<p>The parameters in the code above are set such that it gives ~4000 features on one image from the KITTI dataset. You may want
+tune these parameters so as to obtain the best performance on your own data.
+Note that the code above also converts the datatype of the detected feature points from KeyPoints to a vector of Point2f, so 
+that we can directly pass it to the feature tracking step, described below:</p>
+
+<h3 id="feature-tracking">Feature Tracking</h3>
+
+<p>The fast corners detected in the previous step are fed to the next step, which uses a <a href="https://www.ces.clemson.edu/~stb/klt/">KLT tracker</a>. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in <script type="math/tex">\mathit{I}^{t}</script> are tracked in <script type="math/tex">\mathit{I}^{t+1}</script>. Let the set of features detected in <script type="math/tex">\mathit{I}^{t}</script> be <script type="math/tex">\mathcal{F}^{t}</script> , and the set of corresponding features in <script type="math/tex">\mathit{I}^{t+1}</script> be <script type="math/tex">\mathcal{F}^{t+1}</script>. Here is the function that does feature tracking in OpenCV using the KLT tracker:</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="kt">void</span> <span class="nf">featureTracking</span><span class="p">(</span><span class="n">Mat</span> <span class="n">img_1</span><span class="p">,</span> <span class="n">Mat</span> <span class="n">img_2</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Point2f</span><span class="o">&gt;&amp;</span> <span class="n">points1</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">Point2f</span><span class="o">&gt;&amp;</span> <span class="n">points2</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">uchar</span><span class="o">&gt;&amp;</span> <span class="n">status</span><span class="p">)</span>	<span class="p">{</span> 
+
+<span class="c1">//this function automatically gets rid of points for which tracking fails</span>
+
+  <span class="n">vector</span><span class="o">&lt;</span><span class="kt">float</span><span class="o">&gt;</span> <span class="n">err</span><span class="p">;</span>					
+  <span class="n">Size</span> <span class="n">winSize</span><span class="o">=</span><span class="n">Size</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span><span class="mi">21</span><span class="p">);</span>																								
+  <span class="n">TermCriteria</span> <span class="n">termcrit</span><span class="o">=</span><span class="n">TermCriteria</span><span class="p">(</span><span class="n">TermCriteria</span><span class="o">::</span><span class="n">COUNT</span><span class="o">+</span><span class="n">TermCriteria</span><span class="o">::</span><span class="n">EPS</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">);</span>
+
+  <span class="n">calcOpticalFlowPyrLK</span><span class="p">(</span><span class="n">img_1</span><span class="p">,</span> <span class="n">img_2</span><span class="p">,</span> <span class="n">points1</span><span class="p">,</span> <span class="n">points2</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">err</span><span class="p">,</span> <span class="n">winSize</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">termcrit</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">);</span>
+
+  <span class="c1">//getting rid of points for which the KLT tracking failed or those who have gone outside the frame</span>
+  <span class="kt">int</span> <span class="n">indexCorrection</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+  <span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">status</span><span class="p">.</span><span class="n">size</span><span class="p">();</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+     <span class="p">{</span>  <span class="n">Point2f</span> <span class="n">pt</span> <span class="o">=</span> <span class="n">points2</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="o">-</span> <span class="n">indexCorrection</span><span class="p">);</span>
+     	<span class="k">if</span> <span class="p">((</span><span class="n">status</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">||</span><span class="p">(</span><span class="n">pt</span><span class="p">.</span><span class="n">x</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="o">||</span><span class="p">(</span><span class="n">pt</span><span class="p">.</span><span class="n">y</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">))</span>	<span class="p">{</span>
+     		  <span class="k">if</span><span class="p">((</span><span class="n">pt</span><span class="p">.</span><span class="n">x</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)</span><span class="o">||</span><span class="p">(</span><span class="n">pt</span><span class="p">.</span><span class="n">y</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">))</span>	<span class="p">{</span>
+     		  	<span class="n">status</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+     		  <span class="p">}</span>
+     		  <span class="n">points1</span><span class="p">.</span><span class="n">erase</span> <span class="p">(</span><span class="n">points1</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="n">indexCorrection</span><span class="p">);</span>
+     		  <span class="n">points2</span><span class="p">.</span><span class="n">erase</span> <span class="p">(</span><span class="n">points2</span><span class="p">.</span><span class="n">begin</span><span class="p">()</span> <span class="o">+</span> <span class="n">i</span> <span class="o">-</span> <span class="n">indexCorrection</span><span class="p">);</span>
+     		  <span class="n">indexCorrection</span><span class="o">++</span><span class="p">;</span>
+     	<span class="p">}</span>
+
+     <span class="p">}</span>
+
+<span class="p">}</span></code></pre></div>
+
+<h4 id="feature-re-detection">Feature Re-Detection</h4>
+<p>Note that while doing KLT tracking, we will eventually lose some points (as they move out of the field of view of the car), and 
+we thus trigger a redetection whenver the total number of features go below a certain threshold (2000 in my implementation).</p>
+
+<h3 id="essential-matrix-estimation">Essential Matrix Estimation</h3>
+<p>Once we have point-correspondences, we have several techniques for the computation of an essential matrix. The essential matrix is defined as follows:
+<script type="math/tex">\begin{equation}
+y_{1}^{T}Ey_{2} = 0
+\end{equation}</script>
+Here, <script type="math/tex">y_{1}</script>, <script type="math/tex">y_{2}</script> are homogenous normalised image coordinates. 
+While a simple algorithm requiring eight point correspondences exists\cite{Higgins81}, a more recent approach that is shown to give better results is the five point algorithm<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>. It solves a number of non-linear equations, and requires the minimum number of points possible, since the Essential Matrix has only five degrees of freedom.</p>
+
+<h4 id="ransac">RANSAC</h4>
+<p>If all of our point correspondences were perfect, then we would have need only 
+five feature correspondences between two successive frames to estimate motion accurately. 
+However, the feature tracking algorithms are not perfect, and therefore we have several 
+erroneous correspondence. A standard technique of handling outliers when doing model estimation
+is RANSAC. It is an iterative algorithm. At every iteration, it randomly samples five 
+points from out set of correspondences, estimates the Essential Matrix, and then checks
+if the other points are inliers when using this essential matrix. The algorithm terminates
+after a fixed number of iterations, and the Essential matrix with which the maximum number of points agree, is used.</p>
+
+<p>Using the above in OpenCV is again pretty straightforward, and all you need is one line:</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">E</span> <span class="o">=</span> <span class="n">findEssentialMat</span><span class="p">(</span><span class="n">points2</span><span class="p">,</span> <span class="n">points1</span><span class="p">,</span> <span class="n">focal</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">RANSAC</span><span class="p">,</span> <span class="mf">0.999</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span></code></pre></div>
+
+<h3 id="computing-r-t-from-the-essential-matrix">Computing R, t from the Essential Matrix</h3>
+<p>Another definition of the Essential Matrix (consistent) with the definition mentioned earlier is as follows:
+<script type="math/tex">\begin{equation}
+E = R[t]_{x}
+\end{equation}</script>
+Here, <script type="math/tex">R</script> is the rotation matrix, while <script type="math/tex">[t]_{x}</script> is  the matrix representation of a cross product with <script type="math/tex">t</script>. Taking the SVD of the essential matrix, and then exploiting the constraints on the rotation matrix, we get the following:</p>
+
+<script type="math/tex; mode=display">E = U\Sigma V^{T}</script>
+
+<script type="math/tex; mode=display">[t]_{x} = VW\Sigma V^{T}</script>
+
+<script type="math/tex; mode=display">R = UW^{-1}V^{T}</script>
+
+<p>Here’s the one-liner that implements it in OpenCV:</p>
+
+<div class="highlight"><pre><code class="language-c--" data-lang="c++"><span class="n">recoverPose</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">points2</span><span class="p">,</span> <span class="n">points1</span><span class="p">,</span> <span class="n">R</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">focal</span><span class="p">,</span> <span class="n">pp</span><span class="p">,</span> <span class="n">mask</span><span class="p">);</span></code></pre></div>
+
+<h3 id="constructing-trajectory">Constructing Trajectory</h3>
+<p>Let the pose of the camera be denoted by <script type="math/tex">R_{pos}</script>, <script type="math/tex">t_{pos}</script>. We can then track the trajectory using the following equation:</p>
+
+<script type="math/tex; mode=display">R_{pos} = R R_{pos}</script>
+
+<script type="math/tex; mode=display">t_{pos} = t_{pos} + t R_{pos}</script>
+
+<p>Note that the scale information of the translation vector <script type="math/tex">t</script> has to be obtained from some other source before concatenating.
+In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.</p>
+
+<h3 id="heuristics">Heuristics</h3>
+<p>Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception. The
+heuristive that we use is explained below:</p>
+
+<h4 id="dominant-motion-is-forward">Dominant Motion is Forward</h4>
+<p>The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion.</p>
+
+<h2 id="results">Results</h2>
+<p>So, how good is the performance of the algorithm on the KITTI dataset? See for yourself.</p>
+
+<figure>
+  <img src="/images/visodo/2K.png" />
+  <figcaption> Computed Trajectory vs Ground Truth for 2000 frames</figcaption>
+</figure>
+
+<h2 id="what-next">What next?</h2>
+<p>A major limitation of my implementation is that it cannot evaluate relative scale. I did try implementing some methods, but I 
+encountered the problem which is known as “scale drift” i.e. small errors accumulate, leading to bad odometry estimates.
+I hope I’ll soon implement a more robust relative scale computation pipeline, and write a post about it!</p>
+
+<hr />
+
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>David Nister An efficient solution to the five-point relative pose problem (2004) <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/vision/monocular-vo';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

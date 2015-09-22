@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="A continuation of my previous post on how I implemented an activity recognition system using a Kinect.">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="machinelearning">
+    <link rel="canonical" href="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Recognizing Human Activities with Kinect - The implementation">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Recognizing Human Activities with Kinect - The implementation" />
+    <meta name="twitter:description" content="A continuation of my previous post on how I implemented an activity recognition system using a Kinect." />
+    <meta name="twitter:url" content="http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h2>Recognizing Human Activities with Kinect - The implementation</h2>
+  <span class="post-meta">Jun 2, 2015</span><br>
+  
+  <span class="post-meta small">
+  
+    4 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p><em>Disclaimer: The work described in this post was done by me and my classmate at IIT-Kanpur, Ankit Goyal. <a href="/assets/activity-classification.pdf">Here</a> is a link to the presentation that we gave.</em></p>
+
+<p>This is a follow up of my earlier <a href="/machinelearning/classifying-human-activities-kinect/">post</a>, in which I explored
+temporal models, that can be applied to things like part-of-speech tagging, gesture recognition, and any sequential 
+or temporal sources of data in general. In this post, I will describe in more detail the implementation of our
+project that classified RGBD videos according to the activity being performed in them.</p>
+
+<h3 id="dataset">Dataset</h3>
+<p>Quite a few <a href="http://research.microsoft.com/en-us/um/people/zliu/ActionRecoRsrc/">RGBD datasets</a> 
+are available for human activity detection/classification, and we chose to use the 
+MSR Daily Activity 3D dataset. Since we had limited computational resources (the mathserver of IITK),
+and a limited time before the submission deadline, we chose to use a subset of the above dataset, 
+and worked with only 6 activities. So, our problem was now reduced to 6-class classification.</p>
+
+<h3 id="features">Features</h3>
+<p>In any machine learning problem, your model or learning algorithm is useless without a good set of
+features. I read a <a href="http://www.sciencedirect.com/science/article/pii/S0167865514001299">recent paper</a> which
+had a decent review of the various features used. They were:</p>
+
+<ol>
+  <li>3D silhouettes - Finding the outline of the human body, and using the shape of this outline as features.</li>
+  <li>Skeletal joints or body part tracking - Kinect comes with an algorithm to determine the pose of the body
+from the depth image alone. Pose here refers to the 3D coordinates of 15 body joints.</li>
+  <li>Local Spatio-temporal features - Just like some 2D/3D image feature detector, but with the added dimension of time.</li>
+  <li>Local 3D occupancy features - This one seemed the most interesting. What this does is to treat an RGBD video as
+a function I(x, y, z, t). Now, this a very sparse function, and would be zero at most points in a 4D space. But, 
+whenever a certain activity is performed, certain regions of this 4D space will become filled. Inferring from 
+such data is now a matter sampling it efficiently, and this where all the innovation must lie, if this technique 
+is to work.</li>
+  <li>3D optical flow - The 3D counter part of the popular <a href="http://en.wikipedia.org/wiki/Optical_flow">optical flow</a>, 
+it is also known as [Scene Flow] in the academic literature. <a href="http://www.sciencedirect.com/science/article/pii/S1077314210001748">This</a> 
+is one paper that makes use of these features.</li>
+</ol>
+
+<p>The features that we ultimately went ahead were the skeletal joints. The MSR Daily Activity 3D dataset already provides
+the skeletal joint coordinates to us, so all we had to was to take that data, and do some basic pre-processing on it.</p>
+
+<h4 id="preprocessing-the-features">Preprocessing the features.</h4>
+
+<p>The dataset provides us with the 3D coordinates of 15 human body joints. These cordinates are in the frame of reference of the Kinect.
+The first operation that we perform on them is the following: to transform the points from the Kinect reference frame to the frame
+of the person. By frame of the person, we refer to the joint corresponding to the torso.</p>
+
+<p>Next thing that we do is what we call “body size normalization”. Basically all the body lengths, such as the distance between the elbo and 
+hand, are scaled up or down to a standard body size. This ensures that the variation in bosy sizes is captured at the feature level itself,
+and our model does not have to worry about it anymore.</p>
+
+<p><a href="https://gist.github.com/avisingh599/73ac41db59d87115c99e">Clicke here</a> to get the MATLAB code that does the feature extraction part from skeleton files that were obtained from the MSR dataset.</p>
+
+<h3 id="model">Model</h3>
+
+<p>Now, as I discussed in my <a href="/machinelearning/classifying-human-activities-kinect/">previous post</a>, Hidden Conditional
+Random Fields (HCRFs) was the model that we finally selected. The original authors had released a well documented 
+<a href="http://sourceforge.net/projects/hcrf/">toolbox</a>, to which we directly fed the features that were computed above.</p>
+
+<h3 id="results">Results</h3>
+<p>Five-fold cross-validation without any hyper-parameter tuning yielded a precision of 71%. These results do not seem impressive
+on first glance, but it must be noted that all our experiments were performed in the “new person” setting i.e. the person in the
+test set did not appear in the training set, and we did not do any hyper parameter tuning. Our results can be summarised in the 
+ollowing heatmap:</p>
+
+<figure>
+	<img src="/images/kinect_activity/heatmap.bmp" />
+	<figcaption>Where the algorithm succeeds and fails</figcaption>
+</figure>
+
+<p>The above figure made one thing clear: that accuracy is being seriously harmed by the algorithm’s inability
+to correctly distinguish between drinking and talking on phone. The reason for this is relatively simple. 
+The features that we are using are skeletal features, and therefore we do not pay any attention to what
+objects the human is interacting with. If you look at the skelat stream, talking on the phone, and drinking
+water seem extrmemly similar! In both the cases, the human raises a hand, and brings it near his head. 
+Thus, in order to make a truly useful activity detection system, it is important to model these interactions
+explicitly.</p>
+
+<p>If we do get around to improving this model, I will post it here.</p>
+
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/machinelearning/classifying-human-activities-kinect-2';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

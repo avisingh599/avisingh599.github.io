@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Experimenting various segmentation algorithms to segment every tooth from an intraoral image.">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="vision">
+    <link rel="canonical" href="http://avisingh599.github.io/vision/segmenting-teeth/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Every Tooth Tracked">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/vision/segmenting-teeth/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Every Tooth Tracked" />
+    <meta name="twitter:description" content="Experimenting various segmentation algorithms to segment every tooth from an intraoral image." />
+    <meta name="twitter:url" content="http://avisingh599.github.io/vision/segmenting-teeth/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h2>Every Tooth Tracked</h2>
+  <span class="post-meta">May 23, 2015</span><br>
+  
+  <span class="post-meta small">
+  
+    2 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p><em>Note: This is a repost of my <a href="https://mitredxcampjan2015.wordpress.com/2015/01/30/dental-imaging-project-every-tooth-tracked/">January post</a> on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.</em></p>
+
+<p>We want to track the health of every tooth over time, and therefore wanted an algorithm that could extract the image of every single tooth from the stitch that we obtained in our previous step. Our first attempt was at a completely automated approach, and we soon found a <a href="http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=6482414&amp;tag=1">paper</a> which attempted to solve a problem that was a subset of ours. They wanted to separate the teeth part from the rest of the image, while we wanted to segment every teeth from the rest of the image. The algorithm that these guys had used was pretty basic (<a href="http://cdanup.com/10.1.1.2.1828.pdf">Active Contours Without Edges</a>), and I got it working within half an hour on MATLAB, with the following results:</p>
+
+<figure>
+	<img src="/images/dental/3k_with_removal.png" />
+	<figcaption>Obtained using Active Contours Without Edges (Chan-Vese)</figcaption>
+</figure>
+
+<p>But this approach had a few problems. It was computationally expensive (~ 2min to run on my Intel Core i7 machine), and could not be used to segment an individual tooth out.</p>
+
+<p>So, I started looking at other algorithms, and soon stumbled across the <a href="http://www.cs.rug.nl/~roe/publications/parwshed.pdf">Watershed transform</a>. In order to generate good results, watershed needs certain markers, and these markers can be generated using both automated or manual methods. One popular automated method for generating these markers is ‘opening-by-reconstruction’ and ‘closing-by-reconstruction’. The following results were obtained using MATLAB’s watershed example:</p>
+
+<figure>
+	<img src="/images/dental/49_seg_man.png" />
+	<figcaption>Vanilla Watershed with automatic marker generation</figcaption>
+</figure>
+
+<p>As you can see, the above is a complete mess. A lot of unwanted segments are obtained, and some superpixels (clusters of pixels) flow into each other.
+So, I then tried a manual-marker approach, and the results were much better:</p>
+
+<figure>
+	<img src="/images/dental/49_final.png" />
+	<figcaption>Watershed with manually-annotated markers</figcaption>
+</figure>
+
+<p>A <a href="http://www.mathworks.com/matlabcentral/fileexchange/44469-gui-image-mask-sample">matlab-based GUI</a> is used to generate the masks as follows:</p>
+<figure>
+	<img src="/images/dental/gui_marker.png" />
+</figure>
+
+<p>The mask file looks something like this:</p>
+<figure>
+	<img src="/images/dental/49_msk.png" />
+	<figcaption>The mask used to generate the above results</figcaption>
+</figure>
+
+<p>In the final product, we can assume to have a touchscreen based user interface, wherein the user slashes with his finger across every tooth once, and then gets the segmented image as an output. One several such images have been mannually annotated, we could use a learning algorithm that can automatically generate these masks.</p>
+
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/vision/segmenting-teeth';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

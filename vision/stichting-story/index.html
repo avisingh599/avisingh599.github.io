@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Using ASIFT feature matching for stiching images captured from an intraoral camera.">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="vision">
+    <link rel="canonical" href="http://avisingh599.github.io/vision/stichting-story/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Stitching Intra-Oral Images">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/vision/stichting-story/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Stitching Intra-Oral Images" />
+    <meta name="twitter:description" content="Using ASIFT feature matching for stiching images captured from an intraoral camera." />
+    <meta name="twitter:url" content="http://avisingh599.github.io/vision/stichting-story/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h2>Stitching Intra-Oral Images</h2>
+  <span class="post-meta">May 23, 2015</span><br>
+  
+  <span class="post-meta small">
+  
+    1 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <p><em>Note: This is a repost of my <a href="https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/">January post</a> on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.</em></p>
+
+<p>Most intraoral cameras have a relative narrow field of view, and the entire jaw is never visible in a single image. We are trying to stitch several images into one, so that the user has complete view of the jaw, and we can then segment the tooth from it, and keep a track for every individual tooth.</p>
+
+<p>A basic image stitching pipeline has the following steps:</p>
+
+<ol>
+  <li>Matching features between two images</li>
+  <li>Computing the homography with RANSAC (minimal set is four matches)</li>
+  <li>Transforming , concatenating and blending the images.</li>
+</ol>
+
+<p>Most of the existing panaroma building algorithms are well-suited for applications in which the object being photographed is quite far away from the camera, such as in the image shown below (<a href="http://www.cs.bath.ac.uk/brown/autostitch/autostitch.html">obtained from the Autostitch page</a>):</p>
+
+<figure>
+	<img src="/images/dental/panaroma.png" />
+	<figcaption>Panorama construction</figcaption>
+</figure>
+
+<p>However, we are photographing the teeth at a really close range, and minor changes in perspective are fatal for these algorithms. In order to overcome the problems imposed by changes in perspective, we are using ASIFT, a feature detection/description/matching algorithm which is robust to perspective changes when compared to SIFT. The next steps (homography computation, blending) are pretty standard, and here are some results:</p>
+
+<figure>
+	<img src="/images/dental/stitched.png" />
+	<figcaption>A stitch of three images taken from an intraoral camera</figcaption>
+</figure>
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/vision/stichting-story';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

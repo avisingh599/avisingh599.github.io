@@ -1,0 +1,1054 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Avi Singh</title>
+    <description>Homepage and blog</description>
+    <link>http://avisingh599.github.io/</link>
+    <atom:link href="http://avisingh599.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    
+      <item>
+        <title>Computer Vision for Predicting Facial Attractiveness</title>
+        <description>&lt;p&gt;&lt;a href=&quot;http://www.learnopencv.com/computer-vision-for-predicting-facial-attractiveness/&quot;&gt;Click here to go to the post.&lt;/a&gt;&lt;/p&gt;
+</description>
+        <pubDate>Mon, 27 Jul 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/predicting-facial-attractiveness/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/predicting-facial-attractiveness/</guid>
+      </item>
+    
+      <item>
+        <title>Monocular Visual Odometry using OpenCV</title>
+        <description>&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;Last month, I made a &lt;a href=&quot;/vision/visual-odometry-full/&quot;&gt;post&lt;/a&gt; on Stereo Visual Odometry and its implementation in MATLAB. 
+This post would be focussing on &lt;strong&gt;Monocular Visual Odometry&lt;/strong&gt;, and how we can implement it in &lt;strong&gt;OpenCV/C++&lt;/strong&gt;.
+The implementation that I describe in this post is once again freely available on &lt;a href=&quot;https://github.com/avisingh599/mono-vo&quot;&gt;github&lt;/a&gt;.
+It is also simpler to understand, and runs at 5fps, which is much faster than my older stereo implementation.&lt;/p&gt;
+
+&lt;p&gt;If you are new to Visual Odometry, I suggest having a look at the first few paragraphs (before all the math starts) of my 
+&lt;a href=&quot;/vision/visual-odometry-full/&quot;&gt;old post&lt;/a&gt;. It talks about what Visual Odometry is, why we 
+need it, and also compares the monocular and stereo approaches.&lt;/p&gt;
+
+&lt;p&gt;Acquanted with all the basics of visual odometry? Cool. Let’s go ahead.&lt;/p&gt;
+
+&lt;h2 id=&quot;demo&quot;&gt;Demo&lt;/h2&gt;
+&lt;p&gt;Before I move onto describing the implementation, have a look at the algorithm in action!&lt;/p&gt;
+
+&lt;style&gt;.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }&lt;/style&gt;
+&lt;div class=&quot;embed-container&quot;&gt;&lt;iframe src=&quot;https://www.youtube.com/embed/homos4vd_Zs&quot; frameborder=&quot;0&quot; allowfullscreen=&quot;&quot;&gt;&lt;/iframe&gt;&lt;/div&gt;
+
+&lt;p&gt;Pretty cool, eh? Let’s dive into implementing it in OpenCV now.&lt;/p&gt;
+
+&lt;h3 id=&quot;formulation-of-the-problem&quot;&gt;Formulation of the problem&lt;/h3&gt;
+
+&lt;h4 id=&quot;input&quot;&gt;Input&lt;/h4&gt;
+&lt;p&gt;We have a stream of gray scale images coming from a camera. Let the frames, captured at time &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt; be referred to as
+&lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;. We have prior knowledge of all the intrinsic parameters, obtained via calibration, 
+which can also be done in &lt;a href=&quot;http://docs.opencv.org/3.0.0/d9/d0c/group__calib3d.html&quot;&gt;OpenCV&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;output&quot;&gt;Output&lt;/h4&gt;
+&lt;p&gt;For every pair of images, we need to find the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; and the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, which describes the motion of the vehicle between the two frames. The vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; can only be computed upto a scale factor in our monocular scheme.&lt;/p&gt;
+
+&lt;h3 id=&quot;algorithm-outline&quot;&gt;Algorithm Outline&lt;/h3&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Capture images: &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;,&lt;/li&gt;
+  &lt;li&gt;Undistort the above images.&lt;/li&gt;
+  &lt;li&gt;Use FAST algorithm to detect features in  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^t&lt;/script&gt;, and track those features to &lt;script type=&quot;math/tex&quot;&gt;{I}^{t+1}&lt;/script&gt;. A new detection is triggered if the number of features drop below a certain threshold.&lt;/li&gt;
+  &lt;li&gt;Use Nister’s 5-point alogirthm with RANSAC to compute the essential matrix.&lt;/li&gt;
+  &lt;li&gt;Estimate &lt;script type=&quot;math/tex&quot;&gt;R, t&lt;/script&gt; from the essential matrix that was computed in the previous step.&lt;/li&gt;
+  &lt;li&gt;Take scale information from some external source (like a speedometer), and concatenate the translation vectors, and rotation matrices.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;You may or may not understand all the steps that have been metioned above, but don’t worry. All the points
+above will be explained in great detail in the text to follow.&lt;/p&gt;
+
+&lt;h3 id=&quot;undistortion&quot;&gt;Undistortion&lt;/h3&gt;
+
+&lt;p&gt;Distortion happens when lines that are straight in the real world become curved in the images. T
+his step compensates for this lens distortion. It is performed with the help of the distortion parameters 
+that were obtained during calibration. Since the KITTI dataset that I’m using already comes with 
+undistorted images, I won’t write the code about it here. However, it is relatively straightforward to 
+&lt;a href=&quot;http://docs.opencv.org/modules/imgproc/doc/geometric_transformations.html#undistort&quot;&gt;undistort&lt;/a&gt; with OpenCV.&lt;/p&gt;
+
+&lt;h3 id=&quot;feature-detection&quot;&gt;Feature Detection&lt;/h3&gt;
+&lt;p&gt;My approach uses the FAST corner detector, just like my stereo implementation. I’ll now explain in brief how the detector works, though you must have a look at the &lt;a href=&quot;http://www.edwardrosten.com/work/fast.html&quot;&gt;original paper and source code&lt;/a&gt; if you want to really understand how it works. Suppose there is a point &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt; which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; and for another set of contiguous pixels if the intensity is less by at least the same factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;, or must have an intensity lower by the same amount &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/fast.png&quot; /&gt;
+  &lt;figcaption&gt;Image from the original FAST feature detection paper&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Using OpenCV, detecting features is trivial, and here is the code that does it.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;featureDetection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+  &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;KeyPoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast_threshold&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;20&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;bool&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nonmaxSuppression&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;true&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;FAST&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;fast_threshold&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;nonmaxSuppression&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+  &lt;span class=&quot;n&quot;&gt;KeyPoint&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;convert&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;keypoints_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;());&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;The parameters in the code above are set such that it gives ~4000 features on one image from the KITTI dataset. You may want
+tune these parameters so as to obtain the best performance on your own data.
+Note that the code above also converts the datatype of the detected feature points from KeyPoints to a vector of Point2f, so 
+that we can directly pass it to the feature tracking step, described below:&lt;/p&gt;
+
+&lt;h3 id=&quot;feature-tracking&quot;&gt;Feature Tracking&lt;/h3&gt;
+
+&lt;p&gt;The fast corners detected in the previous step are fed to the next step, which uses a &lt;a href=&quot;https://www.ces.clemson.edu/~stb/klt/&quot;&gt;KLT tracker&lt;/a&gt;. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt; are tracked in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt;. Let the set of features detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; , and the set of corresponding features in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}^{t+1}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt;. Here is the function that does feature tracking in OpenCV using the KLT tracker:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;featureTracking&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Mat&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;uchar&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt; 
+
+&lt;span class=&quot;c1&quot;&gt;//this function automatically gets rid of points for which tracking fails&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;vector&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;					
+  &lt;span class=&quot;n&quot;&gt;Size&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;winSize&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;21&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;																								
+  &lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;termcrit&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;COUNT&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;TermCriteria&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;::&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;EPS&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;30&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.01&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;n&quot;&gt;calcOpticalFlowPyrLK&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;img_2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;err&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;winSize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;termcrit&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.001&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+  &lt;span class=&quot;c1&quot;&gt;//getting rid of points for which the KLT tracking failed or those who have gone outside the frame&lt;/span&gt;
+  &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+  &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;();&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+     &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;  &lt;span class=&quot;n&quot;&gt;Point2f&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     	&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;==&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     		  &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;||&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pt&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;	&lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+     		  	&lt;span class=&quot;n&quot;&gt;status&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;at&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     		  &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;erase&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;erase&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;begin&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+     		  &lt;span class=&quot;n&quot;&gt;indexCorrection&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+     	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+     &lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;feature-re-detection&quot;&gt;Feature Re-Detection&lt;/h4&gt;
+&lt;p&gt;Note that while doing KLT tracking, we will eventually lose some points (as they move out of the field of view of the car), and 
+we thus trigger a redetection whenver the total number of features go below a certain threshold (2000 in my implementation).&lt;/p&gt;
+
+&lt;h3 id=&quot;essential-matrix-estimation&quot;&gt;Essential Matrix Estimation&lt;/h3&gt;
+&lt;p&gt;Once we have point-correspondences, we have several techniques for the computation of an essential matrix. The essential matrix is defined as follows:
+&lt;script type=&quot;math/tex&quot;&gt;\begin{equation}
+y_{1}^{T}Ey_{2} = 0
+\end{equation}&lt;/script&gt;
+Here, &lt;script type=&quot;math/tex&quot;&gt;y_{1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;y_{2}&lt;/script&gt; are homogenous normalised image coordinates. 
+While a simple algorithm requiring eight point correspondences exists\cite{Higgins81}, a more recent approach that is shown to give better results is the five point algorithm&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;. It solves a number of non-linear equations, and requires the minimum number of points possible, since the Essential Matrix has only five degrees of freedom.&lt;/p&gt;
+
+&lt;h4 id=&quot;ransac&quot;&gt;RANSAC&lt;/h4&gt;
+&lt;p&gt;If all of our point correspondences were perfect, then we would have need only 
+five feature correspondences between two successive frames to estimate motion accurately. 
+However, the feature tracking algorithms are not perfect, and therefore we have several 
+erroneous correspondence. A standard technique of handling outliers when doing model estimation
+is RANSAC. It is an iterative algorithm. At every iteration, it randomly samples five 
+points from out set of correspondences, estimates the Essential Matrix, and then checks
+if the other points are inliers when using this essential matrix. The algorithm terminates
+after a fixed number of iterations, and the Essential matrix with which the maximum number of points agree, is used.&lt;/p&gt;
+
+&lt;p&gt;Using the above in OpenCV is again pretty straightforward, and all you need is one line:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;E&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;findEssentialMat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;focal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;RANSAC&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.999&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;1.0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;computing-r-t-from-the-essential-matrix&quot;&gt;Computing R, t from the Essential Matrix&lt;/h3&gt;
+&lt;p&gt;Another definition of the Essential Matrix (consistent) with the definition mentioned earlier is as follows:
+&lt;script type=&quot;math/tex&quot;&gt;\begin{equation}
+E = R[t]_{x}
+\end{equation}&lt;/script&gt;
+Here, &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; is the rotation matrix, while &lt;script type=&quot;math/tex&quot;&gt;[t]_{x}&lt;/script&gt; is  the matrix representation of a cross product with &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;. Taking the SVD of the essential matrix, and then exploiting the constraints on the rotation matrix, we get the following:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;E = U\Sigma V^{T}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;[t]_{x} = VW\Sigma V^{T}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;R = UW^{-1}V^{T}&lt;/script&gt;
+
+&lt;p&gt;Here’s the one-liner that implements it in OpenCV:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c--&quot; data-lang=&quot;c++&quot;&gt;&lt;span class=&quot;n&quot;&gt;recoverPose&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;E&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;R&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;focal&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;pp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;mask&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h3 id=&quot;constructing-trajectory&quot;&gt;Constructing Trajectory&lt;/h3&gt;
+&lt;p&gt;Let the pose of the camera be denoted by &lt;script type=&quot;math/tex&quot;&gt;R_{pos}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;t_{pos}&lt;/script&gt;. We can then track the trajectory using the following equation:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;R_{pos} = R R_{pos}&lt;/script&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;t_{pos} = t_{pos} + t R_{pos}&lt;/script&gt;
+
+&lt;p&gt;Note that the scale information of the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; has to be obtained from some other source before concatenating.
+In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.&lt;/p&gt;
+
+&lt;h3 id=&quot;heuristics&quot;&gt;Heuristics&lt;/h3&gt;
+&lt;p&gt;Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception. The
+heuristive that we use is explained below:&lt;/p&gt;
+
+&lt;h4 id=&quot;dominant-motion-is-forward&quot;&gt;Dominant Motion is Forward&lt;/h4&gt;
+&lt;p&gt;The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion.&lt;/p&gt;
+
+&lt;h2 id=&quot;results&quot;&gt;Results&lt;/h2&gt;
+&lt;p&gt;So, how good is the performance of the algorithm on the KITTI dataset? See for yourself.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/2K.png&quot; /&gt;
+  &lt;figcaption&gt; Computed Trajectory vs Ground Truth for 2000 frames&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h2 id=&quot;what-next&quot;&gt;What next?&lt;/h2&gt;
+&lt;p&gt;A major limitation of my implementation is that it cannot evaluate relative scale. I did try implementing some methods, but I 
+encountered the problem which is known as “scale drift” i.e. small errors accumulate, leading to bad odometry estimates.
+I hope I’ll soon implement a more robust relative scale computation pipeline, and write a post about it!&lt;/p&gt;
+
+&lt;hr /&gt;
+
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;David Nister An efficient solution to the five-point relative pose problem (2004) &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 08 Jun 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/vision/monocular-vo/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/vision/monocular-vo/</guid>
+      </item>
+    
+      <item>
+        <title>Recognizing Human Activities with Kinect - The implementation</title>
+        <description>&lt;p&gt;&lt;em&gt;Disclaimer: The work described in this post was done by me and my classmate at IIT-Kanpur, Ankit Goyal. &lt;a href=&quot;/assets/activity-classification.pdf&quot;&gt;Here&lt;/a&gt; is a link to the presentation that we gave.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;This is a follow up of my earlier &lt;a href=&quot;/machinelearning/classifying-human-activities-kinect/&quot;&gt;post&lt;/a&gt;, in which I explored
+temporal models, that can be applied to things like part-of-speech tagging, gesture recognition, and any sequential 
+or temporal sources of data in general. In this post, I will describe in more detail the implementation of our
+project that classified RGBD videos according to the activity being performed in them.&lt;/p&gt;
+
+&lt;h3 id=&quot;dataset&quot;&gt;Dataset&lt;/h3&gt;
+&lt;p&gt;Quite a few &lt;a href=&quot;http://research.microsoft.com/en-us/um/people/zliu/ActionRecoRsrc/&quot;&gt;RGBD datasets&lt;/a&gt; 
+are available for human activity detection/classification, and we chose to use the 
+MSR Daily Activity 3D dataset. Since we had limited computational resources (the mathserver of IITK),
+and a limited time before the submission deadline, we chose to use a subset of the above dataset, 
+and worked with only 6 activities. So, our problem was now reduced to 6-class classification.&lt;/p&gt;
+
+&lt;h3 id=&quot;features&quot;&gt;Features&lt;/h3&gt;
+&lt;p&gt;In any machine learning problem, your model or learning algorithm is useless without a good set of
+features. I read a &lt;a href=&quot;http://www.sciencedirect.com/science/article/pii/S0167865514001299&quot;&gt;recent paper&lt;/a&gt; which
+had a decent review of the various features used. They were:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;3D silhouettes - Finding the outline of the human body, and using the shape of this outline as features.&lt;/li&gt;
+  &lt;li&gt;Skeletal joints or body part tracking - Kinect comes with an algorithm to determine the pose of the body
+from the depth image alone. Pose here refers to the 3D coordinates of 15 body joints.&lt;/li&gt;
+  &lt;li&gt;Local Spatio-temporal features - Just like some 2D/3D image feature detector, but with the added dimension of time.&lt;/li&gt;
+  &lt;li&gt;Local 3D occupancy features - This one seemed the most interesting. What this does is to treat an RGBD video as
+a function I(x, y, z, t). Now, this a very sparse function, and would be zero at most points in a 4D space. But, 
+whenever a certain activity is performed, certain regions of this 4D space will become filled. Inferring from 
+such data is now a matter sampling it efficiently, and this where all the innovation must lie, if this technique 
+is to work.&lt;/li&gt;
+  &lt;li&gt;3D optical flow - The 3D counter part of the popular &lt;a href=&quot;http://en.wikipedia.org/wiki/Optical_flow&quot;&gt;optical flow&lt;/a&gt;, 
+it is also known as [Scene Flow] in the academic literature. &lt;a href=&quot;http://www.sciencedirect.com/science/article/pii/S1077314210001748&quot;&gt;This&lt;/a&gt; 
+is one paper that makes use of these features.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The features that we ultimately went ahead were the skeletal joints. The MSR Daily Activity 3D dataset already provides
+the skeletal joint coordinates to us, so all we had to was to take that data, and do some basic pre-processing on it.&lt;/p&gt;
+
+&lt;h4 id=&quot;preprocessing-the-features&quot;&gt;Preprocessing the features.&lt;/h4&gt;
+
+&lt;p&gt;The dataset provides us with the 3D coordinates of 15 human body joints. These cordinates are in the frame of reference of the Kinect.
+The first operation that we perform on them is the following: to transform the points from the Kinect reference frame to the frame
+of the person. By frame of the person, we refer to the joint corresponding to the torso.&lt;/p&gt;
+
+&lt;p&gt;Next thing that we do is what we call “body size normalization”. Basically all the body lengths, such as the distance between the elbo and 
+hand, are scaled up or down to a standard body size. This ensures that the variation in bosy sizes is captured at the feature level itself,
+and our model does not have to worry about it anymore.&lt;/p&gt;
+
+&lt;p&gt;&lt;a href=&quot;https://gist.github.com/avisingh599/73ac41db59d87115c99e&quot;&gt;Clicke here&lt;/a&gt; to get the MATLAB code that does the feature extraction part from skeleton files that were obtained from the MSR dataset.&lt;/p&gt;
+
+&lt;h3 id=&quot;model&quot;&gt;Model&lt;/h3&gt;
+
+&lt;p&gt;Now, as I discussed in my &lt;a href=&quot;/machinelearning/classifying-human-activities-kinect/&quot;&gt;previous post&lt;/a&gt;, Hidden Conditional
+Random Fields (HCRFs) was the model that we finally selected. The original authors had released a well documented 
+&lt;a href=&quot;http://sourceforge.net/projects/hcrf/&quot;&gt;toolbox&lt;/a&gt;, to which we directly fed the features that were computed above.&lt;/p&gt;
+
+&lt;h3 id=&quot;results&quot;&gt;Results&lt;/h3&gt;
+&lt;p&gt;Five-fold cross-validation without any hyper-parameter tuning yielded a precision of 71%. These results do not seem impressive
+on first glance, but it must be noted that all our experiments were performed in the “new person” setting i.e. the person in the
+test set did not appear in the training set, and we did not do any hyper parameter tuning. Our results can be summarised in the 
+ollowing heatmap:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/kinect_activity/heatmap.bmp&quot; /&gt;
+	&lt;figcaption&gt;Where the algorithm succeeds and fails&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The above figure made one thing clear: that accuracy is being seriously harmed by the algorithm’s inability
+to correctly distinguish between drinking and talking on phone. The reason for this is relatively simple. 
+The features that we are using are skeletal features, and therefore we do not pay any attention to what
+objects the human is interacting with. If you look at the skelat stream, talking on the phone, and drinking
+water seem extrmemly similar! In both the cases, the human raises a hand, and brings it near his head. 
+Thus, in order to make a truly useful activity detection system, it is important to model these interactions
+explicitly.&lt;/p&gt;
+
+&lt;p&gt;If we do get around to improving this model, I will post it here.&lt;/p&gt;
+
+</description>
+        <pubDate>Tue, 02 Jun 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</guid>
+      </item>
+    
+      <item>
+        <title>Recognizing Human Activities with Kinect - Choosing a temporal model</title>
+        <description>&lt;p&gt;&lt;em&gt;Update: I have posted the sequel to this post &lt;a href=&quot;/machinelearning/classifying-human-activities-kinect-2/&quot;&gt;here&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;In this blog post, I will very briefly talk about some popular models used for &lt;strong&gt;temporal/sequence classification&lt;/strong&gt;, 
+their advantages/disadvantages, which one I used for my human activity recognition project, and why. 
+This post is intended for people who would like to delve into sequence classification, but don’t know where to start. 
+I plan to follow up on this post with another post that explains in detail our implementation of recognizing human 
+activities from RGBD data.  However, if you want to have a look at it now, 
+&lt;a href=&quot;/assets/activity-classification.pdf&quot;&gt;here&lt;/a&gt; are the slides.&lt;/p&gt;
+
+&lt;p&gt;In one my graduate-level course &lt;strong&gt;Machine Learning for Computer Vision&lt;/strong&gt;, we were asked to select
+a research paper to review and present. We selected the paper 
+&lt;a href=&quot;http://www.cs.cornell.edu/~jysung/paper/unstructured_human_activity_learning.pdf&quot;&gt;Unstructured Human Activity Detection from RGBD Images&lt;/a&gt;.
+Our reasons for this selection were several: it was fairly recent (2012), had a large number of citations (according to google scholar, at least), and it dealt with sequential data (RGBD videos). Temporal models, or sequence classification, was
+something that was not covered in our course, and so we were eager to explore this area of Machine Learning. 
+We read the paper, made a &lt;a href=&quot;/assets/activity-poster.pdf&quot;&gt;poster&lt;/a&gt; out of it, and presented it to our peers, TAs and the professor.&lt;/p&gt;
+
+&lt;p&gt;The next part of the course was more interesting, and it involved us picking up a Machine Learning problem, and
+we then had the option of either implementing an existing approach to the problem, or we could come with our
+own approach to solve it. We could have implemented the paper that we reviewed, but it seemed to more interesting
+to have a look at the models available for sequence classification, and then use one 
+such model for our problem.&lt;/p&gt;
+
+&lt;p&gt;So we started looking around, and found that that following three models (and their variations)
+seem to be the most popular:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Hidden Markov Models (HMMs)&lt;/li&gt;
+  &lt;li&gt;Maximum Entropy Markov Models (MEMMs)&lt;/li&gt;
+  &lt;li&gt;Conditional Random Fields (CRFs)&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Here’s the very basic intuition about temporal models: Suppose you are reading some text character by character. The first 
+character that you observe is an “i”. Now, what do you think are the chances of you observing another “i”. Pretty slim, right?
+This is because consecutive “i” are pretty rare while reading english text. Modeling such probabilistic relationships
+in a mathematical form is precisely why we use temporal models, instead of just using some regular classifier (such as
+logistic regression). There’s two more popular models for sequential classification (or structured prediction, as some people
+like to call it), and they are: 1) &lt;strong&gt;Structural SVM&lt;/strong&gt;, 2) &lt;strong&gt;Recurrent Neural Nets&lt;/strong&gt;. I won’t talk about for either of them,
+as I have not used them, but you are welcome to check them out.&lt;/p&gt;
+
+&lt;p&gt;Hidden Markov Models are the oldest, and have been used in things like speech-to-text since the 1960s. MEMMs came
+around in 2000, only to be followed (and overshadowed) by Conditional Random Fields an year later. Both MEMMs and CRF
+came from the &lt;a href=&quot;http://people.cs.umass.edu/~mccallum/&quot;&gt;Andrew McCallum’s research group&lt;/a&gt;, and were focused on &lt;a href=&quot;http://en.wikipedia.org/wiki/Natural_language_processing&quot;&gt;Natural Language Processing&lt;/a&gt; tasks.
+However, once you have extracted features from sequential data, you can use these models as long as your features
+satisfy the assumptions made by these models. Note that all of these models are special cases of 
+&lt;a href=&quot;http://en.wikipedia.org/wiki/Graphical_model&quot;&gt;probabilistic graphical models&lt;/a&gt;, so all the inference and learning algorithms from 
+there can directly be applied here.&lt;/p&gt;
+
+&lt;h3 id=&quot;hidden-markov-models&quot;&gt;Hidden Markov Models&lt;/h3&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/hmm.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Model Representation of a stack of HMMs&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;As I mentioned earlier, Hidden Markov Models have been around for a long time, and were heavily used by the speech processing community.
+I won’t much into the details/code of HMMs, as there are a large number of resources that describe the topic, targeted both at 
+&lt;a href=&quot;http://www.comp.leeds.ac.uk/roger/HiddenMarkovModels/html_dev/main.html&quot;&gt;beginners&lt;/a&gt; and those who want to go into all the 
+&lt;a href=&quot;http://www.ece.ucsb.edu/Faculty/Rabiner/ece259/Reprints/tutorial%20on%20hmm%20and%20applications.pdf&quot;&gt;details&lt;/a&gt;. 
+HMMs are &lt;a href=&quot;http://en.wikipedia.org/wiki/Generative_model&quot;&gt;&lt;strong&gt;generative models&lt;/strong&gt;&lt;/a&gt;, and efficient dynamic programming algorithms 
+are available for both training and inference. The models uses &lt;strong&gt;hidden states&lt;/strong&gt;, and assumes that the &lt;strong&gt;observed states&lt;/strong&gt; are independent of each other, given their hidden states. A common way to go about doing classification with HMMS is the following: Train an HMM
+for every class, and then for every new example, find the probability of that example being generated by each HMM, the HMM that gives the
+maximum probability is your final class.&lt;/p&gt;
+
+&lt;p&gt;However, with HMMs come a number of disadvantages, with the major ones being:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Requires enumeration of all possible observation sequences.&lt;/li&gt;
+  &lt;li&gt;Requires the observations to be independent of each other (given the hidden state).&lt;/li&gt;
+  &lt;li&gt;Generative approach for solving a conditional problem leading to unnecessary computations.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;maximum-entropy-markov-models&quot;&gt;Maximum Entropy Markov Models&lt;/h3&gt;
+
+&lt;p&gt;So, let’s move onto a new model, which, in theory, solves all of the above problems: MEMMs.
+MEMMs were introduced in 2000, and were at that time used in NLP tasks, and showed
+improvements in tasks where assumption [2] mentioned above was not true. MEMMs are discriminative models, so
+they also do away with problems [1] and [3]. There’s also a hierarchical version of the same model, 
+and a Hierarchical MEMM is what was used in the &lt;a href=&quot;http://www.cs.cornell.edu/~jysung/paper/unstructured_human_activity_learning.pdf&quot;&gt;paper&lt;/a&gt; 
+that we reviewed. The paper contains an interesting way of selecting graph structure, and I recommend checking it out.&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/kinect_activity/memm.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of an MEMM. Note how the direction of arrow from observation to hidden state has been reversed.
+	&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;But along with MEMMs comes it’s own problem, commonly called as the label-bias problem.&lt;/p&gt;
+
+&lt;h4 id=&quot;label-bias-problem&quot;&gt;Label bias problem&lt;/h4&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;States with low-entropy transition distributions ”effectively ignore” their observations. States with lower transitions have ”unfair advantage”.&lt;/li&gt;
+  &lt;li&gt;Since training is always done with respect to known previous tags, so the model struggles at test time when there is uncertainty in the previous tag.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;It is impossible to understand the above without some background on what MEMMs are, so it is advisable
+to first look at &lt;a href=&quot;http://courses.ischool.berkeley.edu/i290-dm/s11/SECURE/gidofalvi.pdf&quot;&gt;how MEMMs work&lt;/a&gt;
+, and then at the original &lt;a href=&quot;http://www.cs.columbia.edu/~jebara/6772/papers/crf.pdf&quot;&gt;CRF paper&lt;/a&gt;
+which talks about the label bias problem.&lt;/p&gt;
+
+&lt;h3 id=&quot;conditional-random-fields---star-of-the-show&quot;&gt;Conditional Random Fields -&amp;gt; Star of the show&lt;/h3&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/crf.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of a CRF. Note that this an undirected graphical model, as opposed to HMM/MEMM&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;To overcome the label-bias problem of MEMMs, CRFs were introduced an year later, and demonstrated superior or
+equivalent performance in almost every NLP task that the authors tested it on. CRFs (and its variants) are considered as 
+state-of-the-art in a  number of machine learning problems, specially in Computer Vision. They are used not only 
+for temporal modeling, but can also model more complicated relationships in high-dimensional data, and some applications include
+image segmentation and depth estimation from monocular images. Understanding CRFs is a little more challenging than
+HMMs or MEMMs, so I will list a few resources for you to get started with. For beginners, the best resource is this 
+&lt;a href=&quot;http://videolectures.net/cikm08_elkan_llmacrf/&quot;&gt;short course&lt;/a&gt; by &lt;a href=&quot;http://cseweb.ucsd.edu/~elkan/&quot;&gt;Charles Elkan&lt;/a&gt;.
+It also has accompanying course notes,
+and if you go to this guy’s academic website, you can also find some programming assignments to implement CRFs. 
+&lt;a href=&quot;https://onionesquereality.wordpress.com/2011/08/20/conditional-random-fields-a-beginners-survey/&quot;&gt;Here&lt;/a&gt; is a 
+more comprehensive list of resources related to CRFs, and it’s pretty thorough.&lt;/p&gt;
+
+&lt;p&gt;Now, in 2006, there was an extension to CRF by the MIT CSAIL lab, called hidden CRFs. Here is the original paper&lt;a href=&quot;http://people.csail.mit.edu/sybor/cvpr06_wang.pdf&quot;&gt;original paper&lt;/a&gt;. What this does, in essence, is to introduce another layer of hidden states, and is designed to
+assign a single label to every sequence. This is different from MEMMs and CRFs, which assigned a label to every observation in
+a sequence, and different from HMMs too (wherein a stack of HMMs was trained for classification).&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img img=&quot;&quot; height=&quot;155&quot; width=&quot;410&quot; src=&quot;/images/kinect_activity/hcrf.png&quot; /&gt;
+	&lt;figcaption&gt;Graphical Representation of an hCRF. Note the extra hidden layer.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The original hCRF paper applied it to gesture recognition from RGB videos, and demonstrated superior
+performance to CRF in classifying gestures, so we zeroed down on this model, to be used for our
+Human Activity Classification task (note that activities are not exactly the same as gestures).&lt;/p&gt;
+
+&lt;p&gt;The real icing on the cake was this-&amp;gt; MIT CSAIL had released a well documented &lt;a href=&quot;http://sourceforge.net/projects/hcrf/&quot;&gt;toolbox&lt;/a&gt;,
+making it ridiculously easy for us to use this model on whichever dataset that we wanted, and 
+the only major programming part that was left to us now was was the feature extraction stage.&lt;/p&gt;
+
+&lt;p&gt;In a future blog post, I will describe in detail the implementation of our project: the dataset, the features we used,
+and what results we got.&lt;/p&gt;
+</description>
+        <pubDate>Wed, 27 May 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</guid>
+      </item>
+    
+      <item>
+        <title>Visual Odmetry from scratch - A tutorial for beginners</title>
+        <description>&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;I made a post regarding Visual Odometry several months ago, but 
+never followed it up with a post on the actual work that I did.
+I am hoping that this blog post will serve as a starting point for 
+beginners looking to implement a Visual Odometry system for their robots.
+I will basically present the algorithm described in the paper
+&lt;a href=&quot;https://www-robotics.jpl.nasa.gov/publications/Andrew_Howard/howard_iros08_visodom.pdf&quot;&gt;Real-Time Stereo Visual Odometry for Autonomous Ground Vehicles(Howard2008)&lt;/a&gt;, with some of my own changes. It’s a somewhat old paper,
+but very easy to understand, which is why I used it for my very first implementation. The MATLAB
+source code for the same is available on &lt;a href=&quot;https://github.com/avisingh599/vo-howard08&quot;&gt;github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;what-is-odometry&quot;&gt;What is odometry?&lt;/h3&gt;
+
+&lt;p&gt;Have you seen that little gadget on a car’s dashboard that tells you how much
+distance the car has travelled? It’s called an &lt;a href=&quot;http://en.wikipedia.org/wiki/Odometer&quot;&gt;odometer&lt;/a&gt;.
+It (probably) measures the number of rotations that the wheel is undergoing, and multiplies that
+by the circumference to get an estimate of the distance travlled by the car. &lt;a href=&quot;http://simreal.com/content/Odometry&quot;&gt;Odometry&lt;/a&gt;
+in Robotics is a more general term, and often refers to estimating not only the distance traveled, 
+but the entire trajectory of a moving robot. So for every time instance &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, there is a vector 
+&lt;script type=&quot;math/tex&quot;&gt;[ x^{t} y^{t} z^{t} \alpha^{t} \beta^{t} \gamma^{t}]&lt;/script&gt; which describes the complete &lt;a href=&quot;http://en.wikipedia.org/wiki/Pose_(computer_vision)&quot;&gt;pose&lt;/a&gt; of the robot at that instance. 
+Note that &lt;script type=&quot;math/tex&quot;&gt;\alpha^{t}, \beta^{t}, \gamma^{t}&lt;/script&gt; here are the &lt;a href=&quot;http://mathworld.wolfram.com/EulerAngles.html&quot;&gt;euler angles&lt;/a&gt;, 
+while &lt;script type=&quot;math/tex&quot;&gt;x^{t}, y^{t} ,z^{t}&lt;/script&gt; are &lt;a href=&quot;http://en.wikipedia.org/wiki/Cartesian_coordinate_system&quot;&gt; caetesian coordinates&lt;/a&gt; of the robot.&lt;/p&gt;
+
+&lt;h3 id=&quot;whats-visual-odometry&quot;&gt;What’s visual odometry?&lt;/h3&gt;
+
+&lt;p&gt;There are more than one ways to determine the trajectory of a moving robot, but the one that we
+will focus on in this blog post is called Visual Odometry. In this approach we have a camera (or an 
+array of cameras) rigidly attached to a moving object (such as a car or a robot), and our job is
+to construct a &lt;a href=&quot;http://en.wikipedia.org/wiki/Six_degrees_of_freedom&quot;&gt;6-DOF&lt;/a&gt; trajectory using the
+video stream coming from this camera(s). When we are using just one camera, it’s called 
+&lt;strong&gt;&lt;em&gt;Monocular Visual Odometry&lt;/em&gt;&lt;/strong&gt;. When we’re using two (or more) cameras, it’s refered to as
+&lt;strong&gt;&lt;em&gt;Stereo Visual Odometry&lt;/em&gt;&lt;/strong&gt;.&lt;/p&gt;
+
+&lt;h3 id=&quot;why-stereo-or-why-monocular&quot;&gt;Why stereo, or why monocular?&lt;/h3&gt;
+
+&lt;p&gt;There are certain advantages and disadvantages associated with both the stereo and the monocular
+scheme of things, and I’ll briefly describe some of the main ones here. (Note that this blog post will
+only concentrate on stereo as of now, but I might document and post my monocular implementation also).
+The advantage of stereo is that you can estimate the exact trajectory, while in monocular you can
+only estimate the trajectory, &lt;a href=&quot;http://stackoverflow.com/questions/17114880/up-to-a-scale-factor&quot;&gt;unique only up to a scale factor&lt;/a&gt;. 
+So, in monocular VO, you can only say that you moved one unit in x, two units in y, and so on, while in stereo, 
+you can say that you moved one meter in x, two meters in y, and so on. Also, stereo VO is usually much more robust 
+(due to more data being available). But, in cases where the distance of the objects from the camera are too high (
+as compared to the distance between to the two cameras of the stereo system), the stereo case degenerates to the monocular case.
+So, let’s say you have a very small robot (like the &lt;a href=&quot;http://robobees.seas.harvard.edu/publications&quot;&gt;robobees&lt;/a&gt;), then 
+it’s useless to have a stereo system, and you would be much better off with a monocular VO algorithm like &lt;a href=&quot;https://github.com/uzh-rpg/rpg_svo&quot;&gt;SVO&lt;/a&gt;. Alos, there’s a general trend of drones becoming smaller and smaller, so groups like those of &lt;a href=&quot;http://rpg.ifi.uzh.ch/people_scaramuzza.html&quot;&gt;Davide Scaramuzza&lt;/a&gt; are now focusing more on monocular VO approaches (or so he said in a talk that I happened to attend).&lt;/p&gt;
+
+&lt;h3 id=&quot;enough-english-lets-talk-math-now&quot;&gt;Enough english, let’s talk math now&lt;/h3&gt;
+
+&lt;h4 id=&quot;formulation-of-the-problem&quot;&gt;Formulation of the problem&lt;/h4&gt;
+
+&lt;h5 id=&quot;input&quot;&gt;&lt;strong&gt;Input&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;We have a stream of (grayscale/color) images coming from a pair of cameras. Let the left and right frames, captured at time t and t+1 be referred to as &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;. We have prior knowledge of all the intrinsic as well as extrinsic calibration parameters of the stereo rig, obtained via any one of the numerous stereo calibration algorithms available.&lt;/p&gt;
+
+&lt;h5 id=&quot;output&quot;&gt;&lt;strong&gt;Output&lt;/strong&gt;&lt;/h5&gt;
+&lt;p&gt;For every pair of stereo images, we need to find the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;R&lt;/script&gt; and the translation vector &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt;, which describes the motion of the vehicle between the two frames.&lt;/p&gt;
+
+&lt;h3 id=&quot;the-algorithm&quot;&gt;The algorithm&lt;/h3&gt;
+&lt;p&gt;An outline:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;Capture images: &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Undistort, Rectify the above images.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Compute the disparity map &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^t&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^t&lt;/script&gt; and the map &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^{t+1}&lt;/script&gt; from &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_r^{t+1}&lt;/script&gt;.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Use FAST algorithm to detect features in  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^t&lt;/script&gt;,  &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_l^{t+1}&lt;/script&gt; and match them.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Use the disparity maps &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^t&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathit{D}^{t+1}&lt;/script&gt; to calculate the 3D posistions of the features detected in the previous steps. Two point Clouds &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt;, &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt; will be obtained&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Select a subset of points from the above point cloud such that all the matches are mutually compatible.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Estimate &lt;script type=&quot;math/tex&quot;&gt;R, t&lt;/script&gt; from the inliers that were detected in the previous step.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Do not worry if you do not understand some of the terminologies like disparity maps or FAST features that you see above.
+Most of them will be explained in greater detail in the text to follow, along with the code to use them in MATLAB.&lt;/p&gt;
+
+&lt;h4 id=&quot;undistortion-rectification&quot;&gt;Undistortion, Rectification&lt;/h4&gt;
+&lt;p&gt;Before computing the disparity maps, we must perform a number of preprocessing steps.&lt;/p&gt;
+
+&lt;p&gt;Undistrortion: This step compensates for lens distortion. It is performed with the help of the distortion parameters that were obtained during calibration.&lt;/p&gt;
+
+&lt;p&gt;Rectification: This step is performed so as to ease up the problem of disparity map computation. After this step, all the epipolar lines become parallel to the horizontal, and the disparity computation step needs to perform its search for matching blocks only in one direction.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/epi.jpg&quot; /&gt;
+  &lt;figcaption&gt;Stereo images overlayed from KITTI dataset, notice the feature matches are along parallel (horizontal) lines&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Both of these operations are implemented in MATLAB, and since the KITTI Visual Odometry dataset that I used in my implmentation
+already has these operations implemented, you won’t find the code for them in my implmenation. You can see how to use these functions &lt;a href=&quot;http://www.mathworks.com/help/vision/ref/rectifystereoimages.html?searchHighlight=rectifyStereoImages&quot;&gt;here&lt;/a&gt; and &lt;a href=&quot;http://www.mathworks.com/help/vision/ref/undistortimage.html&quot;&gt;here&lt;/a&gt;. Note that you need the Computer Vision Toolbox, and MATLAB R2014a or newer for these functions.&lt;/p&gt;
+
+&lt;h4 id=&quot;disparity-map-computation&quot;&gt;Disparity Map Computation&lt;/h4&gt;
+
+&lt;p&gt;Given a pair of images from a stereo camera, we can compute a disparity map. Suppose a particular 3D in the physical world &lt;script type=&quot;math/tex&quot;&gt;F&lt;/script&gt; is located at the position &lt;script type=&quot;math/tex&quot;&gt;(x,y)&lt;/script&gt; in the left image, and the same feature is located on &lt;script type=&quot;math/tex&quot;&gt;(x+d,y)&lt;/script&gt; in the second image, then the location &lt;script type=&quot;math/tex&quot;&gt;(x,y)&lt;/script&gt; on the disparity map holds the value &lt;script type=&quot;math/tex&quot;&gt;d&lt;/script&gt;. Note that the y-cordinates are the same since the images have been rectified. Thus, we can define disparity at each point in the image plane as: 
+&lt;script type=&quot;math/tex&quot;&gt;\begin{equation}
+d = x_{l} - x_{r}
+\end{equation}&lt;/script&gt;&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/disp.jpg&quot; /&gt;
+  &lt;figcaption&gt;A disparity map computed on frames from KITTI VO dataset&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;h5 id=&quot;block-matching-algorithm&quot;&gt;Block-Matching Algorithm&lt;/h5&gt;
+&lt;p&gt;Disparity at each point is computed using a sliding window. 
+For every pixel in the left image a 15x15 pixels wide window is generated around it, 
+and the value of all the pixels in the windows is stored. This window is then constructed
+at the same coordinate in the right image, and is slid horizontally, until the Sum-of-Absolute-Differences (SAD) is minimized.
+The algorithm used in our implementation is an advanced version of this block-matching technique, called the &lt;a href=&quot;http://zone.ni.com/reference/en-XX/help/372916M-01/nivisionconceptsdita/guid-53310181-e4af-4093-bba1-f80b8c5da2f4/&quot;&gt;Semi-Global Block Matching algorithm&lt;/a&gt;. A function directly implements this algorithm in MATLAB:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;disparityMap1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;disparity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;DistanceThreshold&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;feature-detection&quot;&gt;Feature Detection&lt;/h4&gt;
+&lt;p&gt;My approach uses the FAST corner detector. I’ll now explain in brief how the detector works, though you must have a look at the &lt;a href=&quot;http://www.edwardrosten.com/work/fast.html&quot;&gt;original paper and source code&lt;/a&gt; if you want to really understand how it works. Suppose there is a point &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt; which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; and for another set of contiguous pixels if the intensity is less by at least the same factor &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt;, or must have an intensity lower by the same amount &lt;script type=&quot;math/tex&quot;&gt;\mathbf{I}&lt;/script&gt; for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/fast.png&quot; /&gt;
+  &lt;figcaption&gt;Image from the original FAST feature detection paper&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;Another thing that we do in this approach is something that is called “bucketing”.
+If we just run a feature detector over an entire image, there is a very good chance
+that most of the features would be concentrated in certain rich regions of the image,
+while certain other regions would not have any representation. This is not good for
+our algorithm, since it relies on the assumption of a static scene, and to find the 
+“true” static scene, we must look at all of the image, instead of just certain regions
+of it. In order to tackle this issue, we divide the images into grids (of roughly 100x100px),
+and extract at most 20 features from each of this grid, thus maintaing a more uniform distribution
+of fetures.&lt;/p&gt;
+
+&lt;p&gt;In the code, you will find the following line:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;points1_l&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;bucketFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numCorners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;This line calls the following function:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;points &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;bucketFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;I, h, b, h_break, b_break, numCorners&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;% input image I should be grayscale&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;linspace&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[];&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;roi&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;   &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;y&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;b_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;floor&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_break&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;detectFASTFeatures&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;I&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;MinQuality&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.00&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;MinContrast&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mf&quot;&gt;0.1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;ROI&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;roi&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;selectStrongest&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numCorners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vertcat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;corners&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Location&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;points&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cornerPoints&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;final_points&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;As you can see, the image is divided into grids, and the strongest corners from each grid are
+selected for the subsequent steps.&lt;/p&gt;
+
+&lt;h4 id=&quot;feature-description-and-matching&quot;&gt;Feature Description and Matching&lt;/h4&gt;
+
+&lt;p&gt;The fast corners detected in the previous step are fed to the next step, which uses a &lt;a href=&quot;https://www.ces.clemson.edu/~stb/klt/&quot;&gt;KLT tracker&lt;/a&gt;. The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t}&lt;/script&gt; are tracked in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t+1}&lt;/script&gt; Let the set of features detected in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; , and the set of corresponding features in &lt;script type=&quot;math/tex&quot;&gt;\mathit{I}_{l}^{t+1}&lt;/script&gt; be &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt;.&lt;/p&gt;
+
+&lt;p&gt;In MATLAB, this is again super-easy to do, and the following three lines intialize the tracker, and run it once.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;vision&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;PointTracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;MaxBidirectionalError&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;initialize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;points1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Location&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;I1_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;points2_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;validity&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;step&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tracker&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;I2_l&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Note that in my current implementation, I am just tracking the point from one frame to the next, and then again doing the detection part,
+but in a better implmentation, one would track these points as long as the number of points do not drop below a particular threshold.&lt;/p&gt;
+
+&lt;h4 id=&quot;triangulation-of-3d-pointcloud&quot;&gt;Triangulation of 3D PointCloud&lt;/h4&gt;
+&lt;p&gt;The real world 3D coordinates of all the point in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t+1}&lt;/script&gt; are computed with respect to the left camera using the disparity value corresponding to these features from the disparity map, and the known projection matrices of the two cameras &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}_{1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}_{2}&lt;/script&gt;.
+We first form the reprojection matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{Q}&lt;/script&gt;, using data from &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P1}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{P2}&lt;/script&gt;:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+Q=
+  \left[ {\begin{array}{cccc}
+   1 &amp; 0 &amp; 0 &amp; -c_{x} \\
+   0 &amp; 1 &amp; 0 &amp; -c_{y} \\
+   0 &amp; 0 &amp; 0 &amp; -f \\
+   0 &amp; 0 &amp; -1/T_{x} &amp; 0  \\
+  \end{array} } \right] %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;c_{x}&lt;/script&gt; = x-coordinate of the optical center of the left camera (in pixels)&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;c_{y}&lt;/script&gt; = y-coordinate of the optical center of the left camera (in pixels)&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;f&lt;/script&gt; = focal length of the first camera&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;T_{x}&lt;/script&gt; = The x-coordinate of the right camera with respect to the first camera (in meters)&lt;/p&gt;
+
+&lt;p&gt;We use the following relation to obtain the 3D coordinates of every feature in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}_{l}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}_{l}^{t+1}&lt;/script&gt;&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\left[ \begin{array}{c} X \\ Y \\ Z \\ 1\end{array} \right] = \mathbf{Q} \times \left[ \begin{array}{c} x \\ y \\ d \\ 1\end{array} \right]
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;Let the set of point clouds obtained from be referred to as &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt;. To have a better understanding of
+the geometry that goes on in the above equations, you can have a look at the Bible of visual geometry i.e. Hartley and Zisserman’s &lt;a href=&quot;http://www.robots.ox.ac.uk/~vgg/hzbook/&quot;&gt;Multiple View Geometry&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h4 id=&quot;the-inlier-detection-step&quot;&gt;The Inlier Detection Step&lt;/h4&gt;
+&lt;p&gt;This algorithm defers from most other visual odometry algorithms in the sense that it does not have an outlier detection step, but it has an inlier detection step. We assume that the scene is rigid, and hence it must not change between the time instance &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt;. As a result, the distance between any two features in the point cloud &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t}&lt;/script&gt; must be same as the distance between the corresponding points in &lt;script type=&quot;math/tex&quot;&gt;\mathcal{W}^{t+1}&lt;/script&gt;. If any such distance is not same, then either there is an error in 3D triangulation of at least one of the two features, or we have triangulated a moving, which we cannot use in the next step. In order to have the maximum set of consistent matches, we form the  consistency matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{M}&lt;/script&gt; such that:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;% &lt;![CDATA[
+\begin{equation}
+\mathbf{M}_{i,j} = \begin{cases} 1, &amp; \mbox{if the distance between i and j points is same in both the point clouds} \\ 0, &amp; \mbox{otherwise} \end{cases}
+\end{equation} %]]&gt;&lt;/script&gt;
+
+&lt;p&gt;From the original point clouds, we now wish to select the largest subset such that they are all the points in this subset are consistent with each other (every element in the reduced consistency matrix is 1). This problem is equivalent to the &lt;a href=&quot;http://en.wikipedia.org/wiki/Clique_problem&quot;&gt;Maximum Clique Problem&lt;/a&gt;, with &lt;script type=&quot;math/tex&quot;&gt;\mathbf{M}&lt;/script&gt; as an adjacency matrix. A cliques is basically a subset of a graph, that only contains nodes that are all connected to each other. An easy way to visualise this is to think of a graph as a social network, and then trying to find the largest group of people who all know each other.&lt;/p&gt;
+
+&lt;figure&gt;
+  &lt;img src=&quot;/images/visodo/clique.png&quot; /&gt;
+  &lt;figcaption&gt;This is how clique looks like.&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;This problem is known to be NP-complete, and thus an optimal solution cannot be found for any practical situation. We therefore employ a greedy heuristic that gives us a clique which is close to the optimal solution:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Select the node with the maximum degree, and initialize the clique to contain this node.&lt;/li&gt;
+  &lt;li&gt;From the existing clique, determine the subset of nodes &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt; which are connected to all the nodes present in the clique.&lt;/li&gt;
+  &lt;li&gt;From the set &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt;, select a node which is connected to the maximum number of other nodes in &lt;script type=&quot;math/tex&quot;&gt;\mathit{v}&lt;/script&gt;. Repeat from step 2 till no more nodes can be added to the clique.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The above algorithm is implemented in the following two functions in my code:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;cl &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;updateClique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;potentialNodes, clique, M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+
+
+&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;==&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;potentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;j&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+                &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;+&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+            &lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;numMatches&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+        &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;maxNumMatches&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;~=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;curr_max&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;cl&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+
+&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;newSet &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;findPotentialNodes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;clique, M&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(:,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;if&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;  
+    &lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+        &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;M&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(:,&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;));&lt;/span&gt;
+    &lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;length&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;newSet&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;clique&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;computation-of-mathbfr-and-mathbft&quot;&gt;Computation of &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt;&lt;/h4&gt;
+&lt;p&gt;In order to determine the rotation matrix &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and translation vector &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt;, we use Levenberg-Marquardt non-linear least squares minimization to minimize the following sum:&lt;/p&gt;
+
+&lt;script type=&quot;math/tex; mode=display&quot;&gt;\begin{equation}
+\epsilon = \sum_{\mathcal{F}^{t}, \mathcal{F}^{t+1}} (\mathbf{j_{t}} - \mathbf{P}\mathbf{T}\mathbf{w_{t+1}})^{2} + (\mathbf{j_{t+1}} - \mathbf{P}\mathbf{T^{-1}}\mathbf{w_{t}})^{2}
+\end{equation}&lt;/script&gt;
+
+&lt;p&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;: Features in the left image at time &lt;script type=&quot;math/tex&quot;&gt;t&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;t+1&lt;/script&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{j_{t}}, \mathbf{j_{t+1}}&lt;/script&gt;: 2D Homogeneous coordinates of the features &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{w_{t}}, \mathbf{w_{t+1}}&lt;/script&gt;: 3D Homogeneous coordinates of the features &lt;script type=&quot;math/tex&quot;&gt;\mathcal{F}^{t}, \mathcal{F}^{t+1}&lt;/script&gt;&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{P}&lt;/script&gt;: &lt;script type=&quot;math/tex&quot;&gt;3\times4&lt;/script&gt; Projection matrix of left camera&lt;br /&gt;
+&lt;script type=&quot;math/tex&quot;&gt;\mathbf{T}&lt;/script&gt;: &lt;script type=&quot;math/tex&quot;&gt;4\times4&lt;/script&gt; Homogeneous Transformation matrix\&lt;/p&gt;
+
+&lt;p&gt;The Optimization Toolbox in MATLAB directly implements the Levenberg-Marquardt algorithm in the function lsqnonlin, which needs to be supplied with a vector objective function that needs to be minimized, and a set of parameters that can be varied.&lt;/p&gt;
+
+&lt;p&gt;This is how the function to be minimized is represented in MATLAB. This part of the algorithm, 
+is the most computationally expensive one.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-matlab&quot; data-lang=&quot;matlab&quot;&gt;&lt;span class=&quot;k&quot;&gt;function&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;F &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;w&quot;&gt; &lt;/span&gt;&lt;span class=&quot;nf&quot;&gt;minimize&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;PAR, F1, F2, W1, W2, P1&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;w&quot;&gt;&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;r&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PAR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;t&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;PAR&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;6&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%F1, F2 -&amp;gt; 2d coordinates of features in I1_l, I2_l&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%W1, W2 -&amp;gt; 3d coordinates of the features that have been triangulated&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%P1, P2 -&amp;gt; Projection matrices for the two cameras&lt;/span&gt;
+&lt;span class=&quot;c&quot;&gt;%r, t -&amp;gt; 3x1 vectors, need to be varied for the minimization&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;nb&quot;&gt;zeros&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;dcm&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;angle2dcm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;r&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;),&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;#39;ZXZ&amp;#39;&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;horzcat&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;dcm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;t&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]];&lt;/span&gt;
+
+&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;k&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;:&lt;/span&gt;&lt;span class=&quot;nb&quot;&gt;size&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;F2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;W1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;P1&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;pinv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;tran&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;w1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;/&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    
+    &lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f1&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f1_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;k&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;:)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f2&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;-&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f2_repr&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;    
+&lt;span class=&quot;k&quot;&gt;end&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;F&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;reproj1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;reproj2&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;h4 id=&quot;validation-of-results&quot;&gt;Validation of results&lt;/h4&gt;
+&lt;p&gt;A particular set of &lt;script type=&quot;math/tex&quot;&gt;\mathbf{R}&lt;/script&gt; and &lt;script type=&quot;math/tex&quot;&gt;\mathbf{t}&lt;/script&gt; is said to be valid if it satisfies the following conditions:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;If the number of features in the clique is at least 8.&lt;/li&gt;
+  &lt;li&gt;The reprojection error &lt;script type=&quot;math/tex&quot;&gt;\epsilon&lt;/script&gt; is less than a certain threshold.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The above constraints help in dealing with noisy data.&lt;/p&gt;
+
+&lt;h4 id=&quot;an-important-hack&quot;&gt;An important “hack”&lt;/h4&gt;
+&lt;p&gt;If you run the above algorithm on real-world sequences, you will encounter a 
+rather big problem. The assumption of scene rigidity stops holding when a large vehicle
+such as a truck or a van occupies a majority of the field of view of the camera. In order
+to deal with such data, we introduce a simple hack: accept a tranlsation/rotation matrix
+only if the dominant motion is in the forward direction. This is known to improve results
+significantly on the KITTI dataset, though you won’t find in this hack explicitly written 
+in most of the papers that are published on the same!&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 25 May 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/vision/visual-odometry-full/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/vision/visual-odometry-full/</guid>
+      </item>
+    
+      <item>
+        <title>Stitching Intra-Oral Images</title>
+        <description>&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/28/dental-imaging-project-the-stitching-story/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;Most intraoral cameras have a relative narrow field of view, and the entire jaw is never visible in a single image. We are trying to stitch several images into one, so that the user has complete view of the jaw, and we can then segment the tooth from it, and keep a track for every individual tooth.&lt;/p&gt;
+
+&lt;p&gt;A basic image stitching pipeline has the following steps:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;Matching features between two images&lt;/li&gt;
+  &lt;li&gt;Computing the homography with RANSAC (minimal set is four matches)&lt;/li&gt;
+  &lt;li&gt;Transforming , concatenating and blending the images.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Most of the existing panaroma building algorithms are well-suited for applications in which the object being photographed is quite far away from the camera, such as in the image shown below (&lt;a href=&quot;http://www.cs.bath.ac.uk/brown/autostitch/autostitch.html&quot;&gt;obtained from the Autostitch page&lt;/a&gt;):&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/panaroma.png&quot; /&gt;
+	&lt;figcaption&gt;Panorama construction&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;However, we are photographing the teeth at a really close range, and minor changes in perspective are fatal for these algorithms. In order to overcome the problems imposed by changes in perspective, we are using ASIFT, a feature detection/description/matching algorithm which is robust to perspective changes when compared to SIFT. The next steps (homography computation, blending) are pretty standard, and here are some results:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/stitched.png&quot; /&gt;
+	&lt;figcaption&gt;A stitch of three images taken from an intraoral camera&lt;/figcaption&gt;
+&lt;/figure&gt;
+</description>
+        <pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/vision/stichting-story/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/vision/stichting-story/</guid>
+      </item>
+    
+      <item>
+        <title>Every Tooth Tracked</title>
+        <description>&lt;p&gt;&lt;em&gt;Note: This is a repost of my &lt;a href=&quot;https://mitredxcampjan2015.wordpress.com/2015/01/30/dental-imaging-project-every-tooth-tracked/&quot;&gt;January post&lt;/a&gt; on MIT Media Lab’s Wordpress blog of their RedX 2015 Camp held at IIT-Bombay. There are a few minor modifications though.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;We want to track the health of every tooth over time, and therefore wanted an algorithm that could extract the image of every single tooth from the stitch that we obtained in our previous step. Our first attempt was at a completely automated approach, and we soon found a &lt;a href=&quot;http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=6482414&amp;amp;tag=1&quot;&gt;paper&lt;/a&gt; which attempted to solve a problem that was a subset of ours. They wanted to separate the teeth part from the rest of the image, while we wanted to segment every teeth from the rest of the image. The algorithm that these guys had used was pretty basic (&lt;a href=&quot;http://cdanup.com/10.1.1.2.1828.pdf&quot;&gt;Active Contours Without Edges&lt;/a&gt;), and I got it working within half an hour on MATLAB, with the following results:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/3k_with_removal.png&quot; /&gt;
+	&lt;figcaption&gt;Obtained using Active Contours Without Edges (Chan-Vese)&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;But this approach had a few problems. It was computationally expensive (~ 2min to run on my Intel Core i7 machine), and could not be used to segment an individual tooth out.&lt;/p&gt;
+
+&lt;p&gt;So, I started looking at other algorithms, and soon stumbled across the &lt;a href=&quot;http://www.cs.rug.nl/~roe/publications/parwshed.pdf&quot;&gt;Watershed transform&lt;/a&gt;. In order to generate good results, watershed needs certain markers, and these markers can be generated using both automated or manual methods. One popular automated method for generating these markers is ‘opening-by-reconstruction’ and ‘closing-by-reconstruction’. The following results were obtained using MATLAB’s watershed example:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_seg_man.png&quot; /&gt;
+	&lt;figcaption&gt;Vanilla Watershed with automatic marker generation&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;As you can see, the above is a complete mess. A lot of unwanted segments are obtained, and some superpixels (clusters of pixels) flow into each other.
+So, I then tried a manual-marker approach, and the results were much better:&lt;/p&gt;
+
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_final.png&quot; /&gt;
+	&lt;figcaption&gt;Watershed with manually-annotated markers&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;A &lt;a href=&quot;http://www.mathworks.com/matlabcentral/fileexchange/44469-gui-image-mask-sample&quot;&gt;matlab-based GUI&lt;/a&gt; is used to generate the masks as follows:&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/gui_marker.png&quot; /&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;The mask file looks something like this:&lt;/p&gt;
+&lt;figure&gt;
+	&lt;img src=&quot;/images/dental/49_msk.png&quot; /&gt;
+	&lt;figcaption&gt;The mask used to generate the above results&lt;/figcaption&gt;
+&lt;/figure&gt;
+
+&lt;p&gt;In the final product, we can assume to have a touchscreen based user interface, wherein the user slashes with his finger across every tooth once, and then gets the segmented image as an output. One several such images have been mannually annotated, we could use a learning algorithm that can automatically generate these masks.&lt;/p&gt;
+
+</description>
+        <pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/vision/segmenting-teeth/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/vision/segmenting-teeth/</guid>
+      </item>
+    
+      <item>
+        <title>Visual Odometry - The Reading List</title>
+        <description>&lt;p&gt;I am thinking of taking up a project on ‘Visual Odometry’ as UGP-1 (Undergraduate Project) here in my fifth semester at IIT-Kanpur.
+This post is primarily a list of some useful links which will get one acquainted with the basics of Visual Odometry.&lt;/p&gt;
+
+&lt;p&gt;The first thing that anyone should read is this wonderful two-part review by Davide Scaramuzza and Friedrich Fraundorfer:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.roboticsschool.ethz.ch/airobots/programme/presentations/VO_part_I.pdf&quot;&gt;Visual Odometry Tutorial Part 1&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://rpg.ifi.uzh.ch/docs/VO_Part_II_Scaramuzza.pdf&quot;&gt;Visual Odometry Tutorial Part 2&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;One thing that I did not understand from the above tutorials was the ‘5-point algorithm’ by Nister in 2003. The original paper is &lt;a href=&quot;http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=1288525&quot;&gt;here&lt;/a&gt;. But, this paper also seemed quite complicated for me to implement without any background, so I moved onto a simpler algorithm, called the ‘8-point algorithm’, which was published a long time ago by Longuet-Higgins. You can find it &lt;a href=&quot;http://www2.ece.ohio-state.edu/~aleix/Longuet-Higgins.pdf&quot;&gt;here&lt;/a&gt;. There are some lecture slides which explain this in a simple manner, and you can find them &lt;a href=&quot;http://www.cse.psu.edu/~rcollins/CSE486/lecture20_6pp.pdf&quot;&gt;here&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;Note, there are more papers that one should read regarding this, most notably:&lt;/p&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;&lt;a href=&quot;http://www.cse.unr.edu/~bebis/CS485/Handouts/hartley.pdf&quot;&gt;In Defense of the 8-point Algorithmm&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href=&quot;http://users.cecs.anu.edu.au/~hongdong/new5pt_cameraREady_ver_1.pdf&quot;&gt;5-point Motion Estimation Made Easy&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
+</description>
+        <pubDate>Tue, 29 Jul 2014 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/vision/visual-odometry-read/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/vision/visual-odometry-read/</guid>
+      </item>
+    
+      <item>
+        <title>RANSAC</title>
+        <description>&lt;p&gt;This post is about the popular outlier rejection algorithm RANSAC. It stands for RANdom SAmple Consensus. It is widely used in computer vision, with one of the application being in rejection of false feature matches in a pair of images from a stereo camera set.&lt;/p&gt;
+
+&lt;p&gt;Suppose you have been given a dataset and you want to fit a mathematical model on it. We now assume that this data has certain &lt;em&gt;inliers&lt;/em&gt; and some &lt;em&gt;outliers&lt;/em&gt;. Inliers refer to the data points whose presence can be explained with the help of a mathematical model, while outliers are data points whose presence can never be explained via any reasonable mathematical model. Usually their presence in the dataset deteriorates the quality of the mathematical model that we can fit to the data. For best results, we should ignore these outliers while estimating the parameters of our mathematical model. RANSAC helps us in identifying these points so that we can obtain a better fir for the inliers.&lt;/p&gt;
+
+&lt;p&gt;Note that even the inliers do not &lt;em&gt;exactly&lt;/em&gt; fit the mathematical model as they might have some noise, but the outliers either have an extremely large amount of noise or they are obtained due to faults in measurement, or because of problems in the sensor from which we are obtaining the data.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-algorithm&quot;&gt;The Algorithm&lt;/h2&gt;
+
+&lt;h3 id=&quot;the-input&quot;&gt;The Input&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;Data points&lt;/li&gt;
+  &lt;li&gt;Some parametrized model (we need to estimate the parameters for this model)&lt;/li&gt;
+  &lt;li&gt;Some confidence parameters&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;algo&quot;&gt;Algo&lt;/h3&gt;
+&lt;ul&gt;
+  &lt;li&gt;A set points from the original dataset are randomly selected, and are assumed to be the inliers.&lt;/li&gt;
+  &lt;li&gt;Parameters are estimated to fit to this hypothetical inlier set.&lt;/li&gt;
+  &lt;li&gt;Every point that was not a part of this hypothetical inlier set is tested against the mathematical model that we just fit.&lt;/li&gt;
+  &lt;li&gt;The points that fit the model become a part of the &lt;em&gt;consensus&lt;/em&gt; set. The model is good if a particular number of points have been classified as part of the consensus set.&lt;/li&gt;
+  &lt;li&gt;This model is then re-estimated using all the members of a consensus set.&lt;/li&gt;
+  &lt;li&gt;The above process is repeated a fixed number of times, and the model with the largest consensus set is kept.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&quot;how-many-times-do-we-repeat&quot;&gt;How many times do we repeat?&lt;/h3&gt;
+&lt;p&gt;It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.&lt;/p&gt;
+</description>
+        <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/stats/ransac/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/stats/ransac/</guid>
+      </item>
+    
+      <item>
+        <title>Parallel Programming with CUDA</title>
+        <description>&lt;p&gt;I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is &lt;em&gt;way&lt;/em&gt; better.&lt;/p&gt;
+
+&lt;h2 id=&quot;why-gpus&quot;&gt;Why GPUs?&lt;/h2&gt;
+
+&lt;p&gt;CPUs are not getting any faster, due to limitation of clock speeds which have virtually remained the same since the past 5 years or so. Increasing this clock speed has become close to impossible, since increasing clock speeds increases the power consumption, which makes it difficult to cool the CPU. So, for faster computations, GPUs are the way to go.&lt;/p&gt;
+
+&lt;h2 id=&quot;gpu-vs-cpu&quot;&gt;GPU vs CPU&lt;/h2&gt;
+
+&lt;p&gt;My computer has a quad-core processor with hyper threading (an Intel i7 Ivy Bridge). This means that, in the best case, I can have at most 8-threads truly running in parallel. On the other hand, the low-end GPU that I have (nVidia GeForce GT630M) has 96 cores!&lt;/p&gt;
+
+&lt;p&gt;In general, a CPU has a few, very powerful computation cores, where as a GPU has a very large number of smaller, less powerful computation cores. The time taken to perform any one particular task is less on the CPU, but if you need to performs thousands of such tasks, then the GPU would beat the CPU.&lt;/p&gt;
+
+&lt;p&gt;One more important thing to note is that, while designing CPUs engineers optimize for &lt;em&gt;latency&lt;/em&gt;. On the other hand, maximum &lt;em&gt;thorughput&lt;/em&gt; is what the designers are aiming at while making GPUs.&lt;/p&gt;
+
+&lt;h2 id=&quot;throughput-vs-latency&quot;&gt;Throughput vs Latency&lt;/h2&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;
+    &lt;p&gt;Throughput: It is defined as the amount of work done in unit time. For example, I need to transport 50 bags of rice from ground floor of a building to the 10th floor, and I can carry at most two bags at a time. Let the time taken in each trip be 5 minutes. So, the amount of work done in one hour would be 2*(60/5) = 24 bags. I can say that the throughput is 24 bags/hr.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Latency: It is defined as the amount of time taken to perform a particular task. In the previous example, it would take take 125 minutes to take all the 50 bags, and hence the latency (measures in time units) is 125 minutes.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&quot;cuda&quot;&gt;CUDA&lt;/h2&gt;
+
+&lt;p&gt;CUDA is a framework developed by nVidia for writing programs that run both on the GPU and the CPU. On the CPU side, you can write programs in C, and then used some extensions to C (written by nVidia) to write programs that run on the GPU. These programs that run on the GPU are called &lt;em&gt;kernels&lt;/em&gt;. A kernel looks like a serial program, but the CPU launches on a large  number of threads on the GPU. In CUDA, the CPU is referred to as the &lt;em&gt;host&lt;/em&gt; while the GPU is referred to as the &lt;em&gt;device&lt;/em&gt;. In this relationship between the CPU and the GPU, the CPU is the &lt;em&gt;alpha&lt;/em&gt;. The CPU and the GPU have separate memories, and can perform operations only on the data that is stored in their own memory. The CPU can allocate memory on the GPU, copy data from the CPU memory to the GPU memory, launch kernels on hundreds of thread on the GPU, and copy back the results from the GPU memory. The GPU, on the other hand, can only respond to call of memory copy made by the CPU, and cannot make its own requests for data transfer.&lt;/p&gt;
+
+&lt;h4 id=&quot;skeleton-of-a-cuda-program&quot;&gt;Skeleton of a CUDA program:&lt;/h4&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Allocate memory on the GPU&lt;/li&gt;
+  &lt;li&gt;Transfer data from the CPU memory to the GPU memory&lt;/li&gt;
+  &lt;li&gt;Perform the computations on the GPU&lt;/li&gt;
+  &lt;li&gt;Copy the results from the GPU to the CPU&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;A sample code in CUDA, which calculates the cubes of all integers from 1 to 64.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// here is the kernel&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;__global__&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
+	&lt;span class=&quot;c1&quot;&gt;// Todo: Fill in this function&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threadIdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+    &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+&lt;span class=&quot;c1&quot;&gt;// threadIdx is a C struct having members x,y,z, other structs available are blockIdx, threaddim, blockdim&lt;/span&gt;
+&lt;span class=&quot;c1&quot;&gt;//__global__ is what specifies that the fucntion is a kernel&lt;/span&gt;
+
+&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// generate the input array on the host&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// declare GPU memory pointers&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// allocate GPU memory&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// transfer the array to the GPU&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyHostToDevice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// launch the kernel&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	One block of 64 threads is being launched here. We specify the number of blocks as well as the number of threads in each block.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	Each block has a limited number of threads that it can support. Modern GPUs support 1024, older support 512.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	Can have any number of blocks. Cuda supports 2D and 3D arrangement of blocks as well.&lt;/span&gt;
+&lt;span class=&quot;cm&quot;&gt;	*/&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// copy back the result array to the CPU&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyDeviceToHost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;c1&quot;&gt;// print out the resulting array&lt;/span&gt;
+	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%f&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
+		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
+
+	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
+
+	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
+&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;If you have the nVidia CUDA toolkit installed, you can compile and run the above program using:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;nvcc -o sample sample.c
+./sample&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+</description>
+        <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
+        <link>http://avisingh599.github.io/gpu/parallel-programming-with-cuda/</link>
+        <guid isPermaLink="true">http://avisingh599.github.io/gpu/parallel-programming-with-cuda/</guid>
+      </item>
+    
+  </channel>
+</rss>

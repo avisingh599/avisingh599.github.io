@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Homepage and blog">
+    <meta name="author" content="Avi Singh">
+    
+    <link rel="canonical" href="http://avisingh599.github.io/research/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201509222113" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Research">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="http://avisingh599.github.io/research/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Research" />
+    <meta name="twitter:description" content="Homepage and blog" />
+    <meta name="twitter:url" content="http://avisingh599.github.io/research/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="http://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+    
+    
+    
+  </div>
+</div>
+<div class="clearfix"></div>
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        <div class="post">
+  <header class="post-header">
+    <h1 class="nomargintop">Research</h1>
+  </header>
+  <article class="post-content">
+  <h3 class="nomargin">Brain4Cars: Learning Temporal Models to Anticipate Driving Maneuvers </h3>
+
+<p>Mentor:<a href="http://cs.stanford.edu/~asaxena">Prof. Ashutosh Saxena</a> and  <a href="http://www.asheshjain.org">Ashesh Jain</a> <br />
+At <strong>Cornell University</strong> in collaboration with <strong>Stanford AI Lab</strong> <br />
+<a href="http://arxiv.org/abs/1509.05016">arXiv pre-print</a> | <a href="http://www.brain4cars.com">website</a> <br /> <br />
+The project attempts to anticipate driving maneuvers using information from driver-facing and road-facing cameras. My contributions to the project are:</p>
+
+<ul>
+  <li><strong>Revamped the Computer Vision pipeline</strong> of the project by incorporating a Constrained Local Neural Field model for enhanced head pose tracking of the driver. This made the tracking robust to changes in illumination and pose, while providing consistent optical flow trajectories of facial landmarks and rich head pose features.</li>
+  <li>Improved the training algorithm for Autoregressive Input Output HMMs by initializing them with Gaussian Mixture Models, and using LBFG-S optimization algorithm for minimizing the cost function.</li>
+  <li>I carried out extensive experiments on the Brain4Cars dataset that improved the performance from a Precision/Recall of <strong>77.4/71.2 to 86.7/78.2</strong>. Further experimenting on Recurrent Neural Networks with Long Short Term Memory (LSTM) units boosted the performance to a Precision/Recall of <strong>90.5/87.4</strong>.</li>
+  <li>Co-authored a <a href="http://arxiv.org/abs/1509.05016">paper</a> which is now under review at ICRA 2016.</li>
+</ul>
+
+<table>
+  <tbody>
+    <tr>
+      <td><img src="/images/icra2016/feat_compare_3.png" alt="" /></td>
+      <td><img src="/images/icra2016/fusionRNN2.png" alt="" /></td>
+    </tr>
+  </tbody>
+</table>
+
+<p><strong>The project in popular press</strong>:</p>
+
+<div id="images">
+
+<a href="http://fortune.com/2015/09/18/artificial-intelligence-cars/" target="_blank">
+	<img height="30" class="img-responsive" src="/images/fortune.png" alt="" />
+</a>
+
+<a href="http://www.forbes.com/sites/dougnewcomb/2015/04/22/new-technology-looks-inward-to-prevents-accidents-by-reading-drivers-body-language/" target="_blank">  
+	<img height="30" class="img-responsive" src="/images/forbes.jpg" />
+</a>
+
+<a href="http://fusion.net/story/119737/the-car-that-knows-when-youll-get-in-an-accident-before-you-do/" target="_blank">  
+    <img height="30" class="img-responsive" src="/images/fusion.png" />
+</a>
+
+</div>
+
+<hr />
+
+<h3 class="nomargin">Stereo and Monocular Visual Odometry</h3>
+<p>Mentor: <a href="http://home.iitk.ac.in/~venkats/">Prof. KS Venkatesh</a><br />
+At Computer Vision Lab, Electrical Engineering, IIT-Kanpur <br />
+<a href="https://github.com/avisingh599/mono-vo">mono-vo-github, OpenCV/C++</a> | <a href="https://github.com/avisingh599/vo-howard2008">howard-stereo-vo-github, MATLAB</a>  <br /> <br />
+I implemented three different visual odometry systems ( two stereo and one monocular), and evaluated them on the KITTI Visual Odometry benchmark.</p>
+
+<h4 id="stereo-visual-odometry">Stereo Visual Odometry</h4>
+
+<ul>
+  <li>Jiang2014: Model Based ICP: 3D points triangulated from stereo data, inliers detected via the use Iterative Closest Point Algorithm that uses a 1-DOF motion model for initial estimate. Efficient PnP Algorithm is then used on the selected inliers to obtain the final rotation and translation</li>
+  <li>Howard2008: Inlier detection using an assumption of scene rigidity. Problem reduced to finding the maximum clique in a graph, solved using a heuristic. Levenberg-Marquardt used for minimizing the reprojection error on the selected inliers. Implementation available on <a href="https://github.com/avisingh599/vo-howard08">Github</a>.</li>
+</ul>
+
+<h4 id="monocular-visual-odometry">Monocular Visual Odometry</h4>
+
+<ul>
+  <li>A simple approach utilizing Nister’s Five Point Algorithm was implemented.</li>
+  <li>Implmentation available on <a href="https://github.com/avisingh599/mono-vo">Github</a>.</li>
+</ul>
+
+<hr />
+
+<h3 class="nomargin">Landmark Based Robot Localization using RGB-D Data</h3>
+
+<p>Mentor: <a href="https://www.linkedin.com/pub/arjun-bhasin/ba/86b/2a8">Arjun Bashin</a><br />
+At Mechatronics Lab, Mechanical Engineering, IIT-Kanpur <br /></p>
+
+<ul>
+  <li>Geometric Triangulation was used to determine the pose (modelled as a set of random variables with
+Gaussian Distribution) of a robot, from information obtained from noisy landmarks.</li>
+  <li>A Microsoft Kinect was used to identify the landmarks (using color histogram based models), CAMshift
+algorithm was used to track these landmarks, and bearing measurements were calculated using the depth
+data.</li>
+  <li>An error model for the data obtained from a Kinect was used along with the Error Propagation Law
+to arrive at the uncertainty in the final pose computed using the Geometric Localisation Algorithm.</li>
+</ul>
+
+<hr />
+
+<h3 class="nomargin">Scene Flow</h3>
+<p>Mentor: <a href="http://home.iitk.ac.in/~venkats/">Prof. KS Venkatesh</a><br />
+At Computer Vision Lab, Electrical Engineering, IIT-Kanpur <br /></p>
+
+<ul>
+  <li>Formulated and implemented two approaches for estimation of Range Flow from RGB-D data, one an extension of Lucas-Kanade to 3D, and the other an extension of Horn-Schunck.</li>
+  <li>Captured RGBD Data from a <strong>Microsoft Kinect</strong> using <strong>OpenNI</strong> and <strong>OpenCV</strong> libraries, and did all the processing using C++ in OpenCV.</li>
+</ul>
+
+<hr />
+
+
+  </article>
+</div>
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Theme from <a href="http://johnotander.com">John Otander</a> (<a href="https://twitter.com/4lpine">@4lpine</a>).
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>
