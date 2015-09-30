@@ -3,16 +3,16 @@
   <channel>
     <title>Avi Singh</title>
     <description>Homepage and blog</description>
-    <link>http://avisingh599.github.io/</link>
-    <atom:link href="http://avisingh599.github.io/feed.xml" rel="self" type="application/rss+xml" />
+    <link>https://avisingh599.github.io/</link>
+    <atom:link href="https://avisingh599.github.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
         <title>Computer Vision for Predicting Facial Attractiveness</title>
         <description>&lt;p&gt;&lt;a href=&quot;http://www.learnopencv.com/computer-vision-for-predicting-facial-attractiveness/&quot;&gt;Click here to go to the post.&lt;/a&gt;&lt;/p&gt;
 </description>
         <pubDate>Mon, 27 Jul 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/predicting-facial-attractiveness/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/predicting-facial-attractiveness/</guid>
+        <link>https://avisingh599.github.io/predicting-facial-attractiveness/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/predicting-facial-attractiveness/</guid>
       </item>
     
       <item>
@@ -208,8 +208,8 @@ I hope I’ll soon implement a more robust relative scale computation pipeline, 
 &lt;/div&gt;
 </description>
         <pubDate>Mon, 08 Jun 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/vision/monocular-vo/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/vision/monocular-vo/</guid>
+        <link>https://avisingh599.github.io/vision/monocular-vo/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/vision/monocular-vo/</guid>
       </item>
     
       <item>
@@ -292,8 +292,8 @@ explicitly.&lt;/p&gt;
 
 </description>
         <pubDate>Tue, 02 Jun 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</guid>
+        <link>https://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/machinelearning/classifying-human-activities-kinect-2/</guid>
       </item>
     
       <item>
@@ -438,8 +438,8 @@ the only major programming part that was left to us now was was the feature extr
 and what results we got.&lt;/p&gt;
 </description>
         <pubDate>Wed, 27 May 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</guid>
+        <link>https://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/machinelearning/classifying-human-activities-kinect/</guid>
       </item>
     
       <item>
@@ -791,8 +791,8 @@ in most of the papers that are published on the same!&lt;/p&gt;
 
 </description>
         <pubDate>Mon, 25 May 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/vision/visual-odometry-full/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/vision/visual-odometry-full/</guid>
+        <link>https://avisingh599.github.io/vision/visual-odometry-full/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/vision/visual-odometry-full/</guid>
       </item>
     
       <item>
@@ -824,8 +824,8 @@ in most of the papers that are published on the same!&lt;/p&gt;
 &lt;/figure&gt;
 </description>
         <pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/vision/stichting-story/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/vision/stichting-story/</guid>
+        <link>https://avisingh599.github.io/vision/stichting-story/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/vision/stichting-story/</guid>
       </item>
     
       <item>
@@ -871,8 +871,8 @@ So, I then tried a manual-marker approach, and the results were much better:&lt;
 
 </description>
         <pubDate>Sat, 23 May 2015 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/vision/segmenting-teeth/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/vision/segmenting-teeth/</guid>
+        <link>https://avisingh599.github.io/vision/segmenting-teeth/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/vision/segmenting-teeth/</guid>
       </item>
     
       <item>
@@ -899,8 +899,8 @@ This post is primarily a list of some useful links which will get one acquainted
 &lt;p&gt;In my next post, I will hopefully start working on my implementation.&lt;/p&gt;
 </description>
         <pubDate>Tue, 29 Jul 2014 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/vision/visual-odometry-read/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/vision/visual-odometry-read/</guid>
+        <link>https://avisingh599.github.io/vision/visual-odometry-read/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/vision/visual-odometry-read/</guid>
       </item>
     
       <item>
@@ -934,8 +934,8 @@ This post is primarily a list of some useful links which will get one acquainted
 &lt;p&gt;It is possible to theoretically determine the fixed number of iterations ‘k’ which are needed, if we have an estimate of the percentage of outliers present in the data.&lt;/p&gt;
 </description>
         <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/stats/ransac/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/stats/ransac/</guid>
+        <link>https://avisingh599.github.io/stats/ransac/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/stats/ransac/</guid>
       </item>
     
       <item>
@@ -1046,8 +1046,8 @@ This post is primarily a list of some useful links which will get one acquainted
 
 </description>
         <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
-        <link>http://avisingh599.github.io/gpu/parallel-programming-with-cuda/</link>
-        <guid isPermaLink="true">http://avisingh599.github.io/gpu/parallel-programming-with-cuda/</guid>
+        <link>https://avisingh599.github.io/gpu/parallel-programming-with-cuda/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/gpu/parallel-programming-with-cuda/</guid>
       </item>
     
   </channel>
