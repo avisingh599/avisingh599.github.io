@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Avi Singh</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Homepage and blog">
+    <meta name="author" content="Avi Singh">
+    <meta name="keywords" content="deeplearning">
+    <link rel="canonical" href="https://avisingh599.github.io/deeplearning/visual-qa/">
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/pixyll.css?201511022119" type="text/css">
+
+    <!-- Fonts -->
+    <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
+    <link href='//fonts.googleapis.com/css?family=Lato:900,300' rel='stylesheet' type='text/css'>
+    
+      <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    
+
+    <!-- Verifications -->
+    
+
+    <!-- Open Graph -->
+    <!-- From: https://github.com/mmistakes/hpstr-jekyll-theme/blob/master/_includes/head.html -->
+    <meta property="og:locale" content="en_US">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Deep Learning for Visual Question Answering">
+    <meta property="og:description" content="Homepage and blog">
+    <meta property="og:url" content="https://avisingh599.github.io/deeplearning/visual-qa/">
+    <meta property="og:site_name" content="Avi Singh">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    
+    <meta name="twitter:title" content="Deep Learning for Visual Question Answering" />
+    <meta name="twitter:description" content="Homepage and blog" />
+    <meta name="twitter:url" content="https://avisingh599.github.io/deeplearning/visual-qa/" />
+
+    <!-- Icons -->
+    <link rel="apple-touch-icon" sizes="57x57" href="/apple-icon-57x57.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="/apple-icon-114x114.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="/apple-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="/apple-icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="60x60" href="/apple-icon-60x60.png">
+    <link rel="apple-touch-icon" sizes="120x120" href="/apple-icon-120x120.png">
+    <link rel="apple-touch-icon" sizes="76x76" href="/apple-icon-76x76.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="/apple-icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-icon-180x180.png">
+    <link rel="icon" type="image/png" href="/favicon-160x160.png" sizes="160x160">
+    <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96">
+    <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
+    <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
+
+    
+    <script type="text/javascript">
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-63278661-1']);
+      _gaq.push(['_trackPageview']);
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    </script>
+    
+</head>
+
+<body class="site">
+  <div class="site-wrap">
+    <header class="site-header px2 px-responsive">
+  <div class="mt2 wrap">
+    <div class="measure">
+      <a href="https://avisingh599.github.io" class="site-title"></a>
+      <nav class="site-nav">
+        <a href="/">Home</a>
+<a href="/research/">Research</a>
+<a href="/blog/">Blog</a>
+      </nav>
+      <div class="clearfix" ></div>
+      
+        <div class="social-icons">
+  <div class="left">
+    
+      <a class="fa fa-github" href="https://github.com/avisingh599"></a>
+    
+    
+    
+    <a class="fa fa-rss" href="/feed.xml"></a>
+    
+    
+      <a class="fa fa-google-plus" href="https://plus.google.com/+avisingh599/posts"></a>
+    
+    
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/avisingh599"></a>
+    
+    
+    
+  </div>
+  <div class="right">
+
+    
+    
+    
+  </div>
+</div>
+
+<div class="clearfix">
+    
+      <center> <a class="fa fa-envelope" href="mailto:avisingh599@gmail.com"></a> avisingh599@gmail.com <center>
+    
+</div>
+
+    
+
+      
+    </div>
+  </div>
+</header>
+
+
+    <div class="post p2 p-responsive wrap" role="main">
+      <div class="measure">
+        
+
+
+<div class="post-header mb2">
+  <h1>Deep Learning for Visual Question Answering</h1>
+  <span class="post-meta">Nov 2, 2015</span><br>
+  
+  <span class="post-meta small">
+  
+    10 minute read
+  
+  </span>
+</div>
+
+<article class="post-content">
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<p><img src="/images/vqa/sample_results.jpg" alt="Teaser" /></p>
+
+<p>In this blog post, I’ll talk about the <a href="http://www.visualqa.org">Visual Question Answering</a> problem, and I’ll also present neural network based approaches for same. The source code for this blog post is written in Python and <a href="http://keras.io">Keras</a>, and is available on <a href="http://github.com/avisingh599/visual-qa">Github</a>.</p>
+
+<p>An year or so ago, a chatbot named <a href="https://en.wikipedia.org/wiki/Eugene_Goostman">Eugene Goostman</a> made it to the mainstream <a href="http://www.bbc.com/news/technology-27762088">news</a>, after having been reported as the first computer program to have passed the famed <a href="https://en.wikipedia.org/wiki/Turing_test">Turing Test</a> in an event organized at the University of Reading. While the organizers hailed it as a historical achievement, most of the scientific community wasn’t impressed. This leads us to the question: Is the Turing Test, in its original form, a suitable test for AI in the modern day?</p>
+
+<p>In the last couple of years, a number of papers (like <a href="http://www.pnas.org/content/112/12/3618.abstract">this one</a>) have suggested that the task of Visual Question Answering (VQA, for short) can be used as an alternative Turing Test. The task involves answering an open-ended question (or a series of questions) about an image. An example is shown below:</p>
+
+<h5 id="image-from-visualqaorg">Image from visualqa.org</h5>
+<p><img src="/images/vqa/challenge.png" alt="Visual QA" /></p>
+
+<p>The AI system needs to solve a number of sub-problems in Natural Language Processing and Computer Vision, in addition to being able to perform some kind of “common-sense” reasoning. It needs to localize the subject being referenced (the woman’s face, and more specifically the region around her lips), needs to detect objects (the banana), and should also have some common-sense knowledge that the word <em>mustache</em> is often used to refer to markings or objects on the face that are not actually mustaches (like milk mustaches). Since the problem cuts through two two very different modalities (vision and text), and requires high-level understanding of the scene, it appears to be an ideal candidate for a true Turing Test. The problem also has real world applications, like helping the <a href="https://itunes.apple.com/us/app/vizwiz/id439686043?mt=8">visually impaired</a>.</p>
+
+<p>A few days ago, the <a href="http://visualqa.org/challenge.html">Visual QA Challenge</a> was launched, and along with it came a large dataset (~750K questions on ~250K images). After the <a href="http://mscoco.org/dataset/#captions-challenge2015">MS COCO Image Captioning Challenge</a> sparked a lot of interest in problem of <a href="https://pdollar.wordpress.com/2015/01/21/image-captioning/">image captioning</a> (or was it the interest that led to the challenge?), the time seems ripe to move onto a much harder problem at the intersection of NLP and Vision.</p>
+
+<p>This post will present ways to model this problem using Neural Networks, exploring both Feedforward Neural Networks, and the much more exciting <strong>Recurrent Neural Networks</strong> (LSTMs, to be specific). If you do not know much about Neural Networks, then I encourage you to check these two awesome blogs: <a href="https://colah.github.io">Colah’s Blog</a> and <a href="https://karpathy.github.io">Karpathy’s Blog</a>. Specifically, check out the posts on Recurrent Neural Nets, Convolutional Neural Nets and LSTM Nets. The models in this post take inspiration from <a href="https://filebox.ece.vt.edu/~parikh/Publications/ICCV2015_VQA.pdf">this ICCV 2015 paper</a>, and <a href="http://www.cs.toronto.edu/~mren/imageqa/">this NIPS 2015 paper</a>.</p>
+
+<h2 id="generating-answers">Generating Answers</h2>
+<p>An important aspect of solving this problem is to have a system that can generate new answers. While most of the answers in the VQA dataset are short (1-3 words), we would still like to a have a system that can generate arbitrarily long answers, keeping up with our spirit of the Turing test. We can perhaps take inspiration from papers on <a href="http://arxiv.org/abs/1409.3215">Sequence to Sequence Learning using RNNs</a>, that solve a similar problem when generating translations of arbitrary length. However, for the purpose of this blog post, we will ignore this aspect of the problem. We will select the 1000 most frequent answers in the VQA training dataset, and solve the problem in a multi-class classification setting. These top 1000 answers cover over 80% of the answers in the VQA training set, so we can still expect to get reasonable results.</p>
+
+<h2 id="the-feedforward-neural-model">The Feedforward Neural Model</h2>
+<p><img src="/images/vqa/model_1.jpg" alt="The MLP Model" /></p>
+
+<p>To get started, let’s first try to model the problem using a <a href="https://en.wikipedia.org/wiki/Multilayer_perceptron">MultiLayer Perceptron</a>. An MLP is a simple feedforward neural net that maps a feature vector (of fixed length) to an appropriate output. In our problem, this output will be a probability distribution over the set of possible answers. We will be using <a href="http://keras.io">Keras</a>, an awesome deep learning library based on <a href="http://deeplearning.net/software/theano/">Theano</a>, and written in Python. Setting up Keras is fairly easy, just have a look at their <a href="https://github.com/fchollet/keras#installation">readme</a> to get started.</p>
+
+<p>In order to use the MLP model, we need to map all our input questions and images to a feature vector of fixed length. We perform the following operations to achieve this:</p>
+
+<ol>
+  <li>For the question, we transform each word to its <a href="https://code.google.com/p/word2vec/">word vector</a>, and sum up all the vectors. The length of this feature vector will be same as the length of a single word vector, and the word vectors (also called embeddings) that we use have a length of <code>300</code>.</li>
+  <li>For the image, we pass it through a Deep Convolutional Neural Network (the well-known <a href="http://arxiv.org/abs/1409.1556">VGG Architecture</a>), and extract the activation from the second last layer (before the softmax layer, that is). Size of this feature vector is <code>4096</code>.</li>
+</ol>
+
+<p>Once we have generated the feature vectors, all we need to do now is to define a model in Keras, set up a cost function and an optimizer, and we’re good to go. 
+The following Keras code defines a multi-layer perceptron with two hidden layers, <code>1024</code> hidden units in each layer and dropout layers in the middle for regularization. The final layer is a softmax layer, and is responsible for generating the probability distribution over the set of possible answers. I have used the <code>categorical_crossentropy</code> loss function since it is a multi-class classification problem. The <code>rmsprop</code> method is used for optimzation. You can try experimenting with other optimizers, and see what kind of <a href="http://lossfunctions.tumblr.com/">learning curves</a> you get.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers.core</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Activation</span>
+
+<span class="n">img_dim</span> <span class="o">=</span> <span class="mi">4096</span> <span class="c">#top layer of the VGG net</span>
+<span class="n">word_vec_dim</span> <span class="o">=</span> <span class="mi">300</span> <span class="c">#dimension of pre-trained word vectors</span>
+<span class="n">nb_hidden_units</span> <span class="o">=</span> <span class="mi">1024</span> <span class="c">#number of hidden units, a hyperparameter</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">nb_hidden_units</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">img_dim</span><span class="o">+</span><span class="n">word_vec_dim</span><span class="p">,</span> 
+          <span class="n">init</span><span class="o">=</span><span class="s">&#39;uniform&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;tanh&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">nb_hidden_units</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;uniform&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;tanh&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">nb_classes</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;uniform&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;softmax&#39;</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">&#39;rmsprop&#39;</span><span class="p">)</span></code></pre></div>
+
+<p>Have a look at the <a href="https://github.com/avisingh599/visual-qa/blob/master/scripts/trainMLP.py">entire python script</a> to see the code for generating the features and training the network. It does not access the hard disk once the training begins, and uses about ~4GB of RAM. You can reduce memory usage by lowering the <code>batchSize</code> variable, but that would also lead to longer training times. It is able to process over 215K image-question pairs in less than <strong>160 seconds/epoch</strong> when working on a GTX 760 GPU with a batch size of 128. I ran my experiments for 100 epochs.</p>
+
+<h2 id="the-recurrent-neural-model">The Recurrent Neural Model</h2>
+<p><img src="/images/vqa/lstm_encoder.jpg" alt="The LSTM Model" align="middle" style="width: 500px;" /></p>
+
+<p>A drawback of the previous approach is that we ignore the sequential nature of the questions. Regardless of what order the words appear in, we’ll get the same vector representing the question, à la <a href="https://en.wikipedia.org/wiki/Bag-of-words_model">bag-of-words (BOW)</a>. A way to tackle this limitation is by use of <a href="http://karpathy.github.io/2015/05/21/rnn-effectiveness/">Recurrent Neural Networks</a>, which are well-suited for sequential data. We’ll be using <a href="http://colah.github.io/posts/2015-08-Understanding-LSTMs/">LSTMs</a> here, since they avoid some common nuances of vanilla RNNs, and often give a slightly better performance. You can also experiment with other recurrent layers in Keras, such as <code>GRU</code>. The word vectors corresponding to the tokens in the question are passed to an LSTM in a sequential fashion, and the output of the LSTM (from its output gate) after all the tokens have been passed is chosen as the representation for the entire question. This fixed length vector is concatenated with the <code>4096</code> dimensional CNN vector for the image, and passed on to a multi-layer perceptron with fully connected layers. The last layer is once again softmax, and provides us with a probability distribution over the possible outputs.</p>
+
+<div class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers.core</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Merge</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">Reshape</span>
+<span class="kn">from</span> <span class="nn">keras.layers.recurrent</span> <span class="kn">import</span> <span class="n">LSTM</span>
+
+<span class="n">num_hidden_units_mlp</span> <span class="o">=</span> <span class="mi">1024</span>
+<span class="n">num_hidden_units_lstm</span> <span class="o">=</span> <span class="mi">512</span>
+<span class="n">img_dim</span> <span class="o">=</span> <span class="mi">4096</span>
+<span class="n">word_vec_dim</span> <span class="o">=</span> <span class="mi">300</span>
+
+<span class="n">image_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">image_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Reshape</span><span class="p">(</span><span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">img_dim</span><span class="p">,),</span> <span class="n">dims</span><span class="o">=</span><span class="p">(</span><span class="n">img_dim</span><span class="p">,)))</span>
+
+<span class="n">language_model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">language_model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">LSTM</span><span class="p">(</span><span class="n">output_dim</span> <span class="o">=</span> <span class="n">num_hidden_units_lstm</span><span class="p">,</span> 
+			<span class="n">return_sequences</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> 
+			<span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">max_len</span><span class="p">,</span> <span class="n">word_vec_dim</span><span class="p">)))</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Merge</span><span class="p">([</span><span class="n">language_model</span><span class="p">,</span> <span class="n">image_model</span><span class="p">],</span> 
+			<span class="n">mode</span><span class="o">=</span><span class="s">&#39;concat&#39;</span><span class="p">,</span> <span class="n">concat_axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_hidden_units_mlp</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;uniform&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;tanh&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_hidden_units_mlp</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s">&#39;uniform&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;tanh&#39;</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">nb_classes</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Activation</span><span class="p">(</span><span class="s">&#39;softmax&#39;</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s">&#39;rmsprop&#39;</span><span class="p">)</span></code></pre></div>
+
+<p>A single <code>train_on_batch</code> method call in Keras expects the sequences to be of the same length (so that is can be represented as a Theano Tensor). There has been a lot of discussion regarding training LSTMs with variable length sequences, and I used the following technique: Sorted all the questions by their length, and then processed them in batches of <code>128</code> while training. Most batches had questions of the same length (say 9 or 10 words), and there was no need of zero-padding. For the few batched that did have questions of varying length, the shorter questions were zero-padded. I was able to achieve a training speed of <strong>200 seconds/epoch</strong> on a GTX 760 GPU.</p>
+
+<h2 id="show-me-the-numbers">Show me the numbers</h2>
+<p>I trained my system on the Training Set of the VQA dataset, and evaluated performance on the validation set, following the rules of the VQA challenge. The answer produced by the Neural Net is checked against every answer provided by humans (there are ten human answers for every question). If the answer produced by the neural net <em>exactly</em> matches <em>at least</em> three of the ten answers, then we classify it as a correct prediction. Here is the performance of the models that I trained:</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Model</th>
+      <th style="text-align: center">Accuracy</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>BOW+CNN</td>
+      <td style="text-align: center">44.30%</td>
+    </tr>
+    <tr>
+      <td>LSTM-Language only</td>
+      <td style="text-align: center">42.51%</td>
+    </tr>
+    <tr>
+      <td>LSTM+CNN</td>
+      <td style="text-align: center">47.80%</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>It’s interesting to see that even a “blind” model is able to obtain an accuracy of 42.51%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3.5% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the <a href="http://www.visualqa.org/VQA_ICCV2015.pdf">original VQA paper</a>, albeit about 5% weaker than them. However, the results reported in the paper were on the <em>test</em> set (trained on train+val), while we have evaluated on the <em>validation</em> set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LST hidden layers, dropout or no dropout etc.).</p>
+
+<p>I carried out my experiments for 100 epochs<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>, and observed the following curve:</p>
+
+<p><img src="/images/vqa/learning_curve.jpg" alt="Validation Accuracy with number of epochs" /></p>
+
+<p>The LSTM+CNN model flattens out in performance after about 50 epochs. The BOW+CNN also showed similar behavior, but took a surprising dive at epoch 90, which was soon rectified by the 100th epoch. I’ll probably re-initialize and run the models for 500 epochs, and see if such behavior is seen again or not.</p>
+
+<h3 id="a-note-on-word-embeddings">A note on word embeddings</h3>
+<p>We have a number of choices when using word embeddings, and I experimented with three of them:</p>
+
+<ol>
+  <li>
+    <p><a href="http://nlp.stanford.edu/projects/glove/">GloVe Word Embeddings</a> trained on the common-crawl: These gave the best performance, and all results reported here are using these embeddings.</p>
+  </li>
+  <li>
+    <p><a href="https://levyomer.wordpress.com/2014/04/25/dependency-based-word-embeddings/">Goldberg and Levy 2014</a>: These are the default embeddings that come with <a href="http://spacy.io/">spaCy</a>, and they gave significantly worse results.</p>
+  </li>
+  <li>
+    <p>Embeddings Trained on the VQA questions: I used <a href="https://radimrehurek.com/gensim/models/word2vec.html">Gensim’s word2vec</a> implementation to train my own embeddings on the questions in the training set of the VQA dataset. The performance was similar to, but slighly worse than the GloVe embeddings. This is primarily because the VQA training set alone is not sufficiently large (~2.5m words) to get reasonable word vectors, especially for less common words.</p>
+  </li>
+</ol>
+
+<h3 id="link-to-github-repohttpsgithubcomavisingh599visual-qa"><a href="https://github.com/avisingh599/visual-qa">Link to github repo</a></h3>
+
+<hr />
+<div class="footnotes">
+  <ol>
+    <li id="fn:1">
+      <p>Validation was done once per 10 epochs for BOW+CNN, once every 5 epochs for LSTMs. <a href="#fnref:1" class="reversefootnote">&#8617;</a></p>
+    </li>
+  </ol>
+</div>
+
+</article>
+
+
+  
+
+
+
+
+
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+    var disqus_shortname  = 'avisingh599';
+    var disqus_identifier = '/deeplearning/visual-qa';
+    var disqus_title      = '';
+
+    (function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+
+
+
+
+      </div>
+    </div>
+  </div>
+
+  <footer class="center">
+  <div class="measure">
+    <small>
+      Powered by <a href="https://jekyllrb.com/">Jekyll</a> using <a href="https://pixyll.com/">Pixyll</a> theme. Hosted on <a href="https://pages.github.com/">Github Pages</a>. <br>
+      © Avi Singh
+    </small>
+  </div>
+</footer>
+
+</body>
+</html>

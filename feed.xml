@@ -7,6 +7,170 @@
     <atom:link href="https://avisingh599.github.io/feed.xml" rel="self" type="application/rss+xml" />
     
       <item>
+        <title>Deep Learning for Visual Question Answering</title>
+        <description>&lt;script type=&quot;text/javascript&quot; src=&quot;http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML&quot;&gt;&lt;/script&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/vqa/sample_results.jpg&quot; alt=&quot;Teaser&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In this blog post, I’ll talk about the &lt;a href=&quot;http://www.visualqa.org&quot;&gt;Visual Question Answering&lt;/a&gt; problem, and I’ll also present neural network based approaches for same. The source code for this blog post is written in Python and &lt;a href=&quot;http://keras.io&quot;&gt;Keras&lt;/a&gt;, and is available on &lt;a href=&quot;http://github.com/avisingh599/visual-qa&quot;&gt;Github&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;An year or so ago, a chatbot named &lt;a href=&quot;https://en.wikipedia.org/wiki/Eugene_Goostman&quot;&gt;Eugene Goostman&lt;/a&gt; made it to the mainstream &lt;a href=&quot;http://www.bbc.com/news/technology-27762088&quot;&gt;news&lt;/a&gt;, after having been reported as the first computer program to have passed the famed &lt;a href=&quot;https://en.wikipedia.org/wiki/Turing_test&quot;&gt;Turing Test&lt;/a&gt; in an event organized at the University of Reading. While the organizers hailed it as a historical achievement, most of the scientific community wasn’t impressed. This leads us to the question: Is the Turing Test, in its original form, a suitable test for AI in the modern day?&lt;/p&gt;
+
+&lt;p&gt;In the last couple of years, a number of papers (like &lt;a href=&quot;http://www.pnas.org/content/112/12/3618.abstract&quot;&gt;this one&lt;/a&gt;) have suggested that the task of Visual Question Answering (VQA, for short) can be used as an alternative Turing Test. The task involves answering an open-ended question (or a series of questions) about an image. An example is shown below:&lt;/p&gt;
+
+&lt;h5 id=&quot;image-from-visualqaorg&quot;&gt;Image from visualqa.org&lt;/h5&gt;
+&lt;p&gt;&lt;img src=&quot;/images/vqa/challenge.png&quot; alt=&quot;Visual QA&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The AI system needs to solve a number of sub-problems in Natural Language Processing and Computer Vision, in addition to being able to perform some kind of “common-sense” reasoning. It needs to localize the subject being referenced (the woman’s face, and more specifically the region around her lips), needs to detect objects (the banana), and should also have some common-sense knowledge that the word &lt;em&gt;mustache&lt;/em&gt; is often used to refer to markings or objects on the face that are not actually mustaches (like milk mustaches). Since the problem cuts through two two very different modalities (vision and text), and requires high-level understanding of the scene, it appears to be an ideal candidate for a true Turing Test. The problem also has real world applications, like helping the &lt;a href=&quot;https://itunes.apple.com/us/app/vizwiz/id439686043?mt=8&quot;&gt;visually impaired&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;A few days ago, the &lt;a href=&quot;http://visualqa.org/challenge.html&quot;&gt;Visual QA Challenge&lt;/a&gt; was launched, and along with it came a large dataset (~750K questions on ~250K images). After the &lt;a href=&quot;http://mscoco.org/dataset/#captions-challenge2015&quot;&gt;MS COCO Image Captioning Challenge&lt;/a&gt; sparked a lot of interest in problem of &lt;a href=&quot;https://pdollar.wordpress.com/2015/01/21/image-captioning/&quot;&gt;image captioning&lt;/a&gt; (or was it the interest that led to the challenge?), the time seems ripe to move onto a much harder problem at the intersection of NLP and Vision.&lt;/p&gt;
+
+&lt;p&gt;This post will present ways to model this problem using Neural Networks, exploring both Feedforward Neural Networks, and the much more exciting &lt;strong&gt;Recurrent Neural Networks&lt;/strong&gt; (LSTMs, to be specific). If you do not know much about Neural Networks, then I encourage you to check these two awesome blogs: &lt;a href=&quot;https://colah.github.io&quot;&gt;Colah’s Blog&lt;/a&gt; and &lt;a href=&quot;https://karpathy.github.io&quot;&gt;Karpathy’s Blog&lt;/a&gt;. Specifically, check out the posts on Recurrent Neural Nets, Convolutional Neural Nets and LSTM Nets. The models in this post take inspiration from &lt;a href=&quot;https://filebox.ece.vt.edu/~parikh/Publications/ICCV2015_VQA.pdf&quot;&gt;this ICCV 2015 paper&lt;/a&gt;, and &lt;a href=&quot;http://www.cs.toronto.edu/~mren/imageqa/&quot;&gt;this NIPS 2015 paper&lt;/a&gt;.&lt;/p&gt;
+
+&lt;h2 id=&quot;generating-answers&quot;&gt;Generating Answers&lt;/h2&gt;
+&lt;p&gt;An important aspect of solving this problem is to have a system that can generate new answers. While most of the answers in the VQA dataset are short (1-3 words), we would still like to a have a system that can generate arbitrarily long answers, keeping up with our spirit of the Turing test. We can perhaps take inspiration from papers on &lt;a href=&quot;http://arxiv.org/abs/1409.3215&quot;&gt;Sequence to Sequence Learning using RNNs&lt;/a&gt;, that solve a similar problem when generating translations of arbitrary length. However, for the purpose of this blog post, we will ignore this aspect of the problem. We will select the 1000 most frequent answers in the VQA training dataset, and solve the problem in a multi-class classification setting. These top 1000 answers cover over 80% of the answers in the VQA training set, so we can still expect to get reasonable results.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-feedforward-neural-model&quot;&gt;The Feedforward Neural Model&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/images/vqa/model_1.jpg&quot; alt=&quot;The MLP Model&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;To get started, let’s first try to model the problem using a &lt;a href=&quot;https://en.wikipedia.org/wiki/Multilayer_perceptron&quot;&gt;MultiLayer Perceptron&lt;/a&gt;. An MLP is a simple feedforward neural net that maps a feature vector (of fixed length) to an appropriate output. In our problem, this output will be a probability distribution over the set of possible answers. We will be using &lt;a href=&quot;http://keras.io&quot;&gt;Keras&lt;/a&gt;, an awesome deep learning library based on &lt;a href=&quot;http://deeplearning.net/software/theano/&quot;&gt;Theano&lt;/a&gt;, and written in Python. Setting up Keras is fairly easy, just have a look at their &lt;a href=&quot;https://github.com/fchollet/keras#installation&quot;&gt;readme&lt;/a&gt; to get started.&lt;/p&gt;
+
+&lt;p&gt;In order to use the MLP model, we need to map all our input questions and images to a feature vector of fixed length. We perform the following operations to achieve this:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;For the question, we transform each word to its &lt;a href=&quot;https://code.google.com/p/word2vec/&quot;&gt;word vector&lt;/a&gt;, and sum up all the vectors. The length of this feature vector will be same as the length of a single word vector, and the word vectors (also called embeddings) that we use have a length of &lt;code&gt;300&lt;/code&gt;.&lt;/li&gt;
+  &lt;li&gt;For the image, we pass it through a Deep Convolutional Neural Network (the well-known &lt;a href=&quot;http://arxiv.org/abs/1409.1556&quot;&gt;VGG Architecture&lt;/a&gt;), and extract the activation from the second last layer (before the softmax layer, that is). Size of this feature vector is &lt;code&gt;4096&lt;/code&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;Once we have generated the feature vectors, all we need to do now is to define a model in Keras, set up a cost function and an optimizer, and we’re good to go. 
+The following Keras code defines a multi-layer perceptron with two hidden layers, &lt;code&gt;1024&lt;/code&gt; hidden units in each layer and dropout layers in the middle for regularization. The final layer is a softmax layer, and is responsible for generating the probability distribution over the set of possible answers. I have used the &lt;code&gt;categorical_crossentropy&lt;/code&gt; loss function since it is a multi-class classification problem. The &lt;code&gt;rmsprop&lt;/code&gt; method is used for optimzation. You can try experimenting with other optimizers, and see what kind of &lt;a href=&quot;http://lossfunctions.tumblr.com/&quot;&gt;learning curves&lt;/a&gt; you get.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;keras.models&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;keras.layers.core&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;img_dim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4096&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#top layer of the VGG net&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;word_vec_dim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#dimension of pre-trained word vectors&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;nb_hidden_units&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt; &lt;span class=&quot;c&quot;&gt;#number of hidden units, a hyperparameter&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nb_hidden_units&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;input_dim&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_dim&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;+&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;word_vec_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+          &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;uniform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;tanh&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nb_hidden_units&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;uniform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;tanh&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nb_classes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;uniform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;softmax&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;categorical_crossentropy&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;rmsprop&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;Have a look at the &lt;a href=&quot;https://github.com/avisingh599/visual-qa/blob/master/scripts/trainMLP.py&quot;&gt;entire python script&lt;/a&gt; to see the code for generating the features and training the network. It does not access the hard disk once the training begins, and uses about ~4GB of RAM. You can reduce memory usage by lowering the &lt;code&gt;batchSize&lt;/code&gt; variable, but that would also lead to longer training times. It is able to process over 215K image-question pairs in less than &lt;strong&gt;160 seconds/epoch&lt;/strong&gt; when working on a GTX 760 GPU with a batch size of 128. I ran my experiments for 100 epochs.&lt;/p&gt;
+
+&lt;h2 id=&quot;the-recurrent-neural-model&quot;&gt;The Recurrent Neural Model&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;/images/vqa/lstm_encoder.jpg&quot; alt=&quot;The LSTM Model&quot; align=&quot;middle&quot; style=&quot;width: 500px;&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;A drawback of the previous approach is that we ignore the sequential nature of the questions. Regardless of what order the words appear in, we’ll get the same vector representing the question, à la &lt;a href=&quot;https://en.wikipedia.org/wiki/Bag-of-words_model&quot;&gt;bag-of-words (BOW)&lt;/a&gt;. A way to tackle this limitation is by use of &lt;a href=&quot;http://karpathy.github.io/2015/05/21/rnn-effectiveness/&quot;&gt;Recurrent Neural Networks&lt;/a&gt;, which are well-suited for sequential data. We’ll be using &lt;a href=&quot;http://colah.github.io/posts/2015-08-Understanding-LSTMs/&quot;&gt;LSTMs&lt;/a&gt; here, since they avoid some common nuances of vanilla RNNs, and often give a slightly better performance. You can also experiment with other recurrent layers in Keras, such as &lt;code&gt;GRU&lt;/code&gt;. The word vectors corresponding to the tokens in the question are passed to an LSTM in a sequential fashion, and the output of the LSTM (from its output gate) after all the tokens have been passed is chosen as the representation for the entire question. This fixed length vector is concatenated with the &lt;code&gt;4096&lt;/code&gt; dimensional CNN vector for the image, and passed on to a multi-layer perceptron with fully connected layers. The last layer is once again softmax, and provides us with a probability distribution over the possible outputs.&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;keras.models&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;keras.layers.core&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Merge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Reshape&lt;/span&gt;
+&lt;span class=&quot;kn&quot;&gt;from&lt;/span&gt; &lt;span class=&quot;nn&quot;&gt;keras.layers.recurrent&lt;/span&gt; &lt;span class=&quot;kn&quot;&gt;import&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;LSTM&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;num_hidden_units_mlp&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;1024&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;num_hidden_units_lstm&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;512&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;img_dim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4096&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;word_vec_dim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;300&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;image_model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;image_model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Reshape&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;input_shape&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,),&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;dims&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;img_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,)))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;language_model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;language_model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;LSTM&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;output_dim&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;num_hidden_units_lstm&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+			&lt;span class=&quot;n&quot;&gt;return_sequences&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;bp&quot;&gt;False&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; 
+			&lt;span class=&quot;n&quot;&gt;input_shape&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;max_len&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;word_vec_dim&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;Sequential&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;()&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Merge&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;([&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;language_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;image_model&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;],&lt;/span&gt; 
+			&lt;span class=&quot;n&quot;&gt;mode&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;concat&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;concat_axis&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_hidden_units_mlp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;uniform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;tanh&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;num_hidden_units_mlp&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;init&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;uniform&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;tanh&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dropout&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;mf&quot;&gt;0.5&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Dense&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;nb_classes&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;add&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;Activation&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;softmax&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;))&lt;/span&gt;
+
+&lt;span class=&quot;n&quot;&gt;model&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;compile&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;loss&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;categorical_crossentropy&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;optimizer&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;#39;rmsprop&amp;#39;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+&lt;p&gt;A single &lt;code&gt;train_on_batch&lt;/code&gt; method call in Keras expects the sequences to be of the same length (so that is can be represented as a Theano Tensor). There has been a lot of discussion regarding training LSTMs with variable length sequences, and I used the following technique: Sorted all the questions by their length, and then processed them in batches of &lt;code&gt;128&lt;/code&gt; while training. Most batches had questions of the same length (say 9 or 10 words), and there was no need of zero-padding. For the few batched that did have questions of varying length, the shorter questions were zero-padded. I was able to achieve a training speed of &lt;strong&gt;200 seconds/epoch&lt;/strong&gt; on a GTX 760 GPU.&lt;/p&gt;
+
+&lt;h2 id=&quot;show-me-the-numbers&quot;&gt;Show me the numbers&lt;/h2&gt;
+&lt;p&gt;I trained my system on the Training Set of the VQA dataset, and evaluated performance on the validation set, following the rules of the VQA challenge. The answer produced by the Neural Net is checked against every answer provided by humans (there are ten human answers for every question). If the answer produced by the neural net &lt;em&gt;exactly&lt;/em&gt; matches &lt;em&gt;at least&lt;/em&gt; three of the ten answers, then we classify it as a correct prediction. Here is the performance of the models that I trained:&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th&gt;Model&lt;/th&gt;
+      &lt;th style=&quot;text-align: center&quot;&gt;Accuracy&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;BOW+CNN&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;44.30%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;LSTM-Language only&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;42.51%&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+      &lt;td&gt;LSTM+CNN&lt;/td&gt;
+      &lt;td style=&quot;text-align: center&quot;&gt;47.80%&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;It’s interesting to see that even a “blind” model is able to obtain an accuracy of 42.51%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3.5% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the &lt;a href=&quot;http://www.visualqa.org/VQA_ICCV2015.pdf&quot;&gt;original VQA paper&lt;/a&gt;, albeit about 5% weaker than them. However, the results reported in the paper were on the &lt;em&gt;test&lt;/em&gt; set (trained on train+val), while we have evaluated on the &lt;em&gt;validation&lt;/em&gt; set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LST hidden layers, dropout or no dropout etc.).&lt;/p&gt;
+
+&lt;p&gt;I carried out my experiments for 100 epochs&lt;sup id=&quot;fnref:1&quot;&gt;&lt;a href=&quot;#fn:1&quot; class=&quot;footnote&quot;&gt;1&lt;/a&gt;&lt;/sup&gt;, and observed the following curve:&lt;/p&gt;
+
+&lt;p&gt;&lt;img src=&quot;/images/vqa/learning_curve.jpg&quot; alt=&quot;Validation Accuracy with number of epochs&quot; /&gt;&lt;/p&gt;
+
+&lt;p&gt;The LSTM+CNN model flattens out in performance after about 50 epochs. The BOW+CNN also showed similar behavior, but took a surprising dive at epoch 90, which was soon rectified by the 100th epoch. I’ll probably re-initialize and run the models for 500 epochs, and see if such behavior is seen again or not.&lt;/p&gt;
+
+&lt;h3 id=&quot;a-note-on-word-embeddings&quot;&gt;A note on word embeddings&lt;/h3&gt;
+&lt;p&gt;We have a number of choices when using word embeddings, and I experimented with three of them:&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;http://nlp.stanford.edu/projects/glove/&quot;&gt;GloVe Word Embeddings&lt;/a&gt; trained on the common-crawl: These gave the best performance, and all results reported here are using these embeddings.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;a href=&quot;https://levyomer.wordpress.com/2014/04/25/dependency-based-word-embeddings/&quot;&gt;Goldberg and Levy 2014&lt;/a&gt;: These are the default embeddings that come with &lt;a href=&quot;http://spacy.io/&quot;&gt;spaCy&lt;/a&gt;, and they gave significantly worse results.&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;Embeddings Trained on the VQA questions: I used &lt;a href=&quot;https://radimrehurek.com/gensim/models/word2vec.html&quot;&gt;Gensim’s word2vec&lt;/a&gt; implementation to train my own embeddings on the questions in the training set of the VQA dataset. The performance was similar to, but slighly worse than the GloVe embeddings. This is primarily because the VQA training set alone is not sufficiently large (~2.5m words) to get reasonable word vectors, especially for less common words.&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;h3 id=&quot;link-to-github-repohttpsgithubcomavisingh599visual-qa&quot;&gt;&lt;a href=&quot;https://github.com/avisingh599/visual-qa&quot;&gt;Link to github repo&lt;/a&gt;&lt;/h3&gt;
+
+&lt;hr /&gt;
+&lt;div class=&quot;footnotes&quot;&gt;
+  &lt;ol&gt;
+    &lt;li id=&quot;fn:1&quot;&gt;
+      &lt;p&gt;Validation was done once per 10 epochs for BOW+CNN, once every 5 epochs for LSTMs. &lt;a href=&quot;#fnref:1&quot; class=&quot;reversefootnote&quot;&gt;&amp;#8617;&lt;/a&gt;&lt;/p&gt;
+    &lt;/li&gt;
+  &lt;/ol&gt;
+&lt;/div&gt;
+</description>
+        <pubDate>Mon, 02 Nov 2015 00:00:00 +0530</pubDate>
+        <link>https://avisingh599.github.io/deeplearning/visual-qa/</link>
+        <guid isPermaLink="true">https://avisingh599.github.io/deeplearning/visual-qa/</guid>
+      </item>
+    
+      <item>
         <title>Computer Vision for Predicting Facial Attractiveness</title>
         <description>&lt;p&gt;&lt;a href=&quot;http://www.learnopencv.com/computer-vision-for-predicting-facial-attractiveness/&quot;&gt;Click here to go to the post.&lt;/a&gt;&lt;/p&gt;
 </description>
@@ -936,118 +1100,6 @@ This post is primarily a list of some useful links which will get one acquainted
         <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
         <link>https://avisingh599.github.io/stats/ransac/</link>
         <guid isPermaLink="true">https://avisingh599.github.io/stats/ransac/</guid>
-      </item>
-    
-      <item>
-        <title>Parallel Programming with CUDA</title>
-        <description>&lt;p&gt;I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is &lt;em&gt;way&lt;/em&gt; better.&lt;/p&gt;
-
-&lt;h2 id=&quot;why-gpus&quot;&gt;Why GPUs?&lt;/h2&gt;
-
-&lt;p&gt;CPUs are not getting any faster, due to limitation of clock speeds which have virtually remained the same since the past 5 years or so. Increasing this clock speed has become close to impossible, since increasing clock speeds increases the power consumption, which makes it difficult to cool the CPU. So, for faster computations, GPUs are the way to go.&lt;/p&gt;
-
-&lt;h2 id=&quot;gpu-vs-cpu&quot;&gt;GPU vs CPU&lt;/h2&gt;
-
-&lt;p&gt;My computer has a quad-core processor with hyper threading (an Intel i7 Ivy Bridge). This means that, in the best case, I can have at most 8-threads truly running in parallel. On the other hand, the low-end GPU that I have (nVidia GeForce GT630M) has 96 cores!&lt;/p&gt;
-
-&lt;p&gt;In general, a CPU has a few, very powerful computation cores, where as a GPU has a very large number of smaller, less powerful computation cores. The time taken to perform any one particular task is less on the CPU, but if you need to performs thousands of such tasks, then the GPU would beat the CPU.&lt;/p&gt;
-
-&lt;p&gt;One more important thing to note is that, while designing CPUs engineers optimize for &lt;em&gt;latency&lt;/em&gt;. On the other hand, maximum &lt;em&gt;thorughput&lt;/em&gt; is what the designers are aiming at while making GPUs.&lt;/p&gt;
-
-&lt;h2 id=&quot;throughput-vs-latency&quot;&gt;Throughput vs Latency&lt;/h2&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;
-    &lt;p&gt;Throughput: It is defined as the amount of work done in unit time. For example, I need to transport 50 bags of rice from ground floor of a building to the 10th floor, and I can carry at most two bags at a time. Let the time taken in each trip be 5 minutes. So, the amount of work done in one hour would be 2*(60/5) = 24 bags. I can say that the throughput is 24 bags/hr.&lt;/p&gt;
-  &lt;/li&gt;
-  &lt;li&gt;
-    &lt;p&gt;Latency: It is defined as the amount of time taken to perform a particular task. In the previous example, it would take take 125 minutes to take all the 50 bags, and hence the latency (measures in time units) is 125 minutes.&lt;/p&gt;
-  &lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;h2 id=&quot;cuda&quot;&gt;CUDA&lt;/h2&gt;
-
-&lt;p&gt;CUDA is a framework developed by nVidia for writing programs that run both on the GPU and the CPU. On the CPU side, you can write programs in C, and then used some extensions to C (written by nVidia) to write programs that run on the GPU. These programs that run on the GPU are called &lt;em&gt;kernels&lt;/em&gt;. A kernel looks like a serial program, but the CPU launches on a large  number of threads on the GPU. In CUDA, the CPU is referred to as the &lt;em&gt;host&lt;/em&gt; while the GPU is referred to as the &lt;em&gt;device&lt;/em&gt;. In this relationship between the CPU and the GPU, the CPU is the &lt;em&gt;alpha&lt;/em&gt;. The CPU and the GPU have separate memories, and can perform operations only on the data that is stored in their own memory. The CPU can allocate memory on the GPU, copy data from the CPU memory to the GPU memory, launch kernels on hundreds of thread on the GPU, and copy back the results from the GPU memory. The GPU, on the other hand, can only respond to call of memory copy made by the CPU, and cannot make its own requests for data transfer.&lt;/p&gt;
-
-&lt;h4 id=&quot;skeleton-of-a-cuda-program&quot;&gt;Skeleton of a CUDA program:&lt;/h4&gt;
-
-&lt;ul&gt;
-  &lt;li&gt;Allocate memory on the GPU&lt;/li&gt;
-  &lt;li&gt;Transfer data from the CPU memory to the GPU memory&lt;/li&gt;
-  &lt;li&gt;Perform the computations on the GPU&lt;/li&gt;
-  &lt;li&gt;Copy the results from the GPU to the CPU&lt;/li&gt;
-&lt;/ul&gt;
-
-&lt;p&gt;A sample code in CUDA, which calculates the cubes of all integers from 1 to 64.&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-c&quot; data-lang=&quot;c&quot;&gt;&lt;span class=&quot;cp&quot;&gt;#include &amp;lt;stdio.h&amp;gt;&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// here is the kernel&lt;/span&gt;
-
-&lt;span class=&quot;n&quot;&gt;__global__&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;){&lt;/span&gt;
-	&lt;span class=&quot;c1&quot;&gt;// Todo: Fill in this function&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;threadIdx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;.&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;x&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-    &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-    &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;idx&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;*&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;f&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-&lt;span class=&quot;c1&quot;&gt;// threadIdx is a C struct having members x,y,z, other structs available are blockIdx, threaddim, blockdim&lt;/span&gt;
-&lt;span class=&quot;c1&quot;&gt;//__global__ is what specifies that the fucntion is a kernel&lt;/span&gt;
-
-&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;nf&quot;&gt;main&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;char&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;**&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;argv&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;64&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;const&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;k&quot;&gt;sizeof&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// generate the input array on the host&lt;/span&gt;
-	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt; &lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;];&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// declare GPU memory pointers&lt;/span&gt;
-	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-	&lt;span class=&quot;kt&quot;&gt;float&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;*&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// allocate GPU memory&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cudaMalloc&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;((&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;void&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;**&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// transfer the array to the GPU&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyHostToDevice&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// launch the kernel&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cube&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;lt;&amp;lt;&amp;lt;&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;1&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;cm&quot;&gt;/*&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;	One block of 64 threads is being launched here. We specify the number of blocks as well as the number of threads in each block.&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;	Each block has a limited number of threads that it can support. Modern GPUs support 1024, older support 512.&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;	Can have any number of blocks. Cuda supports 2D and 3D arrangement of blocks as well.&lt;/span&gt;
-&lt;span class=&quot;cm&quot;&gt;	*/&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// copy back the result array to the CPU&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cudaMemcpy&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_BYTES&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;cudaMemcpyDeviceToHost&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;c1&quot;&gt;// print out the resulting array&lt;/span&gt;
-	&lt;span class=&quot;k&quot;&gt;for&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;kt&quot;&gt;int&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;=&lt;/span&gt;&lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;ARRAY_SIZE&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;o&quot;&gt;++&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;p&quot;&gt;{&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;%f&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;,&lt;/span&gt; &lt;span class=&quot;n&quot;&gt;h_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;[&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;]);&lt;/span&gt;
-		&lt;span class=&quot;n&quot;&gt;printf&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(((&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;i&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;%&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;4&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;!=&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;3&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;)&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;?&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\t&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt; &lt;span class=&quot;o&quot;&gt;:&lt;/span&gt; &lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;se&quot;&gt;\n&lt;/span&gt;&lt;span class=&quot;s&quot;&gt;&amp;quot;&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;
-
-	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_in&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-	&lt;span class=&quot;n&quot;&gt;cudaFree&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;(&lt;/span&gt;&lt;span class=&quot;n&quot;&gt;d_out&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;);&lt;/span&gt;
-
-	&lt;span class=&quot;k&quot;&gt;return&lt;/span&gt; &lt;span class=&quot;mi&quot;&gt;0&lt;/span&gt;&lt;span class=&quot;p&quot;&gt;;&lt;/span&gt;
-&lt;span class=&quot;p&quot;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-&lt;p&gt;If you have the nVidia CUDA toolkit installed, you can compile and run the above program using:&lt;/p&gt;
-
-&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;nvcc -o sample sample.c
-./sample&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
-
-</description>
-        <pubDate>Mon, 21 Jul 2014 00:00:00 +0530</pubDate>
-        <link>https://avisingh599.github.io/gpu/parallel-programming-with-cuda/</link>
-        <guid isPermaLink="true">https://avisingh599.github.io/gpu/parallel-programming-with-cuda/</guid>
       </item>
     
   </channel>
