@@ -12,7 +12,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/pixyll.css?201511022119" type="text/css">
+    <link rel="stylesheet" href="/css/pixyll.css?201511022206" type="text/css">
 
     <!-- Fonts -->
     <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
@@ -262,7 +262,7 @@ The following Keras code defines a multi-layer perceptron with two hidden layers
   </tbody>
 </table>
 
-<p>It’s interesting to see that even a “blind” model is able to obtain an accuracy of 42.51%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3.5% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the <a href="http://www.visualqa.org/VQA_ICCV2015.pdf">original VQA paper</a>, albeit about 5% weaker than them. However, the results reported in the paper were on the <em>test</em> set (trained on train+val), while we have evaluated on the <em>validation</em> set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LST hidden layers, dropout or no dropout etc.).</p>
+<p>It’s interesting to see that even a “blind” model is able to obtain an accuracy of 42.51%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3.5% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the <a href="http://www.visualqa.org/VQA_ICCV2015.pdf">original VQA paper</a>, albeit about 5% weaker than them. However, the results reported in the paper were on the <em>test</em> set (trained on train+val), while we have evaluated on the <em>validation</em> set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LSTM layers, dropout or no dropout etc.).</p>
 
 <p>I carried out my experiments for 100 epochs<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>, and observed the following curve:</p>
 
