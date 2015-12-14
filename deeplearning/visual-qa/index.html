@@ -12,7 +12,7 @@
     <link rel="alternate" type="application/rss+xml" title="RSS Feed for Avi Singh" href="/feed.xml" />
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="/css/pixyll.css?201512081914" type="text/css">
+    <link rel="stylesheet" href="/css/pixyll.css?201512150005" type="text/css">
 
     <!-- Fonts -->
     <link href='//fonts.googleapis.com/css?family=Merriweather:900,900italic,300,300italic' rel='stylesheet' type='text/css'>
@@ -137,7 +137,7 @@
   
   <span class="post-meta small">
   
-    10 minute read
+    11 minute read
   
   </span>
 </div>
@@ -253,26 +253,28 @@ The following Keras code defines a multi-layer perceptron with two hidden layers
   <tbody>
     <tr>
       <td>BOW+CNN</td>
-      <td style="text-align: center">44.30%</td>
+      <td style="text-align: center">48.46%</td>
     </tr>
     <tr>
       <td>LSTM-Language only</td>
-      <td style="text-align: center">42.51%</td>
+      <td style="text-align: center">44.17%</td>
     </tr>
     <tr>
       <td>LSTM+CNN</td>
-      <td style="text-align: center">47.80%</td>
+      <td style="text-align: center">51.63%</td>
     </tr>
   </tbody>
 </table>
 
-<p>It’s interesting to see that even a “blind” model is able to obtain an accuracy of 42.51%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3.5% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the <a href="http://www.visualqa.org/VQA_ICCV2015.pdf">original VQA paper</a>, albeit about 5% weaker than them. However, the results reported in the paper were on the <em>test</em> set (trained on train+val), while we have evaluated on the <em>validation</em> set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LSTM layers, dropout or no dropout etc.).</p>
+<p><strong>Update</strong>: The results that I reported earlier were based on a metric slightly different from the ones used on VQA. They have since been updated. Also, I was able to obtain a performance of <strong>53.34%</strong> on the test-dev set (LSTM+CNN), which is practically the same as those set by the VQA authors in their LSTM baseline.</p>
+
+<p>It’s interesting to see that even a “blind” model is able to obtain an accuracy of 44.17%. This shows that the model is pretty good at guessing the answers once it has identified the type of question. The LSTM+CNN model shows an improvement of about 3% as compared to the Feedforward Model (BOW+CNN), which tells us that the temporal structure of the question is indeed helpful. These results are in line with what was obtained in the <a href="http://www.visualqa.org/VQA_ICCV2015.pdf">original VQA paper</a>. However, the results reported in the paper were on the <em>test</em> set (trained on train+val), while we have evaluated on the <em>validation</em> set (trained on only train). If we learn a model on both the training and the validation data, then we can expect a significant improvement in performance since the number of training examples will increase by 50%. Finally, there is a lot of scope for hyperparameter tuning (number of hidden units, number of MLP hidden layers, number of LSTM layers, dropout or no dropout etc.).</p>
 
 <p>I carried out my experiments for 100 epochs<sup id="fnref:1"><a href="#fn:1" class="footnote">1</a></sup>, and observed the following curve:</p>
 
 <p><img src="/images/vqa/learning_curve.jpg" alt="Validation Accuracy with number of epochs" /></p>
 
-<p>The LSTM+CNN model flattens out in performance after about 50 epochs. The BOW+CNN also showed similar behavior, but took a surprising dive at epoch 90, which was soon rectified by the 100th epoch. I’ll probably re-initialize and run the models for 500 epochs, and see if such behavior is seen again or not.</p>
+<p>The LSTM+CNN model flattens out in performance after about 50 epochs. The BOW+CNN also showed similar behavior, but took a surprising dive at epoch 90, which was soon rectified by the 100th epoch. I’ll probably re-initialize and run the models for 500 epochs, and see if such behavior is seen again or not. <strong>Update</strong>: I did run it once more, and the dip was not observed!</p>
 
 <h3 id="a-note-on-word-embeddings">A note on word embeddings</h3>
 <p>We have a number of choices when using word embeddings, and I experimented with three of them:</p>
