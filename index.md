@@ -25,24 +25,24 @@ In Summer 2015, I was a research intern in the [Robot Learning Lab](http://pr.cs
 
 My <a markdown="0" href="{{ site.url }}/assets/cv.pdf">CV [PDF]</a>, last updated January 2016. 
 
-##<a name="pubs"></a>Publications
+## <a name="pubs"></a>Publications
 <!--
 |<img src="/images/fusionRNN.png" alt="alt text" width="" height="200">  |  Recurrent Neural Networks for Driver Activity Anticipation via Sensory-Fusion Architecture [[arXiv link]](http://arxiv.org/abs/1509.05016) <br> *Ashesh Jain, **Avi Singh**, Hema S Koppula, Shane Soh, Ashutosh Saxena* <br> ICRA 2016|  
 |<img src="/images/car_setup.jpg" alt="alt text" width="" height="200"> | Brain4Cars: Car That Knows Before You Do via Sensory-Fusion Deep Learning Architecture [[arXiv link]](http://arxiv.org/abs/1601.00740)<br>*Ashesh Jain, Hema S Koppula, Shane Soh, Bharad Raghavan, **Avi Singh**, Ashutosh Saxena*<br>under review at IJRR|
 |<img src="/images/car_sensor.jpg" alt="alt text" width="" height="200"> | <br>Brain4Cars: Sensory-Fusion Recurrent Neural Models for Driver Activity Anticipation [[extended abstract [PDF]]](/assets/baylearn.pdf)<br>*Ashesh Jain, Shane Soh, Bharad Raghvan, **Avi Singh**, Hema S Koppula, Ashutosh Saxena*<br><span class="red">**Full Oral**</span> at [BayLearn 2015](http://www.baylearn.org/)|
 -->
 
-###Conference
+### Conference
 Recurrent Neural Networks for Driver Activity Anticipation via Sensory-Fusion Architecture 
 <br>*Ashesh Jain, **Avi Singh**, Hema S Koppula, Shane Soh, Ashutosh Saxena*
 <br>ICRA 2016 [[arXiv]](http://arxiv.org/abs/1509.05016)
 
-###Workshops etc.
+### Workshops etc.
 Brain4Cars: Sensory-Fusion Recurrent Neural Models for Driver Activity Anticipation
 <br>*Ashesh Jain, Shane Soh, Bharad Raghvan, **Avi Singh**, Hema S Koppula, Ashutosh Saxena*
 <br>BayLearn 2015 (<span class="red">**Full Oral**</span>) [[extended abstract]](/assets/baylearn.pdf)
 
-###Preprints
+### Preprints
 Brain4Cars: Car That Knows Before You Do via Sensory-Fusion Deep Learning Architecture 
 <br>*Ashesh Jain, Hema S Koppula, Shane Soh, Bharad Raghavan, **Avi Singh**, Ashutosh Saxena*
 <br>(under review) [[arXiv]](http://arxiv.org/abs/1601.00740)
