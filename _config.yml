@@ -1,8 +1,8 @@
 # Site settings
-title:       Avi Singh
+title:       Avi Singh's blog
 email:       avisingh599@gmail.com
 author:      Avi Singh
-description: "Homepage and blog"
+description: ""
 baseurl:     ""
 url:         "https://avisingh599.github.io"
 #url:         "http://0.0.0.0:4000"
@@ -28,8 +28,8 @@ github_username: avisingh599
 bitbucket_username:
 stackoverflow_id:
 twitter_username: avisingh599
-google_plus_id: +avisingh599
-linkedin_username: avisingh599
+google_plus_id:
+linkedin_username:
 angellist_username:
 medium_id:
 bitcoin_url:

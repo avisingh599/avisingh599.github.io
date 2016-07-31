@@ -10,7 +10,7 @@ image:
   credit: 
   creditlink: 
 comments: true
-share: 
+share:
 ---
 *Disclaimer: The work described in this post was done by me and my classmate at IIT-Kanpur, Ankit Goyal. [Here](/assets/activity-classification.pdf) is a link to the presentation that we gave.*
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Computer Vision for Predicting Facial Attractiveness"
-summary: "A guess post that I wrote for LearnOpencv.com."
+summary: "A guess post that I wrote for LearnOpenCV.com."
 tags: [computer vision, opencv, machine learning, python, sklearn]
 share: false
 ---

@@ -10,7 +10,7 @@ image:
   credit: 
   creditlink: 
 comments: true
-share: 
+share: true
 ---
 {% include mathjs %}
 
