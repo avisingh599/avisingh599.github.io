@@ -1,0 +1,61 @@
+# Site settings
+title:       Avi Singh
+email:       avisingh599@gmail.com
+author:      Avi Singh
+description: "Homepage and blog"
+baseurl:     ""
+url:         "https://avisingh599.github.io"
+#url:         "http://0.0.0.0:4000"
+date_format: "%b %-d, %Y"
+
+# Google services
+google_analytics: UA-63278661-1
+google_verification:
+
+# Optional features
+animated:             false
+show_related_posts:   false
+show_post_footers:    false
+show_social_icons:    true
+ajaxify_contact_form: false
+
+# Disqus post comments
+# (leave blank to disable Disqus)
+disqus_shortname: avisingh599
+
+# Social icons
+github_username: avisingh599
+bitbucket_username:
+stackoverflow_id:
+twitter_username: avisingh599
+google_plus_id: +avisingh599
+linkedin_username: avisingh599
+angellist_username:
+medium_id:
+bitcoin_url:
+paypal_url:
+flattr_button:
+
+# Post sharing icons
+show_sharing_icons: true
+share_text: 'Share this post!'
+# Change to 'true' to enable individual icons
+share_facebook: true
+share_twitter: true
+share_googleplus: true
+share_linkedin: false
+share_digg: false
+share_tumblr: false
+share_reddit: true
+share_stumbleupon: false
+share_hackernews: true
+
+# Build settings
+markdown:     kramdown
+redcarpet:
+  extensions: ['smart', 'tables', 'with_toc_data']
+#permalink:    pretty
+permalink:   /:categories/:title/
+paginate:     nil
+sass:
+  compressed: true

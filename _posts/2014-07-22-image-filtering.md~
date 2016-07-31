@@ -1,0 +1,41 @@
+---
+layout: post
+title: "Image Filtering"
+modified: 2014-07-22 18:35:37 +0530
+category: vision
+tags: vision, imageprocessing
+image:
+  feature: 
+  credit: 
+  creditlink: 
+comments: 
+share: 
+---
+
+Most of the images obtained from cameras have some sort for noise. This may be due to Light Variations, Cam Electronics, Lens and surface reflectance. Noise is obviousely undesirable, and we would like to get rid of it.
+
+I^(x,y) = I(x,y) + n(x,y)
+
+Now what do we know about n(x,y)?
+We cannot exactly knwo what n(x,y) is, but we may have some idea as to what the *distribution* of noise.
+For example, noise might be gaussian in nature, with zero mean.
+
+### Image Derivatives
+What are derivatives?
+* They denote the *rate of change*.
+
+Derivatives might be continuous (for functions), or discrete (for real world data). The smallest Delta_X that we can choose in an image derivate is 1.
+
+- f' = f(x) - f(x-1)
+- f' = f(x+1) - f(x)
+- f' = f(x+1) - f(x-1)
+
+In image processing, we have masks.
+
+Backward mask = [-1 1].
+
+
+
+
+
+
