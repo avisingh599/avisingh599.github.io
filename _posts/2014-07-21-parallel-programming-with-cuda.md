@@ -13,7 +13,7 @@ comments:
 share: 
 ---
 
-I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ do not give a good speed when working on something as computationally expensive as variational optical flow. However, if you use the inbuilt CUDA module (in OpenCV 3.0), the performance is *way* better.
+I recently started going through an amazing Udacity course on Parallel Programming. Having been working on image processing and computer vision for quite some time now, I have realized that CPUs are NOT designed for image processing applications. Even the oh-so-optimized OpenCV implementations of computer vision algorithms in C/C++ are not real time when working on something as computationally expensive as variational optical flow. However, if you use the in-built CUDA module (in OpenCV 3.0), the performance is *way* better.
 
 ## Why GPUs?
 

@@ -20,14 +20,14 @@ or temporal sources of data in general. In this post, I will describe in more de
 project that classified RGBD videos according to the activity being performed in them.
 
 
-###Dataset
+### Dataset
 Quite a few [RGBD datasets](http://research.microsoft.com/en-us/um/people/zliu/ActionRecoRsrc/) 
 are available for human activity detection/classification, and we chose to use the 
 MSR Daily Activity 3D dataset. Since we had limited computational resources (the mathserver of IITK),
 and a limited time before the submission deadline, we chose to use a subset of the above dataset, 
 and worked with only 6 activities. So, our problem was now reduced to 6-class classification.
 
-###Features
+### Features
 In any machine learning problem, your model or learning algorithm is useless without a good set of
 features. I read a [recent paper](http://www.sciencedirect.com/science/article/pii/S0167865514001299) which
 had a decent review of the various features used. They were:
@@ -48,7 +48,7 @@ is one paper that makes use of these features.
 The features that we ultimately went ahead were the skeletal joints. The MSR Daily Activity 3D dataset already provides
 the skeletal joint coordinates to us, so all we had to was to take that data, and do some basic pre-processing on it.
 
-####Preprocessing the features.
+#### Preprocessing the features.
 
 The dataset provides us with the 3D coordinates of 15 human body joints. These cordinates are in the frame of reference of the Kinect.
 The first operation that we perform on them is the following: to transform the points from the Kinect reference frame to the frame
@@ -60,13 +60,13 @@ and our model does not have to worry about it anymore.
 
 [Clicke here](https://gist.github.com/avisingh599/73ac41db59d87115c99e) to get the MATLAB code that does the feature extraction part from skeleton files that were obtained from the MSR dataset. 
 
-###Model
+### Model
 
 Now, as I discussed in my [previous post]({% post_url 2015-05-27-classifying-human-activities-kinect %}), Hidden Conditional
 Random Fields (HCRFs) was the model that we finally selected. The original authors had released a well documented 
 [toolbox](http://sourceforge.net/projects/hcrf/), to which we directly fed the features that were computed above.
 
-###Results
+### Results
 Five-fold cross-validation without any hyper-parameter tuning yielded a precision of 71%. These results do not seem impressive
 on first glance, but it must be noted that all our experiments were performed in the "new person" setting i.e. the person in the
 test set did not appear in the training set, and we did not do any hyper parameter tuning. Our results can be summarised in the 

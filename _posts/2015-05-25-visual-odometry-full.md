@@ -23,7 +23,7 @@ I will basically present the algorithm described in the paper
 but very easy to understand, which is why I used it for my very first implementation. The MATLAB
 source code for the same is available on [github](https://github.com/avisingh599/vo-howard08).
 
-###What is odometry?
+### What is odometry?
 
 Have you seen that little gadget on a car's dashboard that tells you how much
 distance the car has travelled? It's called an [odometer](http://en.wikipedia.org/wiki/Odometer).
@@ -35,7 +35,7 @@ $$[ x^{t} y^{t} z^{t} \alpha^{t} \beta^{t} \gamma^{t}]$$ which describes the com
 Note that $$\alpha^{t}, \beta^{t}, \gamma^{t}$$ here are the [euler angles](http://mathworld.wolfram.com/EulerAngles.html), 
 while $$x^{t}, y^{t} ,z^{t}$$ are [ caetesian coordinates](http://en.wikipedia.org/wiki/Cartesian_coordinate_system) of the robot.
 
-###What's visual odometry?
+### What's visual odometry?
 
 There are more than one ways to determine the trajectory of a moving robot, but the one that we
 will focus on in this blog post is called Visual Odometry. In this approach we have a camera (or an 
@@ -45,7 +45,7 @@ video stream coming from this camera(s). When we are using just one camera, it's
 ***Monocular Visual Odometry***. When we're using two (or more) cameras, it's refered to as
 ***Stereo Visual Odometry***.
 
-###Why stereo, or why monocular?
+### Why stereo, or why monocular?
 
 There are certain advantages and disadvantages associated with both the stereo and the monocular
 scheme of things, and I'll briefly describe some of the main ones here. (Note that this blog post will
@@ -59,9 +59,9 @@ as compared to the distance between to the two cameras of the stereo system), th
 So, let's say you have a very small robot (like the [robobees](http://robobees.seas.harvard.edu/publications)), then 
 it's useless to have a stereo system, and you would be much better off with a monocular VO algorithm like [SVO](https://github.com/uzh-rpg/rpg_svo). Alos, there's a general trend of drones becoming smaller and smaller, so groups like those of [Davide Scaramuzza](http://rpg.ifi.uzh.ch/people_scaramuzza.html) are now focusing more on monocular VO approaches (or so he said in a talk that I happened to attend).
 
-###Enough english, let's talk math now
+### Enough english, let's talk math now
 
-####Formulation of the problem
+#### Formulation of the problem
 
 ##### **Input** 
 We have a stream of (grayscale/color) images coming from a pair of cameras. Let the left and right frames, captured at time t and t+1 be referred to as $$\mathit{I}_l^t$$, $$\mathit{I}_r^t$$, $$\mathit{I}_l^{t+1}$$, $$\mathit{I}_r^{t+1}$$. We have prior knowledge of all the intrinsic as well as extrinsic calibration parameters of the stereo rig, obtained via any one of the numerous stereo calibration algorithms available.
@@ -70,7 +70,7 @@ We have a stream of (grayscale/color) images coming from a pair of cameras. Let 
 For every pair of stereo images, we need to find the rotation matrix $$R$$ and the translation vector $$t$$, which describes the motion of the vehicle between the two frames.
 
 
-###The algorithm
+### The algorithm
 An outline:
 
 1.  Capture images: $$\mathit{I}_l^t$$, $$\mathit{I}_r^t$$, $$\mathit{I}_l^{t+1}$$, $$\mathit{I}_r^{t+1}$$
@@ -91,7 +91,7 @@ An outline:
 Do not worry if you do not understand some of the terminologies like disparity maps or FAST features that you see above.
 Most of them will be explained in greater detail in the text to follow, along with the code to use them in MATLAB.
 
-####Undistortion, Rectification
+#### Undistortion, Rectification
 Before computing the disparity maps, we must perform a number of preprocessing steps.
 
 Undistrortion: This step compensates for lens distortion. It is performed with the help of the distortion parameters that were obtained during calibration.
@@ -107,7 +107,7 @@ Rectification: This step is performed so as to ease up the problem of disparity 
 Both of these operations are implemented in MATLAB, and since the KITTI Visual Odometry dataset that I used in my implmentation
 already has these operations implemented, you won't find the code for them in my implmenation. You can see how to use these functions [here](http://www.mathworks.com/help/vision/ref/rectifystereoimages.html?searchHighlight=rectifyStereoImages) and [here](http://www.mathworks.com/help/vision/ref/undistortimage.html). Note that you need the Computer Vision Toolbox, and MATLAB R2014a or newer for these functions.
 
-####Disparity Map Computation
+#### Disparity Map Computation
 
 Given a pair of images from a stereo camera, we can compute a disparity map. Suppose a particular 3D in the physical world $$F$$ is located at the position $$(x,y)$$ in the left image, and the same feature is located on $$(x+d,y)$$ in the second image, then the location $$(x,y)$$ on the disparity map holds the value $$d$$. Note that the y-cordinates are the same since the images have been rectified. Thus, we can define disparity at each point in the image plane as: 
 $$
@@ -121,7 +121,7 @@ $$
   <figcaption>A disparity map computed on frames from KITTI VO dataset</figcaption>
 </figure>
 
-#####Block-Matching Algorithm
+##### Block-Matching Algorithm
 Disparity at each point is computed using a sliding window. 
 For every pixel in the left image a 15x15 pixels wide window is generated around it, 
 and the value of all the pixels in the windows is stored. This window is then constructed
@@ -133,7 +133,7 @@ disparityMap1 = disparity(I1_l,I1_r, 'DistanceThreshold', 5);
 {% endhighlight %}
 
 
-####Feature Detection
+#### Feature Detection
 My approach uses the FAST corner detector. I'll now explain in brief how the detector works, though you must have a look at the [original paper and source code](http://www.edwardrosten.com/work/fast.html) if you want to really understand how it works. Suppose there is a point $$\mathbf{P}$$ which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor $$\mathbf{I}$$ and for another set of contiguous pixels if the intensity is less by at least the same factor $$\mathbf{I}$$. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least $$\mathbf{I}$$, or must have an intensity lower by the same amount $$\mathbf{I}$$ for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.
 
 <figure>
@@ -181,7 +181,7 @@ points = cornerPoints(final_points);
 As you can see, the image is divided into grids, and the strongest corners from each grid are
 selected for the subsequent steps.
 
-####Feature Description and Matching
+#### Feature Description and Matching
 
 
 The fast corners detected in the previous step are fed to the next step, which uses a [KLT tracker](https://www.ces.clemson.edu/~stb/klt/). The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in $$\mathit{I}_{l}^{t}$$ are tracked in $$\mathit{I}_{l}^{t+1}$$ Let the set of features detected in $$\mathit{I}_{l}^{t}$$ be $$\mathcal{F}^{t}$$ , and the set of corresponding features in $$\mathit{I}_{l}^{t+1}$$ be $$\mathcal{F}^{t+1}$$.
@@ -197,7 +197,7 @@ initialize(tracker, points1_l.Location, I1_l);
 Note that in my current implementation, I am just tracking the point from one frame to the next, and then again doing the detection part,
 but in a better implmentation, one would track these points as long as the number of points do not drop below a particular threshold.
 
-####Triangulation of 3D PointCloud
+#### Triangulation of 3D PointCloud
 The real world 3D coordinates of all the point in $$\mathcal{F}^{t}$$ and $$\mathcal{F}^{t+1}$$ are computed with respect to the left camera using the disparity value corresponding to these features from the disparity map, and the known projection matrices of the two cameras $$\mathbf{P}_{1}$$ and $$\mathbf{P}_{2}$$.
 We first form the reprojection matrix $$\mathbf{Q}$$, using data from $$\mathbf{P1}$$ and $$\mathbf{P2}$$:
 
@@ -229,7 +229,7 @@ $$
 Let the set of point clouds obtained from be referred to as $$\mathcal{W}^{t}$$ and $$\mathcal{W}^{t+1}$$. To have a better understanding of
 the geometry that goes on in the above equations, you can have a look at the Bible of visual geometry i.e. Hartley and Zisserman's [Multiple View Geometry](http://www.robots.ox.ac.uk/~vgg/hzbook/).
 
-####The Inlier Detection Step
+#### The Inlier Detection Step
 This algorithm defers from most other visual odometry algorithms in the sense that it does not have an outlier detection step, but it has an inlier detection step. We assume that the scene is rigid, and hence it must not change between the time instance $$t$$ and $$t+1$$. As a result, the distance between any two features in the point cloud $$\mathcal{W}^{t}$$ must be same as the distance between the corresponding points in $$\mathcal{W}^{t+1}$$. If any such distance is not same, then either there is an error in 3D triangulation of at least one of the two features, or we have triangulated a moving, which we cannot use in the next step. In order to have the maximum set of consistent matches, we form the  consistency matrix $$\mathbf{M}$$ such that:
 
 $$
@@ -301,7 +301,7 @@ end
 
 
 
-####Computation of $$\mathbf{R}$$ and $$\mathbf{t}$$
+#### Computation of $$\mathbf{R}$$ and $$\mathbf{t}$$
 In order to determine the rotation matrix $$\mathbf{R}$$ and translation vector $$\mathbf{t}$$, we use Levenberg-Marquardt non-linear least squares minimization to minimize the following sum:
 
 $$
@@ -359,7 +359,7 @@ end
 F = [reproj1; reproj2];
 {% endhighlight %}
 
-####Validation of results
+#### Validation of results
 A particular set of $$\mathbf{R}$$ and $$\mathbf{t}$$ is said to be valid if it satisfies the following conditions:
 
 1. If the number of features in the clique is at least 8.
@@ -367,7 +367,7 @@ A particular set of $$\mathbf{R}$$ and $$\mathbf{t}$$ is said to be valid if it 
 
 The above constraints help in dealing with noisy data.
 
-####An important "hack"
+#### An important "hack"
 If you run the above algorithm on real-world sequences, you will encounter a 
 rather big problem. The assumption of scene rigidity stops holding when a large vehicle
 such as a truck or a van occupies a majority of the field of view of the camera. In order

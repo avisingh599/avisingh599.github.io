@@ -25,21 +25,21 @@ need it, and also compares the monocular and stereo approaches.
 
 Acquanted with all the basics of visual odometry? Cool. Let's go ahead.
 
-##Demo
+## Demo
 Before I move onto describing the implementation, have a look at the algorithm in action!
 
 <style>.embed-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; } .embed-container iframe, .embed-container object, .embed-container embed { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }</style><div class='embed-container'><iframe src='https://www.youtube.com/embed/homos4vd_Zs' frameborder='0' allowfullscreen></iframe></div>
 
 Pretty cool, eh? Let's dive into implementing it in OpenCV now.
 
-###Formulation of the problem
+### Formulation of the problem
 
-####Input 
+#### Input 
 We have a stream of gray scale images coming from a camera. Let the frames, captured at time $$t$$ and $$t+1$$ be referred to as
 $$\mathit{I}^{t}$$, $$\mathit{I}^{t+1}$$. We have prior knowledge of all the intrinsic parameters, obtained via calibration, 
 which can also be done in [OpenCV](http://docs.opencv.org/3.0.0/d9/d0c/group__calib3d.html).
 
-####Output
+#### Output
 For every pair of images, we need to find the rotation matrix $$R$$ and the translation vector $$t$$, which describes the motion of the vehicle between the two frames. The vector $$t$$ can only be computed upto a scale factor in our monocular scheme. 
 
 
@@ -63,7 +63,7 @@ that were obtained during calibration. Since the KITTI dataset that I'm using al
 undistorted images, I won't write the code about it here. However, it is relatively straightforward to 
 [undistort](http://docs.opencv.org/modules/imgproc/doc/geometric_transformations.html#undistort) with OpenCV.
 
-###Feature Detection
+### Feature Detection
 My approach uses the FAST corner detector, just like my stereo implementation. I'll now explain in brief how the detector works, though you must have a look at the [original paper and source code](http://www.edwardrosten.com/work/fast.html) if you want to really understand how it works. Suppose there is a point $$\mathbf{P}$$ which we want to test if it is a corner or not. We draw a circle of 16px circumference around this point as shown in figure below. For every pixel which lies on the circumference of this circle, we see if there exits a continuous set of pixels whose intensity exceed the intensity of the original pixel by a certain factor $$\mathbf{I}$$ and for another set of contiguous pixels if the intensity is less by at least the same factor $$\mathbf{I}$$. If yes, then we mark this point as a corner. A heuristic for rejecting the vast majority of non-corners is used, in which the pixel at 1,9,5,13 are examined first, and atleast three of them must have a higher intensity be amount at least $$\mathbf{I}$$, or must have an intensity lower by the same amount $$\mathbf{I}$$ for the point to be a corner. This particular approach is selected due to its computational efficiency as compared to other popular interest point detectors such as SIFT.
 
 <figure>
@@ -88,7 +88,7 @@ tune these parameters so as to obtain the best performance on your own data.
 Note that the code above also converts the datatype of the detected feature points from KeyPoints to a vector of Point2f, so 
 that we can directly pass it to the feature tracking step, described below:
 
-###Feature Tracking
+### Feature Tracking
 
 The fast corners detected in the previous step are fed to the next step, which uses a [KLT tracker](https://www.ces.clemson.edu/~stb/klt/). The KLT tracker basically looks around every corner to be tracked, and uses this local information to find the corner in the next image. You are welcome to look into the KLT link to know more. The corners detected in $$\mathit{I}^{t}$$ are tracked in $$\mathit{I}^{t+1}$$. Let the set of features detected in $$\mathit{I}^{t}$$ be $$\mathcal{F}^{t}$$ , and the set of corresponding features in $$\mathit{I}^{t+1}$$ be $$\mathcal{F}^{t+1}$$. Here is the function that does feature tracking in OpenCV using the KLT tracker:
 
@@ -125,7 +125,7 @@ void featureTracking(Mat img_1, Mat img_2, vector<Point2f>& points1, vector<Poin
 Note that while doing KLT tracking, we will eventually lose some points (as they move out of the field of view of the car), and 
 we thus trigger a redetection whenver the total number of features go below a certain threshold (2000 in my implementation).
 
-###Essential Matrix Estimation
+### Essential Matrix Estimation
 Once we have point-correspondences, we have several techniques for the computation of an essential matrix. The essential matrix is defined as follows:
 $$
 \begin{equation}
@@ -135,7 +135,7 @@ $$
 Here, $$y_{1}$$, $$y_{2}$$ are homogenous normalised image coordinates. 
 While a simple algorithm requiring eight point correspondences exists\cite{Higgins81}, a more recent approach that is shown to give better results is the five point algorithm[^1]. It solves a number of non-linear equations, and requires the minimum number of points possible, since the Essential Matrix has only five degrees of freedom.
 
-####RANSAC
+#### RANSAC
 If all of our point correspondences were perfect, then we would have need only 
 five feature correspondences between two successive frames to estimate motion accurately. 
 However, the feature tracking algorithms are not perfect, and therefore we have several 
@@ -150,7 +150,7 @@ Using the above in OpenCV is again pretty straightforward, and all you need is o
 E = findEssentialMat(points2, points1, focal, pp, RANSAC, 0.999, 1.0, mask);
 {% endhighlight %}
 
-###Computing R, t from the Essential Matrix
+### Computing R, t from the Essential Matrix
 Another definition of the Essential Matrix (consistent) with the definition mentioned earlier is as follows:
 $$
 \begin{equation}
@@ -176,7 +176,7 @@ Here's the one-liner that implements it in OpenCV:
 recoverPose(E, points2, points1, R, t, focal, pp, mask);
 {% endhighlight %}
 
-###Constructing Trajectory
+### Constructing Trajectory
 Let the pose of the camera be denoted by $$R_{pos}$$, $$t_{pos}$$. We can then track the trajectory using the following equation:
 
 $$
@@ -190,11 +190,11 @@ $$
 Note that the scale information of the translation vector $$t$$ has to be obtained from some other source before concatenating.
 In my implementation, I extract this information from the ground truth that is supplied by the KITTI dataset.
 
-###Heuristics
+### Heuristics
 Most Computer Vision algorithms are not complete without a few heuristics thrown in, and Visual Odometry is not an exception. The
 heuristive that we use is explained below:
 
-####Dominant Motion is Forward
+#### Dominant Motion is Forward
 The entire visual odometry algorithm makes the assumption that most of the points in its environment are rigid. However, if we are in a scenario where the vehicle is at a stand still, and a buss passes by (on a road intersection, for example), it would lead the algorithm to believe that the car has moved sideways, which is physically impossible. As a result, if we ever find the translation is dominant in a direction other than forward, we simply ignore that motion. 
 
 
