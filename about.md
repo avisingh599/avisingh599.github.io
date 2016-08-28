@@ -3,7 +3,7 @@ layout: page
 permalink: /about/
 ---
 
-My name is Avi Singh. I graduated from IIT-Kanpur in June 2016, with a Bachelor's in Electrical Engineering. 
+My name is Avi Singh. I am a first year PhD student in Computer Science at UC Berkeley, where I am advised by [Sergey Levine](https://people.eecs.berkeley.edu/~svlevine/). I graduated from IIT-Kanpur in June 2016, with a Bachelor's in Electrical Engineering. 
 
 In Summer 2016, I was a research intern in the [Machine Learning and Perception Lab](https://mlp.ece.vt.edu/) at Virginia Tech, and worked under the [Prof. Dhruv Batra](https://filebox.ece.vt.edu/~dbatra/) and [Prof. Devi Parikh](https://filebox.ece.vt.edu/~parikh/).
 
