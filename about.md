@@ -3,6 +3,6 @@ layout: page
 permalink: /about/
 ---
 
-My name is Avi Singh. I am a PhD student in Computer Science at UC Berkeley, where I am advised by [Prof. Sergey Levine](https://people.eecs.berkeley.edu/~svlevine/). I graduated from IIT-Kanpur in June 2016, with a Bachelor's in Electrical Engineering. 
+My name is Avi Singh. Since September 2021, I am a Research Scientist at Google Brain. I received a PhD in Computer Science at UC Berkeley, where I was advised by [Prof. Sergey Levine](https://people.eecs.berkeley.edu/~svlevine/).
 
-You can find more about me on my academic [webpage](http://people.eecs.berkeley.edu/~avisingh/). 
+You can find more about me on my academic [webpage](http://avisingh.org/).
